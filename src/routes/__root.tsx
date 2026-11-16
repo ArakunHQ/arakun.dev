@@ -2,6 +2,7 @@ import { HeadContent, Outlet, Scripts, createRootRoute, useLocation } from '@tan
 import type { ReactNode } from 'react'
 import { CelebrateProvider } from '#/components/Celebrate'
 import { SiteFooter, SiteNav, useReveal } from '#/components/chrome'
+import { pageMeta } from '#/seo'
 import { site } from '#/site'
 import appCss from '#/styles.css?url'
 
@@ -20,18 +21,12 @@ export const Route = createRootRoute({
       { title: `${site.name} · ${site.line}` },
       { name: 'description', content: description },
       { property: 'og:site_name', content: site.name },
-      { property: 'og:title', content: site.name },
-      { property: 'og:description', content: site.line },
       { property: 'og:type', content: 'website' },
-      { property: 'og:url', content: site.url },
-      { property: 'og:image', content: `${site.url}/brand/og.png` },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
-      { property: 'og:image:alt', content: `${site.name}: ${site.line}` },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: site.name },
-      { name: 'twitter:description', content: site.line },
-      { name: 'twitter:image', content: `${site.url}/brand/og.png` },
+      // The home card. Pages override these with their own (pageMeta); a page that doesn't keeps this one.
+      ...pageMeta({ path: '/', title: site.name, description: site.line }),
       { name: 'theme-color', content: '#0b0b0b' },
     ],
     links: [

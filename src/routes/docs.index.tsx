@@ -1,10 +1,18 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { InstallBand, PageHeader } from '#/components/ui'
 import { groupSlug, groups } from '#/docs'
-import { site } from '#/site'
+import { pageMeta } from '#/seo'
+import { pages, site } from '#/site'
+
+const page = pages.docs
 
 export const Route = createFileRoute('/docs/')({
-  head: () => ({ meta: [{ title: `Docs · ${site.name}` }] }),
+  head: () => ({
+    meta: [
+      { title: `Docs · ${site.name}` },
+      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
+    ],
+  }),
   component: DocsIndex,
 })
 
@@ -17,12 +25,7 @@ export const Arrow = () => (
 function DocsIndex() {
   return (
     <>
-      <PageHeader
-        num="03"
-        label="Docs"
-        title="Learn Arakun"
-        lead="Short pages, plain words. Start with the install, then give an agent its first task."
-      />
+      <PageHeader {...page} />
 
       <section className="wrap docs" style={{ paddingTop: 'var(--spacing-16)' }}>
         {groups.map((group) => (

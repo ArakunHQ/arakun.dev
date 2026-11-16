@@ -1,11 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { DownloadButton, InstallLine, PageHeader, Principle, StatusPill } from '#/components/ui'
 import type { Tone } from '#/components/ui'
-import { site } from '#/site'
+import { pageMeta } from '#/seo'
+import { pages, site } from '#/site'
 import type { Platform } from '#/site'
 
+const page = pages.download
+
 export const Route = createFileRoute('/download')({
-  head: () => ({ meta: [{ title: `Download · ${site.name}` }] }),
+  head: () => ({
+    meta: [
+      { title: `Download · ${site.name}` },
+      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
+    ],
+  }),
   component: Download,
 })
 
@@ -35,12 +43,7 @@ const platforms: { name: string; download?: Platform; status: string; tone: Tone
 function Download() {
   return (
     <>
-      <PageHeader
-        num="02"
-        label="Download"
-        title="Install Arakun"
-        lead={`One line in a terminal, or download the build for your platform. Free and open source under ${site.license}.`}
-      />
+      <PageHeader {...page} />
 
       <section className="wrap installs">
         <div>

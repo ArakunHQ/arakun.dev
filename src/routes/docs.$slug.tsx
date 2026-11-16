@@ -1,6 +1,7 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Words, step } from '#/components/ui'
 import { docs, groups } from '#/docs'
+import { pageMeta } from '#/seo'
 import { site } from '#/site'
 
 export const Route = createFileRoute('/docs/$slug')({
@@ -8,9 +9,16 @@ export const Route = createFileRoute('/docs/$slug')({
     const index = docs.findIndex((doc) => doc.slug === params.slug)
     if (index < 0) throw notFound()
     // Only plain data crosses the loader; the page body is looked up again in the component.
-    return { index, title: docs[index].title }
+    return { index, slug: docs[index].slug, title: docs[index].title, summary: docs[index].summary }
   },
-  head: ({ loaderData }) => ({ meta: [{ title: `${loaderData?.title ?? 'Docs'} · ${site.name} docs` }] }),
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: `${loaderData?.title ?? 'Docs'} · ${site.name} docs` },
+      ...(loaderData
+        ? pageMeta({ path: `/docs/${loaderData.slug}`, title: loaderData.title, description: loaderData.summary })
+        : []),
+    ],
+  }),
   component: DocPage,
 })
 

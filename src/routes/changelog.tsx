@@ -4,7 +4,10 @@ import { InstallBand, PageHeader, StatusPill } from '#/components/ui'
 import { notes } from '#/release-notes'
 import { getReleases } from '#/releases'
 import type { Release } from '#/releases'
-import { site } from '#/site'
+import { pageMeta } from '#/seo'
+import { pages, site } from '#/site'
+
+const page = pages.changelog
 
 /**
  * The changelog. Its releases come from GitHub: see `releases.ts` for how they
@@ -13,7 +16,12 @@ import { site } from '#/site'
  */
 export const Route = createFileRoute('/changelog')({
   loader: () => getReleases(),
-  head: () => ({ meta: [{ title: `Changelog · ${site.name}` }] }),
+  head: () => ({
+    meta: [
+      { title: `Changelog · ${site.name}` },
+      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
+    ],
+  }),
   component: Changelog,
 })
 
@@ -59,7 +67,7 @@ function Changelog() {
   const releases = Route.useLoaderData()
   return (
     <>
-      <PageHeader num="04" label="Changelog" title="What changed" lead="Every release, newest first." />
+      <PageHeader {...page} />
 
       <section className="wrap" style={{ paddingTop: 'var(--spacing-16)' }}>
         {releases.map((release) => (
