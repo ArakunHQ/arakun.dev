@@ -1,0 +1,16 @@
+# Git hooks that run the quick checks CI runs. Turn them on once with
+# `lefthook install`; see "Git hooks" in CONTRIBUTING.md. Skip them for one
+# command with `LEFTHOOK=0 git commit ...`. Personal changes go in
+# lefthook-local.yml, which git ignores.
+
+pre-commit:
+  jobs:
+    # Runs on the working tree, so changes you have not staged count too.
+    - name: typecheck
+      glob: ["*.ts", "*.tsx", "tsconfig.json", "package.json", "pnpm-lock.yaml", "wrangler.jsonc"]
+      run: pnpm typecheck
+
+commit-msg:
+  jobs:
+    - name: conventional-commits
+      run: tools/conventional-commits.sh message {1}

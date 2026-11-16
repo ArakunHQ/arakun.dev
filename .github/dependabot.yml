@@ -1,0 +1,30 @@
+# Weekly update pull requests, one per ecosystem, so the actions and the site's
+# packages don't fall behind unnoticed.
+#
+# Titles carry a Conventional Commits prefix because conventional-commits.yml
+# fails any pull request title without one, Dependabot's included.
+#
+# Each update waits a week after its release: a hijacked release is usually
+# found and pulled within days, before it reaches a pull request here.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+    commit-message: { prefix: ci }
+    groups:
+      actions: { patterns: ["*"] }
+
+  # pnpm uses the npm ecosystem; Dependabot updates pnpm-lock.yaml. Major
+  # versions come as pull requests of their own, as they often need code
+  # changes.
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+    commit-message: { prefix: build }
+    groups:
+      packages:
+        patterns: ["*"]
+        update-types: [minor, patch]

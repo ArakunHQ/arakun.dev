@@ -1,0 +1,43 @@
+name: Conventional Commits
+
+# main only takes squash merges, and a squash uses the pull request title as
+# the commit message, so the title is what gets checked; the commits in the
+# pull request never reach main. Separate from CI, so editing a title doesn't
+# rerun the build. `synchronize` is here because a required check has to
+# report on every new head commit.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+concurrency:
+  group: conventional-commits-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  title:
+    name: Pull request title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      # The base branch's copy, so a pull request can't loosen the check it is
+      # checked with. Taken from the branch's current tip: the event's base.sha
+      # stays at the commit the pull request was opened on, which can predate
+      # the checker. No fallback to the pull request's copy, which would let a
+      # failed fetch run a checker the pull request wrote.
+      - name: Take the checker from the base branch
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch --no-tags --depth=1 origin "refs/heads/$BASE_REF"
+          git show FETCH_HEAD:tools/conventional-commits.sh > "$RUNNER_TEMP/check.sh"
+      - name: Check the title
+        env:
+          # Through env, never ${{ }} in the script: the title is untrusted input.
+          TITLE: ${{ github.event.pull_request.title }}
+        run: bash "$RUNNER_TEMP/check.sh" title "$TITLE"

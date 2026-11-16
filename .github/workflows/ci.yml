@@ -1,0 +1,58 @@
+name: CI
+
+# Typechecks and builds the site, and checks that the Worker bundles the way
+# `wrangler deploy` would, without uploading anything. Deploys are not done
+# here: `pnpm deploy` runs by hand (see README.md).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+# A pull request's runs share a group, so a new push cancels the old run. Pushes
+# to main get a group per commit, so every commit keeps its own result.
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # The main ruleset can require this name; renaming it blocks every merge.
+    name: Typecheck and build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Reads the version from packageManager in package.json.
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm build
+
+      # Bundles the Worker and lists its bindings and assets. No account or
+      # token is needed for a dry run.
+      - run: pnpm exec wrangler deploy --dry-run
+
+      # worker-configuration.d.ts is generated from wrangler.jsonc, and the
+      # typecheck relies on it. A stale copy hides type errors.
+      - name: Worker types are up to date
+        run: |
+          pnpm cf-typegen
+          if ! git diff --exit-code -- worker-configuration.d.ts src/routeTree.gen.ts; then
+            echo "::error::Generated files are out of date. Run 'pnpm cf-typegen' and 'pnpm build', then commit the result."
+            exit 1
+          fi
