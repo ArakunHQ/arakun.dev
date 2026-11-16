@@ -6,6 +6,8 @@ const release = `${repo}/releases/download/v${version}`
 export const site = {
   name: 'Arakun',
   line: 'One native window for your coding agents.',
+  /** Absolute origin, for links that leave the site: og:image, canonical URLs. */
+  url: 'https://arakun.dev',
   version,
   released: 'November 14, 2026',
   license: 'AGPL-3.0',
