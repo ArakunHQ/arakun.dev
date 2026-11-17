@@ -30,8 +30,16 @@ const generated =
 /** Conventional Commit types that change nothing a user of the app sees. A revert may, so it stays. */
 const unseen = /^(?:build|ci|test|tests|chore|docs|style|refactor)(?:\(.*?\))?!?:/iu
 
-/** What GitHub adds around the generated list: headings, contributors and the compare link. */
-const boilerplate = [/^\s*#/u, /made their first contribution/iu, /^\s*\*\*Full Changelog\*\*/iu]
+/**
+ * What GitHub adds around the generated list: its two headings, contributors and the
+ * compare link. Other headings stay, since a person may have written one, such as a
+ * warning to read before upgrading.
+ */
+const boilerplate = [
+  /^\s*#+\s*(?:What['’]s Changed|New Contributors)\s*$/iu,
+  /made their first contribution/iu,
+  /^\s*\*\*Full Changelog\*\*/iu,
+]
 
 /** The longest notes we send. GitHub's generated list for a big release fits easily. */
 const MAX_INPUT = 12_000
