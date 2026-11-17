@@ -113,7 +113,11 @@ in `lefthook-local.yml`, which git ignores. Turn the hooks off with `lefthook un
   [ArakunHQ/arakun](https://github.com/ArakunHQ/arakun) and keep `src/docs.tsx` in step
   with it.
 - **Add a screenshot** to the pull request for any visible change, before and after,
-  in both themes. Drag it into the description.
+  in both themes. Drag it into the description. With write access to
+  [ArakunHQ/pr-assets](https://github.com/ArakunHQ/pr-assets), `tools/pr-assets.sh
+  <file>...` uploads it there instead and prints the Markdown to paste; agents do
+  this, since GitHub has no API to upload images. That repository is public: no
+  real accounts, tokens, email addresses or home-directory paths in the picture.
 
 ## Pull requests
 

@@ -46,6 +46,10 @@ Every commit message and pull request title follows
   cleanups in their own commit or pull request.
 - Fill in `.github/pull_request_template.md`. Under "How did you test this?", list the
   commands you actually ran. Leave a checklist item unchecked if you did not run it.
+- A visible change needs before and after screenshots in both themes. GitHub has no API
+  to attach an image, so upload them with `tools/pr-assets.sh <file>...` and paste the
+  Markdown it prints. Name each file; don't use a glob. The images are public: no real
+  accounts, tokens, email addresses or home-directory paths in them.
 - Always open a pull request as a draft: `gh pr create --draft --body-file -`. Run the
   checks below, wait for CI to pass, then mark it ready with `gh pr ready`. Merging is
   a person's job, not yours.
