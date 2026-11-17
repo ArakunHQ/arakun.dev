@@ -29,9 +29,8 @@ const generated = /^\s*[*-]\s+(.+?)\s+by\s+@\S+\s+in\s+https:\/\/github\.com\/\S
 /** Conventional Commit types that change nothing a user of the app sees. A revert may, so it stays. */
 const unseen = /^(build|ci|test|tests|chore|docs|style|refactor)(\(.*?\))?!?:/i
 
-/** What GitHub adds around the generated list: its comment, headings, contributors and compare link. */
+/** What GitHub adds around the generated list: headings, contributors and the compare link. */
 const boilerplate = [
-  /^\s*<!--.*-->\s*$/,
   /^\s*#/,
   /made their first contribution/i,
   /^\s*\*\*Full Changelog\*\*/i,
@@ -40,15 +39,30 @@ const boilerplate = [
 /** The longest notes we send. GitHub's generated list for a big release fits easily. */
 const MAX_INPUT = 12_000
 
+/** Drops HTML comments, such as the one GitHub puts above its generated notes, even across lines. */
+function withoutComments(text: string): string {
+  let kept = ''
+  let at = 0
+  for (;;) {
+    const start = text.indexOf('<!--', at)
+    if (start < 0) return kept + text.slice(at)
+    kept += text.slice(at, start)
+    const end = text.indexOf('-->', start + 4)
+    // An unclosed comment hides the rest, as it would on GitHub.
+    if (end < 0) return kept
+    at = end + 3
+  }
+}
+
 /**
  * What the model reads. For GitHub's generated list: only the pull requests a
  * user could notice, without authors and links, after any text a person wrote
  * around it, such as a warning. Notes written by a person go through as they are.
  */
 export function changesFrom(body: string): string {
-  const lines = body.split('\n')
+  const lines = withoutComments(body).split('\n')
   const prs = lines.map((line) => generated.exec(line)?.[1]).filter((title) => title !== undefined)
-  if (prs.length === 0) return body.trim().slice(0, MAX_INPUT)
+  if (prs.length === 0) return lines.join('\n').trim().slice(0, MAX_INPUT)
   const written = lines
     .filter((line) => line.trim() && !generated.test(line) && !boilerplate.some((pattern) => pattern.test(line)))
     .join('\n')
