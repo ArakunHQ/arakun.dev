@@ -1,0 +1,99 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite/biome/core", "ultracite/biome/react", "ultracite/biome/tanstack"],
+  "files": {
+    "includes": [
+      // The SVGs are artwork, served and used as they are.
+      "!**/*.svg",
+      // A copy of the script in ArakunHQ/arakun. Lint and change it there.
+      "!.github/scripts/cla.mjs"
+    ]
+  },
+  // Keep the style the code already had, so a check doesn't rewrite every line.
+  "formatter": {
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "semicolons": "asNeeded"
+    }
+  },
+  "css": {
+    "formatter": {
+      "lineWidth": 100,
+      "quoteStyle": "single"
+    }
+  },
+  "json": {
+    "formatter": {
+      "lineWidth": 100
+    }
+  },
+  "yaml": {
+    "formatter": {
+      "bracketSpacing": false
+    }
+  },
+  "linter": {
+    "rules": {
+      "performance": {
+        // The handlers go to DOM elements, where a new function each render
+        // costs nothing. useCallback around each one would only add noise.
+        "noJsxPropsBind": "off"
+      },
+      "style": {
+        // Components live in PascalCase files, the React habit.
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "requireAscii": true,
+            "filenameCases": ["kebab-case", "PascalCase"]
+          }
+        }
+      },
+      "suspicious": {
+        "useBaseline": {
+          "level": "error",
+          "options": {
+            // The themes are built on light-dark(). Browsers without it are
+            // too old for the rest of the site anyway.
+            "allowFunctions": ["light-dark"],
+            // Decoration only: where they are missing, the hero dots, the list
+            // markers and the raccoon's blink look a little off. Nothing breaks.
+            "allowProperties": ["mask-image", "transform-box"],
+            "allowSelectors": ["marker"]
+          }
+        }
+      }
+    }
+  },
+  "overrides": [
+    {
+      // TanStack Router reads the route from the file name, such as
+      // install[.]sh.ts for /install.sh.
+      "includes": ["src/routes/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      // The stylesheet is grouped by component, and the rule compares
+      // selectors that never match the same element, such as `.consent a`
+      // and `.sf .col a`. Moving rules to please it would change the cascade.
+      "includes": ["src/styles.css"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDescendingSpecificity": "off"
+          }
+        }
+      }
+    }
+  ]
+}

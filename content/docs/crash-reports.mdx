@@ -1,0 +1,47 @@
+---
+title: Crash reports and usage counts
+description: What the app sends, and how to turn it off.
+---
+
+Arakun sends nothing until you say so. On first launch it asks "Send crash reports and usage counts?". Closing the question answers nothing, and Arakun asks again the next time it starts.
+
+## What is sent
+
+<Accordions>
+<Accordion title="Crash reports">
+
+A crash's message and stack trace. Your home folder becomes `~`, and paths, links, emails and anything shaped like a key or token are removed. When an agent stops with an error, only the agent's name and a fixed category such as "rate limited" go out, never the error's text.
+
+</Accordion>
+<Accordion title="Usage counts">
+
+App launched, session started, agent turn finished, project added, environment created, a built-in view opened and a browser tab opened.
+
+</Accordion>
+</Accordions>
+
+Each report carries Arakun's version, your OS and the CPU architecture. Arakun never sends prompts, replies, file contents, URLs or project names. [Privacy](/privacy) says who receives the reports and how long we keep them.
+
+## Change your answer
+
+Open Settings › General and turn Crash reports or Usage counts on or off. Each switch works on its own.
+
+## Turn both off
+
+Set `DO_NOT_TRACK=1` or `ARAKUN_TELEMETRY=0` in the environment Arakun starts in. Both stay off, and Arakun does not ask.
+
+## The files
+
+Two files in Arakun's data folder hold the setting:
+
+- `telemetry.json`: your answer.
+- `telemetry-id`: a random id that the reports carry. It is not tied to any account.
+
+The data folder is in one of these places:
+
+| Platform | Data folder |
+| --- | --- |
+| Linux and macOS | `~/.local/share/arakun` |
+| Windows | `%LOCALAPPDATA%\arakun` |
+
+Delete `telemetry-id` and Arakun makes a new id. To have the reports for an id deleted, send the id to [{site.privacyEmail}](mailto:{site.privacyEmail}).

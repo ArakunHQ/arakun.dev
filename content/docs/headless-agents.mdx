@@ -1,0 +1,22 @@
+---
+title: Headless agents
+description: An agent that keeps going with the app closed.
+---
+
+```sh
+arakun agent run <prompt>
+```
+
+This starts an agent in its own process. It keeps going with the app closed.
+
+<Callout type="warn" title="Limits">
+  Linux only: it needs `bwrap`. Headless runs use Workers AI models for now.
+</Callout>
+
+## The sandbox
+
+Its tools run inside a bubblewrap sandbox. The workspace is writable and the rest is read-only. There are no credentials, and no network unless you pass `--allow net`.
+
+## The policy
+
+`--policy readonly|workspace|full` decides which tool calls need your approval. Answer with `arakun agent approve` or `arakun agent deny`.

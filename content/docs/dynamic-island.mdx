@@ -1,0 +1,14 @@
+---
+title: Dynamic Island
+description: A small overlay at the top of the screen.
+---
+
+The Dynamic Island is a small overlay at the top of the screen. It shows what the agents of every project are doing: a dot per busy session, and a card when one finishes, fails or needs an answer.
+
+## Where it works
+
+<Callout type="warn">
+  Linux on Wayland only, for now. It needs a compositor with the wlr-layer-shell protocol. Windows has no Dynamic Island yet.
+</Callout>
+
+It runs as its own process, `arakun island-host`.

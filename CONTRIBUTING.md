@@ -41,7 +41,7 @@ the app's does. Unsigned pull requests can't be merged.
 
 ## Setting up
 
-You need [Node](https://nodejs.org/) 24 or newer and [pnpm](https://pnpm.io/). The
+You need [Node](https://nodejs.org/) 24.15 or newer and [pnpm](https://pnpm.io/). The
 pnpm version is pinned in `packageManager` in `package.json`; `corepack enable` picks
 it up. Node 25 and newer no longer include Corepack, so install it first with
 `npm install -g corepack`.
@@ -60,6 +60,7 @@ CI runs these on every pull request. Run them before you push:
 ```sh
 pnpm install --frozen-lockfile
 pnpm typecheck
+pnpm check       # lint and format; `pnpm fix` fixes most findings
 pnpm build
 pnpm exec wrangler deploy --dry-run   # checks the Worker bundles; uploads nothing
 
@@ -82,8 +83,8 @@ Some notes:
 
 ### Git hooks
 
-[`lefthook.yml`](lefthook.yml) runs the typecheck on commit and checks the commit
-message. Install [lefthook](https://lefthook.dev/installation/) (for example
+[`lefthook.yml`](lefthook.yml) runs the typecheck and the lint on commit, and checks
+the commit message. Install [lefthook](https://lefthook.dev/installation/) (for example
 `brew install lefthook` or `npm install -g lefthook`), then turn the hooks on in your
 checkout:
 
@@ -110,8 +111,8 @@ in `lefthook-local.yml`, which git ignores. Turn the hooks off with `lefthook un
   why it is needed. Its license must allow use in AGPL-3.0 code that is also offered
   under other terms: no GPL, LGPL or AGPL packages.
 - **Docs pages.** If the app's behavior changed, check the README of
-  [ArakunHQ/arakun](https://github.com/ArakunHQ/arakun) and keep `src/docs.tsx` in step
-  with it.
+  [ArakunHQ/arakun](https://github.com/ArakunHQ/arakun) and keep the pages in
+  `content/docs/` in step with it. The README says how to write one.
 - **Add a screenshot** to the pull request for any visible change, before and after,
   in both themes. Drag it into the description. With write access to
   [ArakunHQ/pr-assets](https://github.com/ArakunHQ/pr-assets), `tools/pr-assets.sh

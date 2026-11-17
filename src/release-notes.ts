@@ -9,27 +9,83 @@
  * So a new release needs nothing here. Add an entry when its GitHub notes are
  * empty, or when the rewrite gets something wrong.
  */
-export type ReleaseNote = {
-  title: string
+export interface ReleaseNote {
+  changes: [area: string, change: string][]
   /** ISO date. Only used when GitHub cannot be reached. */
   publishedAt?: string
-  changes: [area: string, change: string][]
+  title: string
 }
 
 export const notes: Record<string, ReleaseNote> = {
+  'v0.3.0': {
+    title: 'Updates by themselves, browser tabs and a Marketplace',
+    publishedAt: '2026-11-17T19:04:10Z',
+    changes: [
+      [
+        'Updates',
+        'Arakun installs a new release by itself when you quit, after it checks the signature. A switch in Settings turns this off.',
+      ],
+      [
+        'Browser',
+        'Every download has browser tabs now. A setting opens links in your own browser instead.',
+      ],
+      [
+        'Setup',
+        'A first launch walks you through setup: your agent, the look, the main shortcuts, GitHub and the phone, then your first project.',
+      ],
+      [
+        'Marketplace',
+        'The Extensions tab is now the Marketplace and opens on Discover. Tabs such as GitHub, Usage and Servers are extensions you turn on there, so the sidebar shows only what you use.',
+      ],
+      [
+        'Privacy',
+        "Redacted mode (Ctrl+Shift+H) hides emails, keys, IP addresses and account names while you stream or demo. Arakun reads each agent CLI's sign-in and sends it only to that provider.",
+      ],
+      [
+        'macOS',
+        'A disk image you drag into Applications. The Dynamic Island shows on the Mac, around the notch. A click on a notification opens Arakun.',
+      ],
+      [
+        'App',
+        "The Inbox is a button next to search, with a count. Settings are grouped. The brand book's raccoon is on the start screen and new tabs.",
+      ],
+      [
+        'Fixes',
+        'A zoom change no longer closes the app. Views no longer clip in a small window. On Ubuntu, a blocked browser sandbox shows a notice instead of a crash. The Dynamic Island speaks English on Linux too.',
+      ],
+    ],
+  },
   'v0.2.1': {
     title: 'Remote servers, a GitHub tab and Codex',
     publishedAt: '2026-11-17T03:37:05Z',
     changes: [
-      ['Agents', 'OpenAI Codex is an agent now. Claude Code also runs on an API key or another endpoint.'],
+      [
+        'Agents',
+        'OpenAI Codex is an agent now. Claude Code also runs on an API key or another endpoint.',
+      ],
       ['Servers', 'arakun server runs sessions on a remote machine. The Servers tab follows them.'],
       ['GitHub', 'A GitHub tab with a review queue and a pull request view.'],
-      ['Look', "The brand book's black, white and amber, set in Geist. Amber now marks only what needs you."],
-      ['App', 'New environments get a name from the first prompt. The window reopens where you left it.'],
+      [
+        'Look',
+        "The brand book's black, white and amber, set in Geist. Amber now marks only what needs you.",
+      ],
+      [
+        'App',
+        'New environments get a name from the first prompt. The window reopens where you left it.',
+      ],
       ['Usage', 'The usage tab shows the plan limits of CLIProxyAPI accounts.'],
-      ['Privacy', 'Crash reports and usage counts, only if you say yes on first launch. Sessions and transcripts are saved so only you can read them.'],
-      ['macOS', 'A signed and notarized build for Apple silicon, with an Edit menu, Services and a Liquid Glass icon.'],
-      ['Fixes', 'No crash on first launch without projects. Shortcut hints show the right keys. Windows finds its browser runtime.'],
+      [
+        'Privacy',
+        'Crash reports and usage counts, only if you say yes on first launch. Sessions and transcripts are saved so only you can read them.',
+      ],
+      [
+        'macOS',
+        'A signed and notarized build for Apple silicon, with an Edit menu, Services and a Liquid Glass icon.',
+      ],
+      [
+        'Fixes',
+        'No crash on first launch without projects. Shortcut hints show the right keys. Windows finds its browser runtime.',
+      ],
     ],
   },
   'v0.1.0': {
@@ -38,10 +94,19 @@ export const notes: Record<string, ReleaseNote> = {
     changes: [
       ['Agents', 'Claude Code, Droid, OpenCode and Workers AI run side by side.'],
       ['Worktrees', "Each task gets its own git worktree, so agents don't step on each other."],
-      ['Command', 'The arakun command lets an agent open pages, read terminals, run the project check and leave review drafts.'],
-      ['News', 'A Dynamic Island, an Inbox and a phone remote tell you when a session finishes, fails or needs an answer.'],
+      [
+        'Command',
+        'The arakun command lets an agent open pages, read terminals, run the project check and leave review drafts.',
+      ],
+      [
+        'News',
+        'A Dynamic Island, an Inbox and a phone remote tell you when a session finishes, fails or needs an answer.',
+      ],
       ['App', 'A GPU-rendered Rust app with a keyboard-first palette for everything.'],
-      ['Platforms', 'Linux is supported. Windows is in beta. macOS is experimental, with no release build yet.'],
+      [
+        'Platforms',
+        'Linux is supported. Windows is in beta. macOS is experimental, with no release build yet.',
+      ],
     ],
   },
 }

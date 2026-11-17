@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { INSTALLERS, head, installer } from '#/installer'
+import { head, INSTALLERS, installer } from '#/installer'
 
 // `curl -fsSL https://arakun.dev/install | sh` (see src/installer.ts).
 export const Route = createFileRoute('/install')({

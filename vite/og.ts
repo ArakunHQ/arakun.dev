@@ -2,9 +2,11 @@ import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { Resvg } from '@resvg/resvg-js'
+import mdx from 'fumadocs-mdx/vite'
 import satori from 'satori'
-import { runnerImport } from 'vite'
 import type { Plugin } from 'vite'
+import { runnerImport } from 'vite'
+import * as docsConfig from '../source.config.ts'
 import type * as Cards from '../src/og-cards'
 
 type OgCard = Cards.OgCard
@@ -24,9 +26,13 @@ const H = 630
 const color = { ground: '#0b0b0b', text: '#f2f2f2', muted: '#a3a3a3', faint: '#737373' }
 
 const require = createRequire(import.meta.url)
-const fontFile = (pkg: string, file: string) => readFile(join(dirname(require.resolve(`${pkg}/package.json`)), 'files', file))
+const fontFile = (pkg: string, file: string) =>
+  readFile(join(dirname(require.resolve(`${pkg}/package.json`)), 'files', file))
 
-type Assets = { fonts: Parameters<typeof satori>[1]['fonts']; raccoon: string }
+interface Assets {
+  fonts: Parameters<typeof satori>[1]['fonts']
+  raccoon: string
+}
 
 async function loadAssets(root: string): Promise<Assets> {
   // Satori reads static TTF/WOFF faces, not the variable WOFF2 the site uses.
@@ -47,57 +53,125 @@ async function loadAssets(root: string): Promise<Assets> {
 }
 
 /** The name alone gets the full 96 px; page titles step down so they fit beside the raccoon in two lines. */
-const titleSize = (title: string) => (title.length <= 12 ? 96 : title.length <= 16 ? 76 : 60)
+function titleSize(title: string) {
+  if (title.length <= 12) {
+    return 96
+  }
+  return title.length <= 16 ? 76 : 60
+}
 
-type Node = { type: string; props: Record<string, unknown> }
-const el = (type: string, style: Record<string, unknown>, children?: unknown, props: Record<string, unknown> = {}): Node => ({
+interface Node {
+  props: Record<string, unknown>
+  type: string
+}
+const el = (
+  type: string,
+  style: Record<string, unknown>,
+  children?: unknown,
+  props: Record<string, unknown> = {}
+): Node => ({
   type,
   props: { style, children, ...props },
 })
 
 function layout(card: OgCard, assets: Assets): Node {
   const size = titleSize(card.title)
-  return el('div', { width: W, height: H, display: 'flex', position: 'relative', background: color.ground, fontFamily: 'Geist' }, [
-    // The mark's viewBox is 184 × 144.
-    el('img', { position: 'absolute', right: -110, top: 104, width: 670, height: 524 }, undefined, {
-      src: assets.raccoon,
-      width: 670,
-      height: 524,
-    }),
-    el(
-      'div',
-      {
-        position: 'absolute',
-        left: 72,
-        top: 64,
-        fontFamily: 'Geist Mono',
-        fontSize: 20,
-        letterSpacing: 1.6,
-        textTransform: 'uppercase',
-        color: color.faint,
-      },
-      card.label,
-    ),
-    el('div', { position: 'absolute', left: 72, bottom: 72, width: 548, display: 'flex', flexDirection: 'column', gap: 23 }, [
+  return el(
+    'div',
+    {
+      width: W,
+      height: H,
+      display: 'flex',
+      position: 'relative',
+      background: color.ground,
+      fontFamily: 'Geist',
+    },
+    [
+      // The mark's viewBox is 184 × 144.
+      el(
+        'img',
+        { position: 'absolute', right: -110, top: 104, width: 670, height: 524 },
+        undefined,
+        {
+          src: assets.raccoon,
+          width: 670,
+          height: 524,
+        }
+      ),
       el(
         'div',
-        { fontSize: size, fontWeight: 600, letterSpacing: -0.04 * size, lineHeight: size > 80 ? 0.95 : 1.02, color: color.text },
-        card.title,
+        {
+          position: 'absolute',
+          left: 72,
+          top: 64,
+          fontFamily: 'Geist Mono',
+          fontSize: 20,
+          letterSpacing: 1.6,
+          textTransform: 'uppercase',
+          color: color.faint,
+        },
+        card.label
       ),
-      el('div', { fontSize: 28, lineHeight: 1.3, letterSpacing: -0.28, color: color.muted, lineClamp: 3 }, card.line),
-    ]),
-  ])
+      el(
+        'div',
+        {
+          position: 'absolute',
+          left: 72,
+          bottom: 72,
+          width: 548,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 23,
+        },
+        [
+          el(
+            'div',
+            {
+              fontSize: size,
+              fontWeight: 600,
+              letterSpacing: -0.04 * size,
+              lineHeight: size > 80 ? 0.95 : 1.02,
+              color: color.text,
+            },
+            card.title
+          ),
+          el(
+            'div',
+            {
+              fontSize: 28,
+              lineHeight: 1.3,
+              letterSpacing: -0.28,
+              color: color.muted,
+              lineClamp: 3,
+            },
+            card.line
+          ),
+        ]
+      ),
+    ]
+  )
 }
 
 async function render(card: OgCard, assets: Assets) {
   // satori's types want a ReactNode; a plain { type, props } tree is what it walks.
-  const svg = await satori(layout(card, assets) as never, { width: W, height: H, fonts: assets.fonts })
-  return new Resvg(svg, { fitTo: { mode: 'width', value: W }, font: { loadSystemFonts: false } }).render().asPng()
+  const svg = await satori(layout(card, assets) as never, {
+    width: W,
+    height: H,
+    fonts: assets.fonts,
+  })
+  return new Resvg(svg, { fitTo: { mode: 'width', value: W }, font: { loadSystemFonts: false } })
+    .render()
+    .asPng()
 }
 
 export function ogCards(): Plugin {
   let root = process.cwd()
   let assets: Promise<Assets> | undefined
+  // Loaded once, on first use.
+  const getAssets = () => {
+    assets ??= loadAssets(root)
+    return assets
+  }
   // Loaded through Vite so the TSX docs and the #/ imports resolve; fresh on every call so dev shows edits.
   const loadCards = async () => {
     const { module } = await runnerImport<typeof Cards>(join(root, 'src/og-cards.ts'), {
@@ -105,23 +179,29 @@ export function ogCards(): Plugin {
       root,
       logLevel: 'error',
       resolve: { tsconfigPaths: true },
+      // The docs' titles come from the frontmatter of content/docs/*.mdx.
+      plugins: [mdx(docsConfig)],
     })
     return module.ogCards.map((card) => ({ card, file: module.ogImagePath(card.path) }))
   }
 
   return {
     name: 'arakun:og-cards',
-    configResolved(config) {
-      root = config.root
+    configResolved({ root: configRoot }) {
+      root = configRoot
     },
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const url = req.url?.split('?')[0]
-        if (!url?.startsWith('/og/')) return next()
+        if (!url?.startsWith('/og/')) {
+          return next()
+        }
         try {
           const match = (await loadCards()).find((c) => c.file === url)
-          if (!match) return next()
-          const png = await render(match.card, await (assets ??= loadAssets(root)))
+          if (!match) {
+            return next()
+          }
+          const png = await render(match.card, await getAssets())
           res.setHeader('Content-Type', 'image/png')
           res.setHeader('Cache-Control', 'no-store')
           res.end(png)
@@ -131,10 +211,14 @@ export function ogCards(): Plugin {
       })
     },
     async generateBundle() {
-      if (this.environment.name !== 'client') return
-      const loaded = await (assets ??= loadAssets(root))
-      for (const { card, file } of await loadCards()) {
-        this.emitFile({ type: 'asset', fileName: file.slice(1), source: await render(card, loaded) })
+      if (this.environment.name !== 'client') {
+        return
+      }
+      const loaded = await getAssets()
+      const cards = await loadCards()
+      const pngs = await Promise.all(cards.map(({ card }) => render(card, loaded)))
+      for (const [i, { file }] of cards.entries()) {
+        this.emitFile({ type: 'asset', fileName: file.slice(1), source: pngs[i] })
       }
     },
   }

@@ -1,5 +1,5 @@
-import { notes } from '#/release-notes'
 import type { ReleaseNote } from '#/release-notes'
+import { notes } from '#/release-notes'
 
 /**
  * Turns a release's notes on GitHub into a changelog entry in the site's own
@@ -24,20 +24,21 @@ export const REWRITE_VERSION = 1
 export const MODEL = '@cf/zai-org/glm-5.3-flash' satisfies keyof AiModels
 
 /** A line of GitHub's generated notes: `* feat(x): do y by @someone in https://github.com/o/r/pull/1`. */
-const generated = /^\s*[*-]\s+(.+?)\s+by\s+@\S+\s+in\s+https:\/\/github\.com\/\S+\/pull\/\d+\s*$/
+const generated =
+  /^\s*[*-]\s+(?<title>.+?)\s+by\s+@\S+\s+in\s+https:\/\/github\.com\/\S+\/pull\/\d+\s*$/u
 
 /** Conventional Commit types that change nothing a user of the app sees. A revert may, so it stays. */
-const unseen = /^(build|ci|test|tests|chore|docs|style|refactor)(\(.*?\))?!?:/i
+const unseen = /^(?:build|ci|test|tests|chore|docs|style|refactor)(?:\(.*?\))?!?:/iu
 
 /** What GitHub adds around the generated list: headings, contributors and the compare link. */
-const boilerplate = [
-  /^\s*#/,
-  /made their first contribution/i,
-  /^\s*\*\*Full Changelog\*\*/i,
-]
+const boilerplate = [/^\s*#/u, /made their first contribution/iu, /^\s*\*\*Full Changelog\*\*/iu]
 
 /** The longest notes we send. GitHub's generated list for a big release fits easily. */
 const MAX_INPUT = 12_000
+
+/** A code fence around the model's JSON, which some models add. */
+const fence = /^\s*```(?:json)?\s*|\s*```\s*$/gu
+const endPeriod = /\.$/u
 
 /** Drops HTML comments, such as the one GitHub puts above its generated notes, even across lines. */
 function withoutComments(text: string): string {
@@ -45,11 +46,15 @@ function withoutComments(text: string): string {
   let at = 0
   for (;;) {
     const start = text.indexOf('<!--', at)
-    if (start < 0) return kept + text.slice(at)
+    if (start < 0) {
+      return kept + text.slice(at)
+    }
     kept += text.slice(at, start)
     const end = text.indexOf('-->', start + 4)
     // An unclosed comment hides the rest, as it would on GitHub.
-    if (end < 0) return kept
+    if (end < 0) {
+      return kept
+    }
     at = end + 3
   }
 }
@@ -61,10 +66,17 @@ function withoutComments(text: string): string {
  */
 export function changesFrom(body: string): string {
   const lines = withoutComments(body).split('\n')
-  const prs = lines.map((line) => generated.exec(line)?.[1]).filter((title) => title !== undefined)
-  if (prs.length === 0) return lines.join('\n').trim().slice(0, MAX_INPUT)
+  const prs = lines
+    .map((line) => generated.exec(line)?.groups?.title)
+    .filter((title) => title !== undefined)
+  if (prs.length === 0) {
+    return lines.join('\n').trim().slice(0, MAX_INPUT)
+  }
   const written = lines
-    .filter((line) => line.trim() && !generated.test(line) && !boilerplate.some((pattern) => pattern.test(line)))
+    .filter(
+      (line) =>
+        line.trim() && !generated.test(line) && !boilerplate.some((pattern) => pattern.test(line))
+    )
     .join('\n')
     .trim()
   const visible = prs
@@ -77,7 +89,10 @@ export function changesFrom(body: string): string {
 // The first release's hand-written entry shows the tone. Its changes are old news,
 // so the model cannot pass them off as part of a new release.
 const first = notes['v0.1.0']
-const example = { title: first.title, changes: first.changes.map(([area, change]) => ({ area, change })) }
+const example = {
+  title: first.title,
+  changes: first.changes.map(([area, change]) => ({ area, change })),
+}
 
 const instructions = `You write the changelog on the website of Arakun, a native desktop app that runs coding agents side by side.
 
@@ -118,7 +133,10 @@ export function prompt(tag: string, changes: string): AiModels[typeof MODEL]['in
       { role: 'system', content: instructions },
       { role: 'user', content: `The changes in ${tag}:\n\n${changes}` },
     ],
-    response_format: { type: 'json_schema', json_schema: { name: 'changelog_entry', schema, strict: true } },
+    response_format: {
+      type: 'json_schema',
+      json_schema: { name: 'changelog_entry', schema, strict: true },
+    },
     temperature: 0.2,
     // The model thinks before it answers, and the thinking counts against this.
     max_tokens: 4096,
@@ -132,8 +150,8 @@ export type Entry = Omit<ReleaseNote, 'publishedAt'>
 const plain = (text: unknown, max: number) =>
   typeof text === 'string'
     ? text
-        .replace(/[*_`#]/g, '')
-        .replace(/\s+/g, ' ')
+        .replace(/[*_`#]/gu, '')
+        .replace(/\s+/gu, ' ')
         .trim()
         .slice(0, max)
     : ''
@@ -144,24 +162,33 @@ const plain = (text: unknown, max: number) =>
  */
 export function entryFrom(result: unknown): Entry | null {
   // Older models answer in `response`, newer ones like an OpenAI chat completion.
-  const answer = result as { response?: unknown; choices?: { message?: { content?: unknown } }[] } | null
+  const answer = result as {
+    response?: unknown
+    choices?: { message?: { content?: unknown } }[]
+  } | null
   let value = answer?.choices?.[0]?.message?.content ?? answer?.response
   // The answer is the object itself or JSON text, sometimes in a code fence.
   if (typeof value === 'string') {
     try {
-      value = JSON.parse(value.replace(/^\s*```(?:json)?\s*|\s*```\s*$/g, ''))
+      value = JSON.parse(value.replace(fence, ''))
     } catch {
       return null
     }
   }
-  if (!value || typeof value !== 'object') return null
+  if (!value || typeof value !== 'object') {
+    return null
+  }
   const { title, changes } = value as { title?: unknown; changes?: unknown }
-  const cleanTitle = plain(title, 80).replace(/\.$/, '')
-  if (!cleanTitle || !Array.isArray(changes)) return null
+  const cleanTitle = plain(title, 80).replace(endPeriod, '')
+  if (!(cleanTitle && Array.isArray(changes))) {
+    return null
+  }
   const cleanChanges = changes
     .map((item): [string, string] => [plain(item?.area, 20), plain(item?.change, 280)])
     .filter(([area, change]) => area && change)
     .slice(0, 10)
-  if (cleanChanges.length === 0) return null
+  if (cleanChanges.length === 0) {
+    return null
+  }
   return { title: cleanTitle, changes: cleanChanges }
 }
