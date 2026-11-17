@@ -1,0 +1,26 @@
+name: Review submitted
+
+# Only a trigger. When a review is submitted or dismissed, its completion
+# starts the Human approval workflow (workflow_run), which updates the "Human
+# approval" status.
+#
+# The work can't happen here: on a pull request from a fork, this runs the
+# fork's copy of this file with a read-only token, and a fork could change it
+# to report anything. The Human approval workflow runs from the default
+# branch and reads the reviews from the API itself, so it trusts nothing from
+# this run.
+# If a fork deletes this file, the status stays pending; run the Human
+# approval workflow by hand then.
+
+on:
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions: {}
+
+jobs:
+  trigger:
+    name: Trigger the Human approval workflow
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "Human approval updates the Human approval status."

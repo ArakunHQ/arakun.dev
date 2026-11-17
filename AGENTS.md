@@ -51,8 +51,11 @@ Every commit message and pull request title follows
   Markdown it prints. Name each file; don't use a glob. The images are public: no real
   accounts, tokens, email addresses or home-directory paths in them.
 - Always open a pull request as a draft: `gh pr create --draft --body-file -`. Run the
-  checks below, wait for CI to pass, then mark it ready with `gh pr ready`. Merging is
-  a person's job, not yours.
+  checks below, wait for CI to pass, then mark it ready with `gh pr ready`. Marking it
+  ready starts CodeRabbit's review; a workflow then asks a maintainer to review unless
+  CodeRabbit approved. Merging is a person's job, not yours.
+- Answer every CodeRabbit comment: fix it and push, or reply with the reason. Never
+  resolve its threads yourself; that dismisses its approval.
 
 ## Before you commit
 

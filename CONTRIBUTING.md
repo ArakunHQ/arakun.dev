@@ -151,7 +151,15 @@ in `lefthook-local.yml`, which git ignores. Turn the hooks off with `lefthook un
   Commits inside the pull request are not checked, because they do not reach `main`. To
   check them as you write them, turn on the [Git hooks](#git-hooks).
 - **Open it as a draft** (`gh pr create --draft`) while CI runs, and mark it ready with
-  `gh pr ready` once the checks pass.
+  `gh pr ready` once the checks pass. Nobody is asked to review a draft, and CodeRabbit
+  skips it. Marking it ready starts CodeRabbit's review. When it finishes, a maintainer
+  is asked to review unless CodeRabbit approved and every review thread is resolved. A
+  pull request from outside the team always needs a maintainer's approval: a workflow
+  dismisses CodeRabbit's, and the **Human approval** status waits for a person.
+- **Answer every CodeRabbit comment.** Fix it and push, or reply with the reason you
+  won't. Don't resolve its comments yourself: if you do, a workflow dismisses its
+  approval and asks a person. `@coderabbitai resolve` and `@coderabbitai approve` don't
+  work on your own pull request.
 - **Keep the branch up to date** with `main`, and make sure CI passes before you ask for
   a review. If a check fails and you think it is not your change, say so in the pull
   request.

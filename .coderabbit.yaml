@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 # This is a small static website, so reviews stay quiet and CodeRabbit may
 # approve most pull requests itself. A person still merges.
+# The Reviewers workflow (.github/workflows/reviewers.yml) starts on the
+# "CodeRabbit" check run (`reviews.review_progress`) and reads
+# coderabbitai[bot]'s approval, so keep both turned on. With review_progress
+# off, CodeRabbit posts only a commit status, and the workflow never runs.
 reviews:
   # Only the most important comments, no nitpicks.
   profile: quiet
@@ -11,6 +15,11 @@ reviews:
     # pull requests and withholds approval on all others, so the limit would
     # block nearly every approval. merge_risk_instructions covers it instead.
     max_merge_risk: high
+    # An author could otherwise clear CodeRabbit's blocking findings on their
+    # own pull request with `@coderabbitai resolve` and get it approved.
+    # Someone else has to run `approve` or `resolve` now. The Reviewers
+    # workflow covers threads the author resolves in the GitHub UI.
+    allow_author_approval: false
     overrides:
       # CI and the approval rules themselves always need a person, whatever
       # the risk rating says.
@@ -27,6 +36,10 @@ reviews:
     requests or secrets, are high risk. A change that could expose
     GITHUB_TOKEN, or that could serve a download link outside
     github.com/ArakunHQ, is critical risk, so a person must approve it.
+  # The "CodeRabbit" check run the Reviewers workflow starts on.
+  review_progress: true
+  # The Reviewers workflow requests the reviewers.
+  suggested_reviewers: false
   security_risk_instructions: >-
     The site is public and serves static pages and assets. The only secret
     is GITHUB_TOKEN, a Wrangler secret used to read public release data from
