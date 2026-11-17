@@ -17,6 +17,12 @@ export const site = {
   licenseUrl: `${repo}/blob/main/LICENSE`,
   releasesUrl: `${repo}/releases`,
   sourceUrl: `${repo}#build-from-source`,
+  privacyEmail: 'privacy@arakun.dev',
+  /**
+   * Who runs the site, for the privacy page. TODO(Karlo): the legal entity's full name
+   * (such as "Arakun, Inc.") and its postal address.
+   */
+  operator: { name: 'Arakun', address: '' },
   /** Release v0.1.0 has no macOS archive, so macOS has no direct download. */
   downloads: {
     Linux: `${release}/arakun-v${version}-linux-x86_64.tar.gz`,
@@ -58,6 +64,13 @@ export const pages = {
     label: 'Changelog',
     title: 'What changed',
     lead: 'Every release, newest first.',
+  },
+  privacy: {
+    path: '/privacy',
+    num: '05',
+    label: 'Privacy',
+    title: 'Privacy',
+    lead: 'What this site collects, why, and how to say no.',
   },
 }
 

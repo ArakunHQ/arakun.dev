@@ -46,8 +46,15 @@ function saveConsent(consent: Consent) {
 }
 
 function start() {
-  // Opting out also deletes PostHog's cookie and storage, and keeps them off.
-  initPostHog(state.config, { opt_out_persistence_by_default: true })
+  initPostHog(state.config, {
+    // Opting out also deletes PostHog's cookie and storage, and keeps them off.
+    opt_out_persistence_by_default: true,
+    // The site never identifies visitors, so no person profiles.
+    person_profiles: 'identified_only',
+    // No session recording, whatever the project settings say. Autocapture stays on for
+    // clicks; it never reads what is typed into a field.
+    disable_session_recording: true,
+  })
   // A visitor who declined and then accepts on the same page: posthog-js remembers the opt-out.
   withPostHog((posthog) => {
     if (posthog.has_opted_out_capturing()) posthog.opt_in_capturing()

@@ -130,6 +130,7 @@ export function SiteFooter() {
         <div className="legal">
           <span>arakun.dev</span>
           <span className="end">
+            <Link to="/privacy">Privacy</Link>
             <CookieSettings />
             <span>
               {site.license} · v{site.version}

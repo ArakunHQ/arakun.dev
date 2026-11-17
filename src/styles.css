@@ -512,8 +512,36 @@ svg {
   text-transform: inherit;
   color: inherit;
 }
-.sf .legal button:hover {
+.sf .legal button:hover,
+.sf .legal a:hover {
   color: var(--color-text);
+}
+
+/* Privacy page */
+.privacy {
+  max-width: 720px;
+  padding-bottom: var(--section);
+}
+.privacy section h2 {
+  margin-top: var(--spacing-12);
+}
+.privacy section:first-child h2 {
+  margin-top: 0;
+}
+.privacy button.inline {
+  font-size: inherit;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 3px;
+}
+.privacy button.inline:hover {
+  text-decoration-color: var(--color-accent-ink);
+}
+.privacy .updated {
+  margin-top: var(--spacing-12);
+  font-size: var(--text-md);
+  color: var(--color-text-faint);
 }
 
 /* Cookie consent */
@@ -533,6 +561,15 @@ svg {
   font-size: var(--text-lg);
   line-height: var(--leading-normal);
   color: var(--color-text-muted);
+}
+.consent a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 3px;
+}
+.consent a:hover {
+  text-decoration-color: var(--color-accent-ink);
 }
 .consent .actions {
   display: flex;
