@@ -55,7 +55,8 @@ export const pages = {
     path: '/download',
     num: '02',
     label: 'Download',
-    title: 'Install Arakun',
+    // Not "Install Arakun": that is the title of /docs/install.
+    title: 'Download Arakun',
     lead: `One line in a terminal, or download the build for your platform. Free and open source under ${site.license}.`,
   },
   docs: {
