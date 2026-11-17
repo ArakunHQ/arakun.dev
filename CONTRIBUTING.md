@@ -41,7 +41,7 @@ the app's does. Unsigned pull requests can't be merged.
 
 ## Setting up
 
-You need [Node](https://nodejs.org/) 24 or newer and [pnpm](https://pnpm.io/). The
+You need [Node](https://nodejs.org/) 24.15 or newer and [pnpm](https://pnpm.io/). The
 pnpm version is pinned in `packageManager` in `package.json`; `corepack enable` picks
 it up. Node 25 and newer no longer include Corepack, so install it first with
 `npm install -g corepack`.

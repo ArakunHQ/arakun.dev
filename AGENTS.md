@@ -9,7 +9,8 @@ where each part of the site lives.
 
 ## Setting up
 
-Node 24 or newer and pnpm (the version in `packageManager` in `package.json`):
+Node 24.15 or newer (Ultracite needs it) and pnpm (the version in `packageManager` in
+`package.json`):
 
 ```sh
 pnpm install
