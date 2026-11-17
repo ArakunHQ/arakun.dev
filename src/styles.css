@@ -1505,8 +1505,8 @@ svg {
   line-height: 32px;
 }
 
-/* MDX: Cards */
-.cards {
+/* MDX: Cards. Scoped to .prose: the features page has its own .cards grid. */
+.prose .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--spacing-3);
