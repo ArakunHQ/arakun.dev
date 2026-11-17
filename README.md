@@ -49,6 +49,21 @@ release there and it shows on the site within ten minutes. No deploy is needed.
 - The shared cache only works on a custom domain. On a `workers.dev` address each
   Worker instance remembers the answer by itself, which still keeps requests low.
 
+## Analytics
+
+PostHog counts visits and reports errors, through
+[posthog-tanstack-start](https://github.com/rivi-software/tools/tree/main/packages/posthog-tanstack-start#readme).
+
+- The browser loads PostHog only after a visitor accepts the cookie banner
+  (`src/analytics.ts`, `src/components/ConsentBanner.tsx`). "Cookies" in the
+  footer changes the answer. Without consent nothing is stored or sent.
+- The Worker reports what server functions throw (`src/start.ts`). It sets no cookie.
+- `POSTHOG_PROJECT_TOKEN` and `POSTHOG_HOST` in `wrangler.jsonc` configure both
+  sides. The token is public, since browsers send it. Empty turns PostHog off and
+  hides the banner. To try it locally, put a token in `.dev.vars`.
+- The project is on PostHog's US Cloud. The comment in `wrangler.jsonc` says why,
+  and how the DPA with PostHog covers EU visitors.
+
 ## On a new release
 
 The changelog needs nothing. The version and the download links do: change

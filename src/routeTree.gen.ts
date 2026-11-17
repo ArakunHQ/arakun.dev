@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as DocsIndexRouteImport } from './routes/docs.index'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 
@@ -36,6 +37,11 @@ const FeaturesRoute = FeaturesRouteImport.update({
   path: '/features',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
   id: '/docs/',
   path: '/docs/',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/privacy': typeof PrivacyRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/privacy': typeof PrivacyRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs': typeof DocsIndexRoute
 }
@@ -69,21 +77,36 @@ export interface FileRoutesById {
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/privacy': typeof PrivacyRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/changelog' | '/download' | '/features' | '/docs/$slug' | '/docs/'
+    | '/'
+    | '/changelog'
+    | '/download'
+    | '/features'
+    | '/privacy'
+    | '/docs/$slug'
+    | '/docs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/changelog' | '/download' | '/features' | '/docs/$slug' | '/docs'
+  to:
+    | '/'
+    | '/changelog'
+    | '/download'
+    | '/features'
+    | '/privacy'
+    | '/docs/$slug'
+    | '/docs'
   id:
     | '__root__'
     | '/'
     | '/changelog'
     | '/download'
     | '/features'
+    | '/privacy'
     | '/docs/$slug'
     | '/docs/'
   fileRoutesById: FileRoutesById
@@ -93,6 +116,7 @@ export interface RootRouteChildren {
   ChangelogRoute: typeof ChangelogRoute
   DownloadRoute: typeof DownloadRoute
   FeaturesRoute: typeof FeaturesRoute
+  PrivacyRoute: typeof PrivacyRoute
   DocsSlugRoute: typeof DocsSlugRoute
   DocsIndexRoute: typeof DocsIndexRoute
 }
@@ -127,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeaturesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/': {
       id: '/docs/'
       path: '/docs'
@@ -149,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChangelogRoute: ChangelogRoute,
   DownloadRoute: DownloadRoute,
   FeaturesRoute: FeaturesRoute,
+  PrivacyRoute: PrivacyRoute,
   DocsSlugRoute: DocsSlugRoute,
   DocsIndexRoute: DocsIndexRoute,
 }
@@ -157,10 +189,11 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
