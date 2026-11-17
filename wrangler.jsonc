@@ -12,10 +12,11 @@
 		"enabled": true
 	},
 	"upload_source_maps": true,
-	// PostHog, for analytics and error reports. The project token is public: posthog-js
-	// sends it from every browser. Empty turns PostHog off, in the browser and the Worker.
+	// PostHog project 736741 (US Cloud), for analytics and error reports. The token is
+	// public: posthog-js sends it from every browser. Empty turns PostHog off, in the
+	// browser and the Worker.
 	"vars": {
-		"POSTHOG_PROJECT_TOKEN": "",
+		"POSTHOG_PROJECT_TOKEN": "phc_kXKrLfaWumKa3mfXcFVBCRpyKa6DZiUv7hCkQW2epLQZ",
 		"POSTHOG_HOST": "https://us.i.posthog.com"
 	}
 }

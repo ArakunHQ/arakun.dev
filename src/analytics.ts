@@ -46,7 +46,8 @@ function saveConsent(consent: Consent) {
 }
 
 function start() {
-  initPostHog(state.config, {})
+  // Opting out also deletes PostHog's cookie and storage, and keeps them off.
+  initPostHog(state.config, { opt_out_persistence_by_default: true })
   // A visitor who declined and then accepts on the same page: posthog-js remembers the opt-out.
   withPostHog((posthog) => {
     if (posthog.has_opted_out_capturing()) posthog.opt_in_capturing()
@@ -68,7 +69,7 @@ export function acceptAnalytics() {
 export function declineAnalytics() {
   saveConsent('denied')
   update({ consent: 'denied', reopened: false })
-  // Only does something when PostHog was running: it stops capturing and clears its cookie.
+  // Only does something when PostHog was running: it stops and deletes its cookie and storage.
   withPostHog((posthog) => posthog.opt_out_capturing())
 }
 
