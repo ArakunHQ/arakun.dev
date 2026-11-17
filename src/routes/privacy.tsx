@@ -37,7 +37,8 @@ function Privacy() {
           <Section title="Who runs this site">
             <p>
               arakun.dev is run by {site.operator.name}
-              {site.operator.address ? `, ${site.operator.address}` : ''}. Questions about your data go to {mail}.
+              {site.operator.address ? `, ${site.operator.address}` : ''}. {site.operator.name} is also responsible
+              for the reports the Arakun app sends. Questions about your data go to {mail}.
             </p>
           </Section>
 
@@ -79,23 +80,60 @@ function Privacy() {
             </p>
           </Section>
 
+          <Section title="In the Arakun app">
+            <p>
+              The app can send crash reports and usage counts to the same PostHog project. It sends nothing until you
+              answer. On first launch it asks "Send crash reports and usage counts?". Closing the question answers
+              nothing, and the app asks again the next time it starts.
+            </p>
+            <p>You choose each of these on its own. Both stay off until you agree:</p>
+            <ul>
+              <li>
+                <strong>Crash reports:</strong> when the app crashes, the error message and the place in the code where
+                it happened (the stack trace). Before the message leaves your computer, the app replaces your home
+                folder with <code>~</code> and removes paths, links, email addresses and anything that looks like a key
+                or token. When an agent stops with an error, the report holds only the agent's name and a fixed
+                category such as "rate limited" or "not signed in", never the error's text.
+              </li>
+              <li>
+                <strong>Usage counts:</strong> app launched, session started (with the agent's name), agent turn
+                finished, project added, environment created, a built-in view opened (with its name) and a browser tab
+                opened.
+              </li>
+            </ul>
+            <p>
+              Every report carries the app's version, your operating system and its CPU architecture. The app never
+              sends your prompts, the agents' replies, file contents, URLs or project names.
+            </p>
+            <p>
+              Reports carry a random id, kept in a file named <code>telemetry-id</code> in the app's data folder. It is
+              not tied to any account. PostHog builds no profile from it, and it does not keep your IP address or use
+              it to find your location. If you delete the file, the app makes a new id. The{' '}
+              <a href="/docs/crash-reports">docs</a> say where the folder is.
+            </p>
+          </Section>
+
           <Section title="Why we may do this">
             <p>
-              Analytics run on your consent (GDPR Art. 6(1)(a)). Server error reports run on our legitimate interest in
-              keeping the site working (Art. 6(1)(f)).
+              Analytics on the site, and the app's crash reports and usage counts, run on your consent (GDPR Art.
+              6(1)(a)). Server error reports run on our legitimate interest in keeping the site working (Art. 6(1)(f)).
             </p>
           </Section>
 
           <Section title="Where it is stored">
             <p>
-              PostHog, Inc. stores the data on its servers in the United States, as our processor under a data
+              PostHog, Inc. stores the data from the site and the app on its servers in the United States, as our
+              processor under a data
               processing agreement. For visitors in the EU, the UK and Switzerland, that agreement relies on PostHog's
               Data Privacy Framework certification and on the EU Standard Contractual Clauses.
             </p>
           </Section>
 
           <Section title="How long we keep it">
-            <p>We keep analytics and error reports for one year, then PostHog deletes them. PostHog's cookie expires after a year.</p>
+            <p>
+              We keep the site's analytics and error reports, and the app's reports, for one year. Then PostHog deletes
+              them. PostHog's cookie expires after a year.
+            </p>
           </Section>
 
           <Section title="Your choices">
@@ -104,7 +142,21 @@ function Privacy() {
                 Change your answer at any time with <ConsentLink /> in the footer. Saying no stops PostHog and deletes its
                 cookie.
               </li>
-              <li>Ask us what we hold about you, or ask us to delete it, at {mail}.</li>
+              <li>
+                In the app, change your answer at any time in Settings › General, with the Crash reports and Usage
+                counts switches.
+              </li>
+              <li>
+                Set <code>DO_NOT_TRACK=1</code> or <code>ARAKUN_TELEMETRY=0</code> to turn both off. The app then does
+                not ask.
+              </li>
+              <li>
+                Delete <code>telemetry-id</code> to start again with a new id.
+              </li>
+              <li>
+                Ask us what we hold about you, or ask us to delete it, at {mail}. For the app's reports, send us the id
+                in <code>telemetry-id</code>, so we can find them.
+              </li>
               <li>If you are in the EU or the UK, you can also complain to your data protection authority.</li>
             </ul>
           </Section>

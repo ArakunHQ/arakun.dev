@@ -648,6 +648,67 @@ arakun-server approve <id>                   # or deny`}</Code>
       </>
     ),
   },
+  {
+    slug: 'crash-reports',
+    group: 'Go further',
+    title: 'Crash reports and usage counts',
+    summary: 'What the app sends, and how to turn it off.',
+    body: (
+      <>
+        <p>
+          Arakun sends nothing until you say so. On first launch it asks "Send crash reports and usage counts?". Closing
+          the question answers nothing, and Arakun asks again the next time it starts.
+        </p>
+        <h2>What is sent</h2>
+        <ul>
+          <li>
+            <strong>Crash reports:</strong> a crash's message and stack trace. Your home folder becomes <code>~</code>,
+            and paths, links, emails and anything shaped like a key or token are removed. When an agent stops with an
+            error, only the agent's name and a fixed category such as "rate limited" go out, never the error's text.
+          </li>
+          <li>
+            <strong>Usage counts:</strong> app launched, session started, agent turn finished, project added,
+            environment created, a built-in view opened and a browser tab opened.
+          </li>
+        </ul>
+        <p>
+          Each report carries Arakun's version, your OS and the CPU architecture. Arakun never sends prompts, replies,
+          file contents, URLs or project names. <a href="/privacy">Privacy</a> says who receives the reports and how
+          long we keep them.
+        </p>
+        <h2>Change your answer</h2>
+        <p>Open Settings › General and turn Crash reports or Usage counts on or off. Each switch works on its own.</p>
+        <h2>Turn both off</h2>
+        <p>
+          Set <code>DO_NOT_TRACK=1</code> or <code>ARAKUN_TELEMETRY=0</code> in the environment Arakun starts in. Both
+          stay off, and Arakun does not ask.
+        </p>
+        <h2>The files</h2>
+        <p>Two files in Arakun's data folder hold the setting:</p>
+        <ul>
+          <li>
+            <code>telemetry.json</code>: your answer.
+          </li>
+          <li>
+            <code>telemetry-id</code>: a random id that the reports carry. It is not tied to any account.
+          </li>
+        </ul>
+        <p>The data folder is in one of these places:</p>
+        <ul>
+          <li>
+            Linux and macOS: <code>~/.local/share/arakun</code>
+          </li>
+          <li>
+            Windows: <code>%LOCALAPPDATA%\arakun</code>
+          </li>
+        </ul>
+        <p>
+          Delete <code>telemetry-id</code> and Arakun makes a new id. To have the reports for an id deleted, send the id
+          to <a href={`mailto:${site.privacyEmail}`}>{site.privacyEmail}</a>.
+        </p>
+      </>
+    ),
+  },
 ]
 
 export const groups = [...new Set(docs.map((doc) => doc.group))].map((title) => ({
