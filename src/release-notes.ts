@@ -18,6 +18,44 @@ export interface ReleaseNote {
 }
 
 export const notes: Record<string, ReleaseNote> = {
+  'v0.3.0': {
+    title: 'Updates by themselves, browser tabs and a Marketplace',
+    publishedAt: '2026-11-17T19:04:10Z',
+    changes: [
+      [
+        'Updates',
+        'Arakun installs a new release by itself when you quit, after it checks the signature. A switch in Settings turns this off.',
+      ],
+      [
+        'Browser',
+        'Every download has browser tabs now. A setting opens links in your own browser instead.',
+      ],
+      [
+        'Setup',
+        'A first launch walks you through setup: your agent, the look, the main shortcuts, GitHub and the phone, then your first project.',
+      ],
+      [
+        'Marketplace',
+        'The Extensions tab is now the Marketplace and opens on Discover. Tabs such as GitHub, Usage and Servers are extensions you turn on there, so the sidebar shows only what you use.',
+      ],
+      [
+        'Privacy',
+        "Redacted mode (Ctrl+Shift+H) hides emails, keys, IP addresses and account names while you stream or demo. Arakun reads each agent CLI's sign-in and sends it only to that provider.",
+      ],
+      [
+        'macOS',
+        'A disk image you drag into Applications. The Dynamic Island shows on the Mac, around the notch. A click on a notification opens Arakun.',
+      ],
+      [
+        'App',
+        "The Inbox is a button next to search, with a count. Settings are grouped. The brand book's raccoon is on the start screen and new tabs.",
+      ],
+      [
+        'Fixes',
+        'A zoom change no longer closes the app. Views no longer clip in a small window. On Ubuntu, a blocked browser sandbox shows a notice instead of a crash. The Dynamic Island speaks English on Linux too.',
+      ],
+    ],
+  },
   'v0.2.1': {
     title: 'Remote servers, a GitHub tab and Codex',
     publishedAt: '2026-11-17T03:37:05Z',

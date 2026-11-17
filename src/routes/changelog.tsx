@@ -39,9 +39,8 @@ function repeatsTag(name: string, tag: string) {
 }
 
 function ReleaseNotes({ release, note }: { release: Release; note?: ReleaseNote }) {
-  if (release.body) {
-    return <Markdown source={release.body} />
-  }
+  // A note wins even over a body cached before the note was written, so a new
+  // entry in release-notes.ts shows from the first deploy.
   if (note) {
     return (
       <ul className="areas">
@@ -53,6 +52,9 @@ function ReleaseNotes({ release, note }: { release: Release; note?: ReleaseNote 
         ))}
       </ul>
     )
+  }
+  if (release.body) {
+    return <Markdown source={release.body} />
   }
   return <p className="none">This release has no written notes.</p>
 }
