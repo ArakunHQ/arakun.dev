@@ -17,6 +17,13 @@
 		"enabled": true
 	},
 	"upload_source_maps": true,
+	// The site's domains. Deploying without them detaches them from this Worker,
+	// which takes arakun.dev down. times.arakun.dev is the Arakun Times (another
+	// Worker), and *.arakun.dev/* is the phone relay.
+	"routes": [
+		{ "pattern": "arakun.dev", "custom_domain": true },
+		{ "pattern": "www.arakun.dev", "custom_domain": true }
+	],
 	// PostHog project 736741 (US Cloud), for analytics and error reports. The token is
 	// public: posthog-js sends it from every browser. Empty turns PostHog off, in the
 	// browser and the Worker.
