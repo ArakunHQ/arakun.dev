@@ -18,6 +18,9 @@
   --color-brand-ink: #151515;
   --color-brand-paper: #f1efe8;
   --color-brand-amber: #ffb547;
+  /* The mascot swaps fur and ink in light mode, like the app's ASCII raccoon. The logo never does. */
+  --color-mascot-fur: light-dark(var(--color-brand-ink), var(--color-brand-paper));
+  --color-mascot-ink: light-dark(var(--color-brand-paper), var(--color-brand-ink));
   --color-success: light-dark(#1a7f37, #3fb950);
   --color-error: light-dark(#cf222e, #f85149);
   --color-attention: light-dark(#9a6700, #d29922);
@@ -1384,10 +1387,10 @@ svg {
   transform: translate(calc(var(--px, 0) * 7px), calc(var(--py, 0) * 5px)) rotate(calc(var(--px, 0) * 1.6deg));
 }
 .rk .fur {
-  fill: var(--color-brand-paper);
+  fill: var(--color-mascot-fur);
 }
 .rk .ink {
-  fill: var(--color-brand-ink);
+  fill: var(--color-mascot-ink);
   fill-rule: evenodd;
 }
 .rk .mask {
