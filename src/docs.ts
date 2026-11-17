@@ -1,6 +1,7 @@
 // biome-ignore lint/correctness/noUndeclaredDependencies: a tsconfig path to the code fumadocs-mdx writes into .source, not a package.
 import { docs as collection } from 'collections/server'
 import { loader } from 'fumadocs-core/source'
+import { use } from 'react'
 
 /**
  * The docs, written from the app's README (github.com/ArakunHQ/arakun). Each page is
@@ -58,6 +59,7 @@ export const groupSlug = (title: string) => title.toLowerCase().replaceAll(' ', 
 
 type Body = Awaited<ReturnType<ReturnType<typeof source.getPages>[number]['data']['load']>>
 const bodies = new Map<string, Promise<Body>>()
+const loaded = new Map<string, Body>()
 
 /**
  * The compiled page. Each page is its own chunk, fetched on first use. The promise is
@@ -71,11 +73,26 @@ export function loadBody(slug: string): Promise<Body> {
       throw new Error(`No doc named ${slug}`)
     }
     // A failed load is forgotten, so the next visit tries again.
-    body = page.data.load().catch((error: unknown) => {
-      bodies.delete(slug)
-      throw error
-    })
+    body = page.data.load().then(
+      (value) => {
+        loaded.set(slug, value)
+        return value
+      },
+      (error: unknown) => {
+        bodies.delete(slug)
+        throw error
+      }
+    )
     bodies.set(slug, body)
   }
   return body
+}
+
+/**
+ * The page's compiled body, without waiting when it has already loaded. React's use()
+ * suspends on a promise it has not seen before, even one that has resolved. Between
+ * docs pages that hides the whole page for a frame, so the page shrinks and jumps.
+ */
+export function useBody(slug: string): Body {
+  return loaded.get(slug) ?? use(loadBody(slug))
 }

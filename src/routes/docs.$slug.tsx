@@ -1,9 +1,8 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { AnchorProvider, TOCItem } from 'fumadocs-core/toc'
-import { use } from 'react'
 import { mdxComponents } from '#/components/mdx'
 import { step, Words } from '#/components/ui'
-import { docs, groups, loadBody } from '#/docs'
+import { docs, groups, loadBody, useBody } from '#/docs'
 import { pageMeta } from '#/seo'
 import { site } from '#/site'
 
@@ -36,7 +35,7 @@ export const Route = createFileRoute('/docs/$slug')({
 function DocPage() {
   const { index } = Route.useLoaderData()
   const doc = docs[index]
-  const { body: Body, toc } = use(loadBody(doc.slug))
+  const { body: Body, toc } = useBody(doc.slug)
   const previous = docs[index - 1]
   const next = docs[index + 1]
   return (
