@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
+import { reopenConsent, useAnalytics } from '#/analytics'
 import { site } from '#/site'
 import { ButtonLink } from './ui'
 
@@ -128,8 +129,11 @@ export function SiteFooter() {
         </div>
         <div className="legal">
           <span>arakun.dev</span>
-          <span>
-            {site.license} · v{site.version}
+          <span className="end">
+            <CookieSettings />
+            <span>
+              {site.license} · v{site.version}
+            </span>
           </span>
         </div>
       </div>
@@ -162,4 +166,15 @@ export function useReveal(key: string) {
     }
     return () => seen.disconnect()
   }, [key])
+}
+
+// Shown once PostHog is configured, so a visitor can change their answer to the banner.
+function CookieSettings() {
+  const { available } = useAnalytics()
+  if (!available) return null
+  return (
+    <button type="button" onClick={reopenConsent}>
+      Cookies
+    </button>
+  )
 }

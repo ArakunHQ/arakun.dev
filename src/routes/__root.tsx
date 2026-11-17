@@ -2,6 +2,7 @@ import { HeadContent, Outlet, Scripts, createRootRoute, useLocation } from '@tan
 import type { ReactNode } from 'react'
 import { BuildMeta } from '@rivi-software/deploy-watch/react'
 import { CelebrateProvider } from '#/components/Celebrate'
+import { ConsentBanner } from '#/components/ConsentBanner'
 import { SiteFooter, SiteNav, useReveal } from '#/components/chrome'
 import { pageMeta } from '#/seo'
 import { site } from '#/site'
@@ -68,6 +69,7 @@ function RootLayout() {
         <Outlet />
       </main>
       <SiteFooter />
+      <ConsentBanner />
     </CelebrateProvider>
   )
 }

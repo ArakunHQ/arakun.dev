@@ -1,4 +1,6 @@
 allowBuilds:
+  # posthog-js depends on it; its install script only prints a funding message.
+  core-js: false
   esbuild: true
   lightningcss: true
   sharp: true
