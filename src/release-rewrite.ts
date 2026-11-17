@@ -26,26 +26,38 @@ export const MODEL = '@cf/zai-org/glm-5.3-flash' satisfies keyof AiModels
 /** A line of GitHub's generated notes: `* feat(x): do y by @someone in https://github.com/o/r/pull/1`. */
 const generated = /^\s*[*-]\s+(.+?)\s+by\s+@\S+\s+in\s+https:\/\/github\.com\/\S+\/pull\/\d+\s*$/
 
-/** Conventional Commit types that change nothing a user of the app sees. */
-const unseen = /^(build|ci|test|tests|chore|docs|style|refactor|revert)(\(.*?\))?!?:/i
+/** Conventional Commit types that change nothing a user of the app sees. A revert may, so it stays. */
+const unseen = /^(build|ci|test|tests|chore|docs|style|refactor)(\(.*?\))?!?:/i
+
+/** What GitHub adds around the generated list: its comment, headings, contributors and compare link. */
+const boilerplate = [
+  /^\s*<!--.*-->\s*$/,
+  /^\s*#/,
+  /made their first contribution/i,
+  /^\s*\*\*Full Changelog\*\*/i,
+]
 
 /** The longest notes we send. GitHub's generated list for a big release fits easily. */
 const MAX_INPUT = 12_000
 
 /**
  * What the model reads. For GitHub's generated list: only the pull requests a
- * user could notice, without authors and links. Notes written by a person go
- * through as they are.
+ * user could notice, without authors and links, after any text a person wrote
+ * around it, such as a warning. Notes written by a person go through as they are.
  */
 export function changesFrom(body: string): string {
   const lines = body.split('\n')
   const prs = lines.map((line) => generated.exec(line)?.[1]).filter((title) => title !== undefined)
   if (prs.length === 0) return body.trim().slice(0, MAX_INPUT)
-  return prs
+  const written = lines
+    .filter((line) => line.trim() && !generated.test(line) && !boilerplate.some((pattern) => pattern.test(line)))
+    .join('\n')
+    .trim()
+  const visible = prs
     .filter((title) => !unseen.test(title))
     .map((title) => `- ${title}`)
     .join('\n')
-    .slice(0, MAX_INPUT)
+  return [written, visible].filter(Boolean).join('\n\n').slice(0, MAX_INPUT)
 }
 
 // The first release's hand-written entry shows the tone. Its changes are old news,

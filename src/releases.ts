@@ -174,6 +174,10 @@ async function withEntries(releases: Release[]): Promise<Release[]> {
   const { AI: ai, CHANGELOG: kv } = env
   return Promise.all(
     releases.map(async (release) => {
+      // The edge cache may hold releases from before a deploy that added or changed
+      // a hand-written entry, so look it up again here.
+      const hand = notes[release.tag]
+      if (hand) return { ...release, note: hand, rewritten: false, body: '' }
       if (release.note || !release.body) return release
       try {
         const key = await entryKey(release)
@@ -186,11 +190,11 @@ async function withEntries(releases: Release[]): Promise<Release[]> {
         if (!started.has(key)) {
           started.add(key)
           waitUntil(
-            rewrite(release, key, kv, ai).catch((error) => {
-              console.warn('Changelog: could not rewrite the notes of', release.tag, error)
-              // Try again on a later visit, once the lock has expired.
-              started.delete(key)
-            }),
+            rewrite(release, key, kv, ai)
+              .catch((error) => console.warn('Changelog: could not rewrite the notes of', release.tag, error))
+              // Done, failed, or left to another instance: a later visit checks again.
+              // A finished entry is in memory or KV by then, so it is not written twice.
+              .finally(() => started.delete(key)),
           )
         }
       } catch (error) {
