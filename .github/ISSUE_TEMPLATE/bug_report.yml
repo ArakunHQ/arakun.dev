@@ -1,0 +1,52 @@
+name: Bug report
+description: Something on arakun.dev is broken, wrong or out of date.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. This form is for the website. For a bug in the Arakun app, use [ArakunHQ/arakun](https://github.com/ArakunHQ/arakun/issues/new/choose). For security issues, use a private advisory instead (see SECURITY.md).
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The address of the page, as it was in the address bar.
+      placeholder: https://arakun.dev/download
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead. A broken link, wrong text or a page that looks off all count.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Download page...
+        2. Click "Copy" on the install command...
+        3. ...
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options:
+        - Dark
+        - Light
+        - Both
+        - Not sure
+  - type: input
+    id: browser
+    attributes:
+      label: Browser, OS and screen
+      placeholder: Firefox 140 on Arch Linux, 2560x1440 / Safari on iPhone 16
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Screenshots or console output
+      description: A screenshot of the problem, or errors from the browser's developer console.

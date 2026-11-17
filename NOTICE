@@ -1,0 +1,14 @@
+Arakun website
+Copyright (C) 2026 Karlo Aldrete
+
+Licensed under the GNU Affero General Public License v3.0 (see LICENSE).
+Commercial licenses are available from the copyright holder.
+
+This product includes software developed by third parties:
+
+- Geist and Geist Mono (@fontsource-variable/geist, @fontsource-variable/geist-mono),
+  Copyright 2024 The Geist Project Authors, licensed under the SIL Open Font
+  License 1.1.
+- React and React DOM, Copyright Meta Platforms, Inc. and affiliates, licensed
+  under MIT.
+- TanStack Router and TanStack Start, Copyright Tanner Linsley, licensed under MIT.

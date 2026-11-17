@@ -58,3 +58,17 @@ The changelog needs nothing. The version and the download links do: change
 
 The custom domain is not configured. Add a `routes` entry to `wrangler.jsonc`
 (or attach the domain in the Cloudflare dashboard) to serve the site at arakun.dev.
+
+## Contributing
+
+Issues and pull requests are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) says how to
+set up, which checks CI runs and how to write a pull request title. Coding agents
+follow [AGENTS.md](AGENTS.md). Report security problems privately, as
+[SECURITY.md](SECURITY.md) says. Everyone here follows the
+[Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+The website is licensed under the [GNU Affero General Public License v3.0](LICENSE),
+like the app. Commercial licenses are available from the copyright holder; see
+[NOTICE](NOTICE). Contributors sign the [CLA](CLA.md).

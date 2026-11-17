@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a bug in the Arakun app
+    url: https://github.com/ArakunHQ/arakun/issues/new/choose
+    about: This repository is the website. Problems with the app itself go to ArakunHQ/arakun.
+  - name: Report a security vulnerability
+    url: https://github.com/arakunhq/arakun/security/advisories/new
+    about: Please report security issues privately, not as public issues. See SECURITY.md.

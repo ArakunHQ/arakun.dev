@@ -1,0 +1,84 @@
+name: CLA
+
+# Checks that everyone in a pull request has signed CLA.md, and records a
+# signature when someone posts the sentence from CONTRIBUTING.md. The work is
+# in .github/scripts/cla.mjs, copied from ArakunHQ/arakun; fix it there too. It
+# sets the "cla-assistant" status, which the main ruleset should require.
+#
+# The signatures are on the cla-signatures branch of this repository, so a
+# signature on the app does not count here. That branch must exist before the
+# first signature can be saved.
+#
+# When it runs:
+# - pull_request_target: a pull request was opened or got new commits, which
+#   may have new authors. After a push or a close, the old head commit may
+#   still be the head of another open pull request, so it is checked again.
+#   `edited` covers a new base: a stacked pull request moves to main before
+#   it merges, and the commits it brings are judged again then.
+# - issue_comment: someone signed or asked for a "recheck".
+# - push: this file or the script changed on the default branch, so every
+#   open pull request is checked again under the new rules.
+# - workflow_dispatch: by hand, for one pull request or, with no number, for
+#   every open one.
+#
+# These events run this file from the default branch with a write token, even
+# for pull requests from forks. That is safe only because no job checks out or
+# runs code from the pull request: the checkout below is the default branch,
+# and the pull request is read through the API. Keep it that way.
+
+on:
+  # Safe as the comment above says; zizmor can't see that no job checks out
+  # the pull request.
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
+    types: [opened, reopened, synchronize, edited, closed]
+  issue_comment: # zizmor: ignore[dangerous-triggers]
+    types: [created]
+  push:
+    branches: [main]
+    paths: [.github/workflows/cla.yml, .github/scripts/cla.mjs]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number (empty checks every open one)
+        required: false
+
+permissions: {}
+
+# No concurrency group: GitHub cancels a pending run when a newer one joins
+# the group, which would drop a signature. Runs overlap instead; the script
+# checks again whenever the signatures changed while it was checking.
+
+jobs:
+  cla:
+    # Not "cla-assistant": a check with the required name that passes whenever
+    # the job runs would satisfy the ruleset without anyone signing.
+    name: CLA signatures
+    # Comments only matter on pull requests. contains() ignores case but not
+    # spacing, so it looks for one word of the sentence; the script matches
+    # the whole sentence with any spacing.
+    if: >-
+      github.event_name != 'issue_comment' ||
+      (github.event.issue.pull_request &&
+        (contains(github.event.comment.body, 'recheck') ||
+         contains(github.event.comment.body, 'hereby')))
+    runs-on: ubuntu-latest
+    permissions:
+      # Commits to the cla-signatures branch.
+      contents: write
+      # Reads the pull request and writes the comment on it.
+      pull-requests: write
+      statuses: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Never the pull request's branch, and not its base either: a stacked
+          # pull request's base may not have the script yet.
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+      - name: Check the CLA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node .github/scripts/cla.mjs

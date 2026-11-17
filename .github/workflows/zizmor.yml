@@ -1,0 +1,52 @@
+name: Workflow lint
+
+# zizmor checks the workflows and dependabot.yml for security problems: actions
+# not pinned to a commit, tokens with more access than a job needs, checkouts
+# that keep the token, and untrusted input expanded into scripts. Run it locally
+# with `zizmor .github`.
+#
+# A finding that is safe in context gets a `# zizmor: ignore[<rule>]` comment
+# on the line zizmor points at, with the reason next to it.
+#
+# Pull requests run it only when they change something it checks. Safe because
+# it is not a required check, so a skipped run leaves nothing pending. The
+# online audits find newly published advisories for the actions in use, so
+# main is also checked every day.
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/**"]
+  pull_request:
+    paths: [".github/**"]
+  schedule:
+    - cron: "47 6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: zizmor-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Findings go to the log and as annotations on the pull request, not to
+      # the Security tab: uploading needs security-events: write, which a
+      # pull request from a fork doesn't get. A fixed zizmor version, so a
+      # new release's audits don't fail pull requests that changed nothing;
+      # bump it by hand.
+      - uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
+        with:
+          version: 1.32.0
+          advanced-security: false
+          annotations: true
