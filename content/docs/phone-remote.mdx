@@ -1,0 +1,16 @@
+---
+title: Phone remote
+description: Follow sessions and answer the agent from a phone.
+---
+
+Arakun serves a web page that lets a paired phone follow sessions, send prompts and answer the agent.
+
+## How the phone reaches your computer
+
+- Over the local network. This is the default.
+- Over Tailscale.
+- Through an end-to-end encrypted relay.
+
+## The relay
+
+The relay defaults to the hosted one at `arakun.dev`. You can run your own: it is a Cloudflare Worker in the `relay/` folder of the repository. Point `relay_base` in `phone.json` at it.

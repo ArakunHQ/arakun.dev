@@ -1165,14 +1165,14 @@ svg {
 .prose li::marker {
   color: var(--color-text-faint);
 }
-.prose a:not(.doc-next a) {
+.prose a:not(.doc-next a, .anchor, .card) {
   color: var(--color-text);
   text-decoration: underline;
   text-decoration-color: var(--color-line-strong);
   text-underline-offset: 3px;
   transition: text-decoration-color 0.2s;
 }
-.prose a:not(.doc-next a):hover {
+.prose a:not(.doc-next a, .anchor, .card):hover {
   text-decoration-color: var(--color-accent-ink);
 }
 .prose code {
@@ -1252,6 +1252,368 @@ svg {
 }
 .doc-next a.n:hover {
   transform: translateX(4px);
+}
+
+/* "On this page": a third column on wide screens. TOCItem marks the heading in view with data-active. */
+.doc-toc {
+  display: none;
+}
+@media (min-width: 1200px) {
+  .doc {
+    grid-template-columns: 220px minmax(0, 720px) 180px;
+    gap: var(--spacing-12);
+    justify-content: space-between;
+  }
+  .doc-toc {
+    position: sticky;
+    top: calc(72px + var(--spacing-8));
+    align-self: start;
+    max-height: calc(100vh - 72px - var(--spacing-16));
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    font-size: var(--text-md);
+  }
+  .doc-toc .mono-label {
+    font-size: var(--text-xs);
+    margin-bottom: var(--spacing-1);
+  }
+  .doc-toc a {
+    padding-left: var(--spacing-3);
+    border-left: 1px solid var(--color-line-strong);
+    color: var(--color-text-faint);
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .doc-toc a[data-depth='3'] {
+    padding-left: var(--spacing-6);
+  }
+  .doc-toc a:hover {
+    color: var(--color-text);
+  }
+  .doc-toc a[data-active='true'] {
+    color: var(--color-accent-ink);
+    border-color: var(--color-accent-ink);
+  }
+}
+
+/* MDX: headings link to themselves */
+.prose h2,
+.prose h3 {
+  scroll-margin-top: calc(72px + var(--spacing-6));
+}
+.prose h3 {
+  margin-top: var(--spacing-8);
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+.prose a.anchor {
+  color: inherit;
+  text-decoration: none;
+}
+.prose a.anchor::after {
+  content: '#';
+  margin-left: var(--spacing-2);
+  color: var(--color-text-faint);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.prose a.anchor:hover::after,
+.prose a.anchor:focus-visible::after {
+  opacity: 1;
+}
+
+/* MDX: code blocks. Shiki gives each token both theme colors; the page's color scheme picks one. */
+.prose .code {
+  position: relative;
+  margin-top: var(--spacing-4);
+}
+.prose .code pre {
+  margin-top: 0;
+  padding-right: var(--spacing-12);
+}
+.prose .shiki,
+.prose .shiki span {
+  color: light-dark(var(--shiki-light), var(--shiki-dark));
+}
+.prose .shiki .line {
+  display: inline-block;
+  min-width: 100%;
+}
+.prose .shiki .highlighted {
+  background: var(--color-raised);
+  box-shadow: inset 2px 0 var(--color-accent);
+}
+.prose .shiki .diff.add {
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+}
+.prose .shiki .diff.remove {
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+}
+.prose .code figcaption {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--spacing-12) 0 var(--spacing-4);
+  border: 1px solid var(--color-line-strong);
+  border-bottom: 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--color-raised);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-faint);
+}
+.prose .code[data-titled] pre {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+.code-copy {
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-faint);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+.code:hover .code-copy,
+.code-copy:focus-visible,
+.code-copy[data-state='copied'] {
+  opacity: 1;
+}
+.code-copy:hover {
+  color: var(--color-text);
+  border-color: var(--color-line-strong);
+}
+.code[data-titled] .code-copy {
+  top: var(--spacing-1);
+}
+.code-copy .ok {
+  display: none;
+  color: var(--color-success);
+}
+.code-copy[data-state='copied'] .c {
+  display: none;
+}
+.code-copy[data-state='copied'] .ok {
+  display: block;
+  animation: il-pop 0.32s cubic-bezier(0.3, 1.6, 0.4, 1);
+}
+@media (hover: none) {
+  .code-copy {
+    opacity: 1;
+  }
+}
+
+/* MDX: a wide table scrolls by itself */
+.prose .table {
+  margin-top: var(--spacing-4);
+  overflow-x: auto;
+}
+.prose .table table {
+  margin-top: 0;
+}
+
+/* MDX: Callout */
+.callout {
+  --tone: var(--color-text-faint);
+  display: flex;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-6);
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-line-strong);
+  border-left: 2px solid var(--tone);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--tone) 6%, var(--color-raised));
+}
+.callout[data-type='tip'] {
+  --tone: var(--color-accent-ink);
+}
+.callout[data-type='warn'] {
+  --tone: var(--color-attention);
+}
+.callout[data-type='error'] {
+  --tone: var(--color-error);
+}
+.callout[data-type='success'] {
+  --tone: var(--color-success);
+}
+.callout > svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--tone);
+}
+.callout > div > :first-child {
+  margin-top: 0;
+}
+.prose .callout p,
+.prose .callout li {
+  font-size: var(--text-lg);
+}
+.prose .callout .callout-title {
+  color: var(--color-text);
+  font-weight: 500;
+}
+.prose .callout .callout-title + * {
+  margin-top: var(--spacing-1);
+}
+
+/* MDX: Steps, numbered down a line */
+.steps {
+  counter-reset: step;
+  margin-top: var(--spacing-6);
+  margin-left: 15px;
+  padding-left: var(--spacing-8);
+  border-left: 1px solid var(--color-line-strong);
+}
+.step {
+  counter-increment: step;
+  position: relative;
+}
+.step + .step {
+  margin-top: var(--spacing-8);
+}
+.step::before {
+  content: counter(step);
+  position: absolute;
+  left: calc(-1 * var(--spacing-8) - 16px);
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  background: var(--color-ground);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  color: var(--color-accent-ink);
+}
+.prose .step > h3:first-child {
+  margin-top: 0;
+  line-height: 32px;
+}
+
+/* MDX: Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-6);
+}
+.prose a.card,
+.prose .card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-raised);
+  text-decoration: none;
+  transition:
+    border-color 0.2s,
+    transform 0.3s var(--ease);
+}
+.prose a.card:hover {
+  border-color: var(--color-text-faint);
+  transform: translateY(-2px);
+}
+.card-title {
+  font-weight: 500;
+  color: var(--color-text);
+}
+.card-text {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+}
+
+/* MDX: Tabs. Code blocks with tab="…" turn into these too. */
+.tabs {
+  margin-top: var(--spacing-6);
+}
+.tabs-list {
+  display: flex;
+  gap: var(--spacing-1);
+  border-bottom: 1px solid var(--color-line-strong);
+  overflow-x: auto;
+}
+.tabs-list button {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font: inherit;
+  font-size: var(--text-lg);
+  color: var(--color-text-faint);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.tabs-list button:hover {
+  color: var(--color-text);
+}
+.tabs-list button[aria-selected='true'] {
+  color: var(--color-text);
+  border-bottom-color: var(--color-accent-ink);
+}
+.tabs-panel > :first-child,
+.tabs-panel > .code:first-child pre {
+  margin-top: var(--spacing-4);
+}
+.tabs-panel > .code:first-child {
+  margin-top: 0;
+}
+
+/* MDX: Accordions */
+.accordions {
+  margin-top: var(--spacing-6);
+  border-top: 1px solid var(--color-line);
+}
+.accordion {
+  border-bottom: 1px solid var(--color-line);
+}
+.accordion summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) 0;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  list-style: none;
+}
+.accordion summary::-webkit-details-marker {
+  display: none;
+}
+.accordion summary svg {
+  flex: none;
+  color: var(--color-text-faint);
+  transition: transform 0.25s var(--ease);
+}
+.accordion[open] summary svg {
+  transform: rotate(180deg);
+}
+.accordion > div {
+  padding-bottom: var(--spacing-4);
+}
+.accordion > div > :first-child {
+  margin-top: 0;
 }
 
 /* InstallBand */

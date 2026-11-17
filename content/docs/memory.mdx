@@ -1,0 +1,14 @@
+---
+title: Memory
+description: What agents learn carries over to the next session.
+---
+
+Agents save what they learn with `arakun mem`. Every new session starts with an index of it in the system prompt.
+
+Memory is plain JSON files: one per repository, plus a global one.
+
+## Search it
+
+```sh
+arakun mem search <words>
+```
