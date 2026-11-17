@@ -70,7 +70,7 @@ export const pages = {
     num: '05',
     label: 'Privacy',
     title: 'Privacy',
-    lead: 'What this site collects, why, and how to say no.',
+    lead: 'What arakun.dev and the Arakun app collect, why, and how to say no.',
   },
 }
 
