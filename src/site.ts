@@ -19,6 +19,8 @@ export const site = {
   released: 'November 17, 2026',
   license: 'AGPL-3.0',
   installUrl: 'https://arakun.dev/install',
+  /** arakun-server alone, for Linux machines with no display (src/routes/install-server.ts). */
+  installServerUrl: 'https://arakun.dev/install-server',
   githubUrl: repo,
   issuesUrl: `${repo}/issues`,
   licenseUrl: `${repo}/blob/main/LICENSE`,
@@ -94,6 +96,7 @@ export const pages = {
 export const installCommands = {
   sh: `curl -fsSL ${site.installUrl} | sh`,
   powershell: `irm ${site.installUrl}.ps1 | iex`,
+  server: `curl -fsSL ${site.installServerUrl} | sh`,
 }
 
 export const pillars = [

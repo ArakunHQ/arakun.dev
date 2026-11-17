@@ -140,9 +140,10 @@ export function InstallLine({ shell = 'sh' }: { shell?: keyof typeof installComm
       }}
       type="button"
     >
-      {shell === 'sh' ? (
+      {shell === 'sh' || shell === 'server' ? (
         <code>
-          <span className="p">$ </span>curl -fsSL <span className="u">{site.installUrl}</span> | sh
+          <span className="p">$ </span>curl -fsSL{' '}
+          <span className="u">{shell === 'sh' ? site.installUrl : site.installServerUrl}</span> | sh
         </code>
       ) : (
         <code>

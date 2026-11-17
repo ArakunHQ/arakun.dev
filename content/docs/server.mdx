@@ -16,6 +16,19 @@ description: Run Arakun without a window on a build box, an office workstation o
 <Steps>
 <Step>
 
+### Install it
+
+On Linux (x86_64), install `arakun-server` alone:
+
+```sh
+curl -fsSL {site.installServerUrl} | sh
+```
+
+It checks the release's signature and puts the binary in `~/.local/bin`. On a Mac or Windows, [install the app](/docs/install) and use `arakun server` in place of `arakun-server`.
+
+</Step>
+<Step>
+
 ### Start it
 
 ```sh
@@ -54,6 +67,15 @@ arakun-server approve <id>                   # or deny
 
 </Step>
 </Steps>
+
+## Keep it running
+
+```sh
+arakun-server service install   # systemd on Linux: starts now, after a crash and at boot
+arakun-server service status
+```
+
+On Linux it keeps running after you log out, so you can set it up over SSH. To update, run the install line again, then `systemctl --user restart arakun-server`.
 
 ## How devices reach it
 
