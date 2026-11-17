@@ -80,8 +80,8 @@ Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
 - Before the first deploy, free the name: delete the DNS record for `arakun.dev`, or
   detach the domain from the Pages project or Worker that serves it now. A custom
   domain can't replace an existing record. The `www` redirect can stay.
-- A push waits for the deploy before it to finish. If `main` has moved on by then,
-  it skips, and the newer commit's run deploys.
+- Deploys queue and run one at a time. When a deploy's turn comes and `main` has
+  moved on, it skips, and the newer commit's run deploys.
 - The job runs in the `production` environment of the GitHub repository. It needs:
   - `CLOUDFLARE_API_TOKEN`, an environment secret: a Cloudflare API token with
     "Edit Cloudflare Workers" on the account and zone that hold arakun.dev.

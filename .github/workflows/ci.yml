@@ -71,10 +71,14 @@ jobs:
     environment:
       name: production
       url: https://arakun.dev
-    # One deploy at a time, never cancelled halfway.
+    # One deploy at a time, never cancelled halfway. By default a job waiting
+    # here is dropped when another arrives, and the arrival may be an older
+    # commit that the check below then skips, so nothing deploys. `queue: max`
+    # keeps every waiting job instead.
     concurrency:
       group: deploy-production
       cancel-in-progress: false
+      queue: max
     steps:
       # Pushes to main build in parallel, so an older commit can reach this
       # job after a newer one has deployed. It must not put the old build
