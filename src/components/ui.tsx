@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, ComponentProps, PointerEvent, ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import { installCommands, site } from '#/site'
@@ -39,6 +39,20 @@ type ButtonTone = 'primary' | 'secondary' | 'ghost'
 /** A button that goes to another page of the site. */
 export function ButtonLink({ tone = 'primary', ...props }: ComponentProps<typeof Link> & { tone?: ButtonTone }) {
   return <Link className="btn" data-tone={tone} {...props} />
+}
+
+/**
+ * The download that suits the visitor: macOS on a Mac, Linux everywhere else.
+ * The server can't see the visitor's OS, so the page renders Linux first and
+ * switches after hydration, which also keeps the server and client markup equal.
+ */
+export function useVisitorPlatform(): Platform {
+  const [platform, setPlatform] = useState<Platform>('Linux')
+  useEffect(() => {
+    // iPads also say "Macintosh"; touch support tells them apart.
+    if (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints < 2) setPlatform('macOS')
+  }, [])
+  return platform
 }
 
 /** Downloads the release archive for a platform and celebrates the click. */
@@ -197,6 +211,7 @@ export function PageHeader({ num, label, title, lead }: { num: string; label: st
 
 /** The closing call to install, above the footer on inner pages. */
 export function InstallBand({ note }: { note?: string }) {
+  const platform = useVisitorPlatform()
   return (
     <div className="wrap section" data-reveal="">
       <section className="ib">
@@ -211,7 +226,7 @@ export function InstallBand({ note }: { note?: string }) {
             <ButtonLink to="/docs" tone="ghost">
               Read the docs
             </ButtonLink>
-            <DownloadButton platform="Linux" />
+            <DownloadButton platform={platform} />
           </div>
         </div>
       </section>

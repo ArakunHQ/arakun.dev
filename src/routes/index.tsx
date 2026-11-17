@@ -1,11 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { HeroRaccoon } from '#/components/HeroRaccoon'
-import { AppShot, DownloadButton, Eyebrow, InstallBand, InstallLine, Principle, SessionRow, Words, step } from '#/components/ui'
+import { AppShot, DownloadButton, Eyebrow, InstallBand, InstallLine, Principle, SessionRow, Words, step, useVisitorPlatform } from '#/components/ui'
 import { pillars, sessions, site } from '#/site'
 
 export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
+  const platform = useVisitorPlatform()
   return (
     <>
       <section className="hero">
@@ -21,7 +22,7 @@ function Home() {
             don't step on each other.
           </p>
           <div className="cta rise" style={step(1, 480)}>
-            <DownloadButton platform="Linux" />
+            <DownloadButton platform={platform} />
             <InstallLine />
           </div>
           <span className="meta rise" style={step(2, 480)}>
