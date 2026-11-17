@@ -27,7 +27,16 @@ export const Route = createFileRoute('/changelog')({
 })
 
 const day = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' })
-const LEADING_V = /^v/u
+// Built from our own name only. A tag from GitHub never goes into a pattern: braces in it
+// would make RegExp throw.
+const NAME_PREFIX = new RegExp(`^${site.name}\\s+`, 'iu')
+const LEADING_V = /^v/iu
+
+/** True if a release name only repeats its tag, as in "Arakun v0.1.0", "v0.1.0" or "0.1.0". */
+function repeatsTag(name: string, tag: string) {
+  const version = (text: string) => text.replace(LEADING_V, '').toLowerCase()
+  return version(name.replace(NAME_PREFIX, '')) === version(tag)
+}
 
 function ReleaseNotes({ release, note }: { release: Release; note?: ReleaseNote }) {
   if (release.body) {
@@ -51,10 +60,7 @@ function ReleaseNotes({ release, note }: { release: Release; note?: ReleaseNote 
 function ReleaseEntry({ release }: { release: Release }) {
   const note = notes[release.tag]
   // "Arakun v0.1.0" says nothing the version beside it doesn't: prefer the written title.
-  const plainName = new RegExp(
-    `^(?:${site.name}\\s+)?v?${release.tag.replace(LEADING_V, '')}$`,
-    'iu'
-  ).test(release.name)
+  const plainName = repeatsTag(release.name, release.tag)
   const title = plainName ? (note?.title ?? release.name) : release.name
   return (
     <article className="re" id={release.tag}>
