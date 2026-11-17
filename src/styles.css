@@ -525,10 +525,8 @@ svg {
 .privacy section h2 {
   margin-top: var(--spacing-12);
 }
-.privacy section:first-child h2 {
-  margin-top: 0;
-}
 .privacy button.inline {
+  padding: 0;
   font-size: inherit;
   color: var(--color-text);
   text-decoration: underline;
