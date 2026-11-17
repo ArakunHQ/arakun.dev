@@ -25,7 +25,7 @@ function Home() {
             <InstallLine />
           </div>
           <span className="meta rise" style={step(2, 480)}>
-            v{site.version} · {site.license} · Windows in beta, macOS experimental
+            v{site.version} · {site.license} · Windows and macOS in beta
           </span>
         </div>
         <div className="peek">
@@ -69,7 +69,7 @@ function Home() {
         </div>
       </section>
 
-      <InstallBand note="Linux supported · Windows in beta · macOS experimental" />
+      <InstallBand note="Linux supported · Windows and macOS in beta" />
     </>
   )
 }
