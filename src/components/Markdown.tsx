@@ -76,7 +76,7 @@ function blocks(source: string): ReactNode[] {
     if (heading !== undefined) {
       flush()
       // Release notes sit under the release's own title, so every heading is a small one.
-      out.push(<h4 key={out.length}>{inline(heading)}</h4>)
+      out.push(<h3 key={out.length}>{inline(heading)}</h3>)
     } else if (item !== undefined) {
       if (paragraph.length) {
         flush()

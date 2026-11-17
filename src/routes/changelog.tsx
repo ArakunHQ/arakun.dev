@@ -3,7 +3,7 @@ import { Markdown } from '#/components/Markdown'
 import { InstallBand, PageHeader, StatusPill } from '#/components/ui'
 import type { Release } from '#/releases'
 import { getReleases } from '#/releases'
-import { pageMeta } from '#/seo'
+import { innerPageHead } from '#/seo'
 import { pages, site } from '#/site'
 
 const page = pages.changelog
@@ -15,12 +15,7 @@ const page = pages.changelog
  */
 export const Route = createFileRoute('/changelog')({
   loader: () => getReleases(),
-  head: () => ({
-    meta: [
-      { title: `Changelog · ${site.name}` },
-      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
-    ],
-  }),
+  head: () => innerPageHead(page),
   component: Changelog,
 })
 
@@ -75,7 +70,7 @@ function ReleaseEntry({ release }: { release: Release }) {
         {release.prerelease ? <StatusPill label="Pre-release" tone="attention" /> : null}
       </div>
       <div className="c">
-        <h3>{title}</h3>
+        <h2>{title}</h2>
         <ReleaseNotes release={release} />
         {release.rewritten ? (
           <p className="by mono-label">Summarized by Workers AI from the GitHub notes</p>

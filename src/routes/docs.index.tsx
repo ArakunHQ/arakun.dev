@@ -1,18 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { InstallBand, PageHeader } from '#/components/ui'
 import { groupSlug, groups } from '#/docs'
-import { pageMeta } from '#/seo'
-import { pages, site } from '#/site'
+import { innerPageHead } from '#/seo'
+import { pages } from '#/site'
 
 const page = pages.docs
 
 export const Route = createFileRoute('/docs/')({
-  head: () => ({
-    meta: [
-      { title: `Docs · ${site.name}` },
-      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
-    ],
-  }),
+  head: () => innerPageHead(page),
   component: DocsIndex,
 })
 
@@ -40,7 +35,7 @@ function DocsIndex() {
             {group.docs.map((doc) => (
               <Link className="dr" key={doc.slug} params={{ slug: doc.slug }} to="/docs/$slug">
                 <div>
-                  <h4>{doc.title}</h4>
+                  <h2>{doc.title}</h2>
                   <p>{doc.summary}</p>
                 </div>
                 <Arrow />

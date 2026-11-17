@@ -7,18 +7,13 @@ import {
   Principle,
   SessionRow,
 } from '#/components/ui'
-import { pageMeta } from '#/seo'
+import { innerPageHead } from '#/seo'
 import { pages, sessions, site } from '#/site'
 
 const page = pages.features
 
 export const Route = createFileRoute('/features')({
-  head: () => ({
-    meta: [
-      { title: `Features · ${site.name}` },
-      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
-    ],
-  }),
+  head: () => innerPageHead(page),
   component: Features,
 })
 

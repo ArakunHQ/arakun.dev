@@ -13,9 +13,20 @@ import {
   useVisitorPlatform,
   Words,
 } from '#/components/ui'
+import { pageHead, softwareApplication, website } from '#/seo'
 import { pillars, sessions, site } from '#/site'
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/')({
+  head: () =>
+    pageHead({
+      path: '/',
+      tabTitle: `${site.name} · ${site.line}`,
+      title: site.name,
+      description: site.description,
+      jsonLd: [softwareApplication, website],
+    }),
+  component: Home,
+})
 
 function Home() {
   const platform = useVisitorPlatform()

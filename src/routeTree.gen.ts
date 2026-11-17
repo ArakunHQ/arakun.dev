@@ -17,6 +17,8 @@ import { Route as InstallRouteImport } from './routes/install'
 import { Route as InstallDotps1RouteImport } from './routes/install[.]ps1'
 import { Route as InstallDotshRouteImport } from './routes/install[.]sh'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as DocsIndexRouteImport } from './routes/docs.index'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 
@@ -60,6 +62,16 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
   id: '/docs/',
   path: '/docs/',
@@ -80,6 +92,8 @@ export interface FileRoutesByFullPath {
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
 }
@@ -92,6 +106,8 @@ export interface FileRoutesByTo {
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs': typeof DocsIndexRoute
 }
@@ -105,6 +121,8 @@ export interface FileRoutesById {
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
 }
@@ -119,6 +137,8 @@ export interface FileRouteTypes {
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/docs/$slug'
     | '/docs/'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +151,8 @@ export interface FileRouteTypes {
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/docs/$slug'
     | '/docs'
   id:
@@ -143,6 +165,8 @@ export interface FileRouteTypes {
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/docs/$slug'
     | '/docs/'
   fileRoutesById: FileRoutesById
@@ -156,6 +180,8 @@ export interface RootRouteChildren {
   InstallDotps1Route: typeof InstallDotps1Route
   InstallDotshRoute: typeof InstallDotshRoute
   PrivacyRoute: typeof PrivacyRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   DocsSlugRoute: typeof DocsSlugRoute
   DocsIndexRoute: typeof DocsIndexRoute
 }
@@ -218,6 +244,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/': {
       id: '/docs/'
       path: '/docs'
@@ -244,6 +284,8 @@ const rootRouteChildren: RootRouteChildren = {
   InstallDotps1Route: InstallDotps1Route,
   InstallDotshRoute: InstallDotshRoute,
   PrivacyRoute: PrivacyRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   DocsSlugRoute: DocsSlugRoute,
   DocsIndexRoute: DocsIndexRoute,
 }
