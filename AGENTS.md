@@ -47,8 +47,11 @@ Every commit message and pull request title follows
 - Fill in `.github/pull_request_template.md`. Under "How did you test this?", list the
   commands you actually ran. Leave a checklist item unchecked if you did not run it.
 - Always open a pull request as a draft: `gh pr create --draft --body-file -`. Run the
-  checks below, wait for CI to pass, then mark it ready with `gh pr ready`. Merging is
-  a person's job, not yours.
+  checks below, wait for CI to pass, then mark it ready with `gh pr ready`. Marking it
+  ready starts CodeRabbit's review; a workflow then asks a maintainer to review unless
+  CodeRabbit approved. Merging is a person's job, not yours.
+- Answer every CodeRabbit comment: fix it and push, or reply with the reason. Never
+  resolve its threads yourself; that dismisses its approval.
 
 ## Before you commit
 

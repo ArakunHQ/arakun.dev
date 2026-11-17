@@ -1,0 +1,313 @@
+name: Reviewers
+
+# Requests reviewers once CodeRabbit has finished reviewing a pull request and
+# has not approved it. The same workflow runs in ArakunHQ/arakun; keep the two
+# in step. A CodeRabbit approval is enough to merge a change from the team, so
+# nobody is asked then, unless a review thread is still open: an open thread
+# is a finding nobody dealt with, so a person resolves it and approves.
+# CodeRabbit's approval is dismissed then, and when the author resolved one
+# of its threads, so an author can't clear its findings to get approved.
+# Nothing runs this again when a thread is resolved, which is why an open
+# thread dismisses it too. It replaces CODEOWNERS, which asked everyone on
+# every pull request, drafts included.
+#
+# CodeRabbit may not approve a pull request from outside the team: this
+# workflow dismisses such an approval and asks a person. That rule lives here,
+# not in .coderabbit.yaml, because CodeRabbit's approval overrides can only
+# match members of a team, not everyone outside it. The dismissal comes after
+# the approval, so it can't stop a merge in between. For an outside pull
+# request the "Human approval" commit status does; human-approval.yml sets it.
+# For a team pull request whose author resolved CodeRabbit's threads, nothing
+# covers those minutes.
+#
+# A pull request from the team goes to Karlo, or to Rik if Karlo wrote it. A
+# pull request from outside the team goes to whichever of Karlo and Rik has
+# fewer open review requests, to spread the work. Nobody reviews their own
+# pull request. Someone already requested, or who has already reviewed, is not
+# asked again, so a push doesn't notify everyone again.
+#
+# When it runs:
+# - check_run: CodeRabbit's "CodeRabbit" check run on the head commit
+#   completed, so its review is done (or skipped, or rate limited).
+# - issue_comment: CodeRabbit edits its summary comment when it approves
+#   later, after the author resolves its threads. This catches an approval of
+#   an outside pull request that came after the check run.
+# - workflow_dispatch: by hand, for a pull request CodeRabbit never reviewed.
+#   It doesn't wait for CodeRabbit.
+# Drafts get no reviewers. CodeRabbit reviews a pull request once it is marked
+# ready, and that review starts this workflow.
+#
+# These events run this file from the default branch with a write token, even
+# for pull requests from forks. That is safe only because no job checks out or
+# runs code from the pull request: the reviewers are in this file, and the
+# reviews and threads come from the API. Keep it that way. A change to this
+# file takes effect once it is on main.
+
+on:
+  check_run:
+    types: [completed]
+  # Safe as the comment above says; zizmor can't see that no job checks out.
+  issue_comment: # zizmor: ignore[dangerous-triggers]
+    types: [created, edited]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number
+        required: true
+
+permissions: {}
+
+env:
+  # The members of the ArakunHQ/maintainers team. The workflow's token can't
+  # read team membership, so keep this in step by hand, here, in
+  # human-approval.yml and in the workflows of ArakunHQ/arakun.
+  TEAM: KarloAldrete rikvisser-dev daniektj
+
+jobs:
+  request:
+    name: Request reviewers
+    # On the job, not the workflow: a run whose job is skipped (any comment
+    # but CodeRabbit's) must not cancel one that is working.
+    concurrency:
+      group: reviewers-${{ github.event.issue.number || inputs.pr || github.event.check_run.head_sha }}
+      cancel-in-progress: true
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'check_run' &&
+      github.event.check_run.app.slug == 'coderabbitai' &&
+      github.event.check_run.name == 'CodeRabbit') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
+      github.event.comment.user.login == 'coderabbitai[bot]') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      checks: read
+      pull-requests: write
+    steps:
+      - name: Request reviewers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          SHA: ${{ github.event.check_run.head_sha }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
+          CODERABBIT: coderabbitai[bot]
+          # GraphQL names the author of CodeRabbit's threads without "[bot]".
+          CODERABBIT_AUTHOR: coderabbitai
+          # How long to wait, after CodeRabbit's check run completes, for its
+          # approval of a team pull request. It can come about a minute later.
+          APPROVAL_WAIT: 120
+          # Every pull request: from the team, the first of these who is not
+          # the author; from outside, the one with the fewest open requests.
+          DEFAULT_REVIEWERS: KarloAldrete rikvisser-dev
+        run: |
+          set -euo pipefail
+
+          in_team() { grep -qxF "$1" <<<"${TEAM// /$'\n'}"; }
+
+          # CodeRabbit's verdict on the head commit: APPROVED, CHANGES_REQUESTED
+          # or nothing. COMMENTED doesn't change a reviewer's verdict on GitHub.
+          coderabbit_verdict() {
+            gh api "repos/$GH_REPO/pulls/$1/reviews" --paginate --jq \
+              '.[] | select(.user.login == env.CODERABBIT and .commit_id == env.HEAD) | .state' |
+              grep -xE 'APPROVED|CHANGES_REQUESTED' | tail -n 1 || true
+          }
+
+          # One line per review thread that matters here: "open" for an
+          # unresolved one, "self" for one of CodeRabbit's the author resolved.
+          thread_states() {
+            # The $ names are GraphQL variables, not the shell's.
+            # shellcheck disable=SC2016
+            AUTHOR=$2 gh api graphql --paginate \
+              -F owner="${GH_REPO%/*}" -F name="${GH_REPO#*/}" -F pr="$1" \
+              -f query='query($owner: String!, $name: String!, $pr: Int!, $endCursor: String) {
+                repository(owner: $owner, name: $name) { pullRequest(number: $pr) {
+                  reviewThreads(first: 100, after: $endCursor) {
+                    nodes { isResolved resolvedBy { login } comments(first: 1) { nodes { author { login } } } }
+                    pageInfo { hasNextPage endCursor } } } } }' \
+              --jq '.data.repository.pullRequest.reviewThreads.nodes[] |
+                if .isResolved | not then "open"
+                elif (.comments.nodes[0].author.login // "") == env.CODERABBIT_AUTHOR and
+                  .resolvedBy.login == env.AUTHOR then "self"
+                else empty end'
+          }
+
+          # Every CodeRabbit approval, older commits' too: one of those can
+          # still count toward the ruleset.
+          coderabbit_approvals() {
+            gh api "repos/$GH_REPO/pulls/$1/reviews" --paginate \
+              --jq '.[] | select(.user.login == env.CODERABBIT and .state == "APPROVED") | .id'
+          }
+
+          # The pull request, the message, then the approvals to dismiss
+          # (by default every one there is now).
+          dismiss_approvals() {
+            local pr=$1 message=$2 id listed
+            shift 2
+            local ids=("$@")
+            if [ ${#ids[@]} -eq 0 ]; then
+              # An assignment, not `mapfile < <(...)`: a failed lookup must
+              # fail the step, not look like no approvals.
+              listed=$(coderabbit_approvals "$pr")
+              [ -z "$listed" ] || mapfile -t ids <<<"$listed"
+            fi
+            for id in "${ids[@]}"; do
+              gh api -X PUT "repos/$GH_REPO/pulls/$pr/reviews/$id/dismissals" --silent \
+                -f event=DISMISS -f message="$message"
+              echo "Dismissed CodeRabbit's approval $id: $message"
+            done
+          }
+
+          handle() {
+            local pr=$1
+            echo "::group::#$pr"
+            local state draft author
+            read -r state draft author HEAD < <(gh api "repos/$GH_REPO/pulls/$pr" \
+              --jq '[.state, .draft, .user.login, .head.sha] | @tsv')
+            export HEAD
+            if [ "$state" != open ] || [ "$draft" = true ]; then
+              echo "It is closed or a draft."
+              echo "::endgroup::"
+              return
+            fi
+
+            if [ "$EVENT" != workflow_dispatch ]; then
+              local check status completed
+              check=$(gh api "repos/$GH_REPO/commits/$HEAD/check-runs?check_name=CodeRabbit" \
+                --jq '[.check_runs[] | select(.app.slug == "coderabbitai")][0] // {} | [.status // "missing", .completed_at // ""] | @tsv')
+              read -r status completed <<<"$check"
+              if [ "$status" != completed ]; then
+                echo "CodeRabbit hasn't finished reviewing $HEAD ($status)."
+                echo "::endgroup::"
+                return
+              fi
+              # CodeRabbit can approve a little after its check run ends. An
+              # outside pull request needn't wait: its approval is dismissed.
+              if in_team "$author"; then
+                local deadline
+                deadline=$(($(date -d "$completed" +%s) + APPROVAL_WAIT))
+                while [ -z "$(coderabbit_verdict "$pr")" ] && [ "$(date +%s)" -lt "$deadline" ]; do
+                  sleep 15
+                done
+              fi
+            fi
+
+            if ! in_team "$author"; then
+              dismiss_approvals "$pr" \
+                "A pull request from outside the team needs a person's approval. CodeRabbit's comments still apply."
+            fi
+            # Any approval, not only the head's: a newer head may get no
+            # verdict at all (CodeRabbit rate limited), and an older approval
+            # can still count. Taken before the threads are read, so only
+            # these are dismissed: an approval that comes later starts a run
+            # of its own, which judges it.
+            local approvals=() listed
+            if in_team "$author"; then
+              # A failed lookup fails the step (see dismiss_approvals).
+              listed=$(coderabbit_approvals "$pr")
+              [ -z "$listed" ] || mapfile -t approvals <<<"$listed"
+            fi
+            if [ ${#approvals[@]} -gt 0 ]; then
+              local threads open self
+              threads=$(thread_states "$pr" "$author")
+              open=$(grep -cx open <<<"$threads" || true)
+              self=$(grep -cx self <<<"$threads" || true)
+              # Open threads dismiss it too: nothing runs this again when a
+              # thread is resolved, so the author could resolve them
+              # afterwards and merge on CodeRabbit's approval.
+              if [ "$self" -gt 0 ]; then
+                dismiss_approvals "$pr" \
+                  "The author resolved CodeRabbit's threads, so a person has to approve. CodeRabbit's comments still apply." \
+                  "${approvals[@]}"
+              elif [ "$open" -gt 0 ]; then
+                echo "$open review threads are open."
+                dismiss_approvals "$pr" \
+                  "Review threads are still open; a person resolves them and approves. CodeRabbit's comments still apply." \
+                  "${approvals[@]}"
+              elif [ "$(coderabbit_verdict "$pr")" = APPROVED ]; then
+                echo "CodeRabbit approved $HEAD and every thread is resolved; no reviewer needed."
+                echo "::endgroup::"
+                return
+              else
+                # Only an older commit's approval: it would still count.
+                dismiss_approvals "$pr" \
+                  "CodeRabbit has not approved the latest commit, so a person has to approve. CodeRabbit's comments still apply." \
+                  "${approvals[@]}"
+              fi
+            fi
+
+            local requested reviewed asked
+            requested=$(gh api "repos/$GH_REPO/pulls/$pr/requested_reviewers" --jq '.users[].login')
+            reviewed=$(gh api "repos/$GH_REPO/pulls/$pr/reviews" --paginate --jq '.[].user.login')
+            asked="$requested"$'\n'"$reviewed"
+
+            local want=() user
+            if in_team "$author"; then
+              for user in $DEFAULT_REVIEWERS; do
+                if [ "$user" != "$author" ]; then
+                  want+=("$user")
+                  break
+                fi
+              done
+            else
+              # Pick once: on a later push the load has changed, and picking
+              # again would ask a second person.
+              local picked="" fewest="" load
+              for user in $DEFAULT_REVIEWERS; do
+                if grep -qxF "$user" <<<"$asked"; then
+                  picked=$user
+                fi
+              done
+              if [ -z "$picked" ]; then
+                for user in $DEFAULT_REVIEWERS; do
+                  load=$(gh api -X GET search/issues --jq .total_count \
+                    -f q="repo:$GH_REPO is:pr is:open review-requested:$user")
+                  echo "$user has $load open review requests."
+                  if [ -z "$fewest" ] || [ "$load" -lt "$fewest" ]; then
+                    fewest=$load
+                    picked=$user
+                  fi
+                done
+                want+=("$picked")
+              fi
+            fi
+
+            local add=()
+            for user in "${want[@]}"; do
+              if [ "$user" = "$author" ] ||
+                grep -qxF "$user" <<<"$asked"$'\n'"$(printf '%s\n' "${add[@]}")"; then
+                continue
+              fi
+              add+=("$user")
+            done
+
+            if [ ${#add[@]} -eq 0 ]; then
+              echo "Everyone who should review is already asked."
+            elif [ "$(gh api "repos/$GH_REPO/pulls/$pr" --jq .head.sha)" != "$HEAD" ]; then
+              # A push during the wait: the new commit's review decides.
+              echo "The head moved on from $HEAD; its own review will run this again."
+            else
+              local args=()
+              for user in "${add[@]}"; do
+                args+=(-f "reviewers[]=$user")
+              done
+              gh api -X POST "repos/$GH_REPO/pulls/$pr/requested_reviewers" "${args[@]}" --silent
+              echo "Requested: ${add[*]}"
+            fi
+            echo "::endgroup::"
+          }
+
+          if [ "$EVENT" = check_run ]; then
+            # The event lists no pull request when the branch is on a fork,
+            # so find them by their head commit.
+            prs=$(gh api "repos/$GH_REPO/pulls?state=open&per_page=100" --paginate \
+              --jq '.[] | select(.head.sha == env.SHA) | .number')
+          else
+            if ! [[ "$PR" =~ ^[0-9]+$ ]]; then
+              echo "::error::Not a pull request number: $PR"
+              exit 1
+            fi
+            prs=$PR
+          fi
+          for pr in $prs; do
+            handle "$pr"
+          done
