@@ -34,9 +34,10 @@ const platforms: { name: string; download?: Platform; status: string; tone: Tone
   },
   {
     name: 'macOS',
+    download: 'macOS',
     status: 'Beta',
     tone: 'attention',
-    note: `Apple silicon. No browser in release builds yet. Release v${site.version} has no macOS build.`,
+    note: 'Apple silicon. Signed and notarized by Apple. No browser in release builds yet.',
   },
 ]
 
