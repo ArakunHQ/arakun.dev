@@ -1,8 +1,8 @@
 name: CI
 
-# Typechecks and builds the site, and checks that the Worker bundles the way
-# `wrangler deploy` would, without uploading anything. A push to main that
-# passes those checks then deploys to arakun.dev (see "Deploys" in README.md).
+# Typechecks, lints and builds the site, and checks that the Worker bundles
+# the way `wrangler deploy` would, without uploading anything. A push to main
+# that passes those checks then deploys to arakun.dev (see "Deploys" in README.md).
 
 on:
   push:
@@ -41,6 +41,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
+      # Ultracite (Biome): lint and format. `pnpm fix` fixes most of what it finds.
+      - run: pnpm check
       - run: pnpm build
 
       # Bundles the Worker and lists its bindings and assets. No account or

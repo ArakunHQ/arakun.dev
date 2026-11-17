@@ -60,6 +60,7 @@ CI runs these on every pull request. Run them before you push:
 ```sh
 pnpm install --frozen-lockfile
 pnpm typecheck
+pnpm check       # lint and format; `pnpm fix` fixes most findings
 pnpm build
 pnpm exec wrangler deploy --dry-run   # checks the Worker bundles; uploads nothing
 
@@ -82,8 +83,8 @@ Some notes:
 
 ### Git hooks
 
-[`lefthook.yml`](lefthook.yml) runs the typecheck on commit and checks the commit
-message. Install [lefthook](https://lefthook.dev/installation/) (for example
+[`lefthook.yml`](lefthook.yml) runs the typecheck and the lint on commit, and checks
+the commit message. Install [lefthook](https://lefthook.dev/installation/) (for example
 `brew install lefthook` or `npm install -g lefthook`), then turn the hooks on in your
 checkout:
 

@@ -64,6 +64,7 @@ Run what CI runs, and fix every error:
 ```sh
 pnpm install --frozen-lockfile
 pnpm typecheck
+pnpm check       # lint and format; `pnpm fix` fixes most findings
 pnpm build
 pnpm exec wrangler deploy --dry-run
 # wrangler.jsonc changed: regenerate the Worker types and commit them
@@ -74,7 +75,8 @@ zizmor .github
 
 If you add or update a dependency, commit `pnpm-lock.yaml` too. Keep dependencies few;
 they must run on Cloudflare Workers, and GPL, LGPL and AGPL packages can't be used.
-`lefthook install` runs the typecheck and the commit message check as Git hooks.
+`lefthook install` runs the typecheck, the lint and the commit message check as Git
+hooks.
 
 ## Code
 

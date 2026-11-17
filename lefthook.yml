@@ -10,6 +10,11 @@ pre-commit:
       glob: ["*.ts", "*.tsx", "tsconfig.json", "package.json", "pnpm-lock.yaml", "wrangler.jsonc"]
       run: pnpm typecheck
 
+    # Lints and checks the format of the staged files only.
+    - name: lint
+      glob: ["*.ts", "*.tsx", "*.mjs", "*.css", "*.json", "*.jsonc", "*.yml", "*.yaml"]
+      run: pnpm exec biome check --no-errors-on-unmatched {staged_files}
+
 commit-msg:
   jobs:
     - name: conventional-commits
