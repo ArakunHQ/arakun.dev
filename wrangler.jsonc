@@ -15,6 +15,18 @@
 	// PostHog project 736741 (US Cloud), for analytics and error reports. The token is
 	// public: posthog-js sends it from every browser. Empty turns PostHog off, in the
 	// browser and the Worker.
+	//
+	// Why US Cloud and not EU Cloud (https://eu.i.posthog.com, data in Frankfurt):
+	// - Arakun is a US company, so the data it controls is in the US either way.
+	// - EU Cloud still has PostHog, Inc. as the processor, and its DPA says it may process
+	//   data in the US too (clause 10.2).
+	// - EU Cloud is a separate instance. Moving means a new project and token, and the
+	//   history stays behind.
+	// For EU visitors, the cookie banner (src/analytics.ts) asks consent first, and a DPA
+	// with PostHog makes it our processor (GDPR Art. 28). The DPA is self-serve at
+	// https://us.posthog.com/legal, on any plan. Where data counts as a transfer, the DPA
+	// covers it with PostHog's Data Privacy Framework certification, and with the EU
+	// Standard Contractual Clauses (module 2) as the fallback.
 	"vars": {
 		"POSTHOG_PROJECT_TOKEN": "phc_kXKrLfaWumKa3mfXcFVBCRpyKa6DZiUv7hCkQW2epLQZ",
 		"POSTHOG_HOST": "https://us.i.posthog.com"

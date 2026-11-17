@@ -61,6 +61,8 @@ PostHog counts visits and reports errors, through
 - `POSTHOG_PROJECT_TOKEN` and `POSTHOG_HOST` in `wrangler.jsonc` configure both
   sides. The token is public, since browsers send it. Empty turns PostHog off and
   hides the banner. To try it locally, put a token in `.dev.vars`.
+- The project is on PostHog's US Cloud. The comment in `wrangler.jsonc` says why,
+  and how the DPA with PostHog covers EU visitors.
 
 ## On a new release
 
