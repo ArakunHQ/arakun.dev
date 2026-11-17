@@ -58,6 +58,21 @@ function start() {
 export function setupAnalytics(config: PostHogBrowserConfig | null) {
   update({ config, consent: readConsent() })
   if (state.consent === 'granted') start()
+  // A choice made in another tab of the site applies here too, so a "No thanks" there
+  // stops PostHog in a tab that accepted earlier.
+  addEventListener('storage', (event) => {
+    if (event.key !== KEY && event.key !== null) return
+    const consent = readConsent()
+    if (consent === state.consent) return
+    update({ consent, reopened: false })
+    if (consent === 'granted') start()
+    else stop()
+  })
+}
+
+// Only does something when PostHog runs in this tab: it stops and deletes its cookie and storage.
+function stop() {
+  withPostHog((posthog) => posthog.opt_out_capturing())
 }
 
 export function acceptAnalytics() {
@@ -69,8 +84,7 @@ export function acceptAnalytics() {
 export function declineAnalytics() {
   saveConsent('denied')
   update({ consent: 'denied', reopened: false })
-  // Only does something when PostHog was running: it stops and deletes its cookie and storage.
-  withPostHog((posthog) => posthog.opt_out_capturing())
+  stop()
 }
 
 export function reopenConsent() {
