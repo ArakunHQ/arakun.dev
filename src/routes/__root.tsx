@@ -1,5 +1,6 @@
 import { HeadContent, Outlet, Scripts, createRootRoute, useLocation } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
+import { BuildMeta } from '@rivi-software/deploy-watch/react'
 import { CelebrateProvider } from '#/components/Celebrate'
 import { SiteFooter, SiteNav, useReveal } from '#/components/chrome'
 import { pageMeta } from '#/seo'
@@ -47,6 +48,7 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <HeadContent />
+        <BuildMeta />
       </head>
       <body>
         {children}
