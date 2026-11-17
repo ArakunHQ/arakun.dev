@@ -42,8 +42,9 @@ release there and it shows on the site within ten minutes. No deploy is needed.
   after that the releases in `src/release-notes.ts`.
 - The page shows the notes written on the GitHub release. Drafts are never shown;
   pre-releases get a "Pre-release" label.
-- `src/release-notes.ts` holds hand-written notes per tag. They are shown for a
-  release whose GitHub notes are empty, as v0.1.0's are.
+- `src/release-notes.ts` holds hand-written notes per tag. They are shown in
+  place of the GitHub notes: for v0.1.0, whose notes are empty, and for v0.2.1,
+  whose notes are GitHub's generated list of pull requests.
 - Optional: `wrangler secret put GITHUB_TOKEN` raises GitHub's limit from 60 to
   5000 requests an hour. A token with no scopes is enough for a public repository.
 - The shared cache only works on a custom domain. On a `workers.dev` address each
