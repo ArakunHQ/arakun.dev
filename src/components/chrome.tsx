@@ -4,6 +4,9 @@ import { reopenConsent, useAnalytics } from '#/analytics'
 import { site } from '#/site'
 import { ButtonLink } from './ui'
 
+/** The hero raccoon sends this with `true` while it is on screen, and `false` once it is not. */
+export const HERO_EVENT = 'arakun:hero-in-view'
+
 /**
  * Sticky top bar with the raccoon in the brand.
  *
@@ -16,19 +19,13 @@ export function SiteNav() {
   // The home page loads with its hero in view, so start hidden there: no flash before hydration.
   const [heroInView, setHeroInView] = useState(pathname === '/')
 
+  // The hero reports itself. After a client-side navigation the new page can render after
+  // the URL changes, so a lookup on the URL change would miss it.
   useEffect(() => {
-    const raccoon = document.querySelector('.hero .rk')
-    if (!raccoon) {
-      setHeroInView(false)
-      return
-    }
-    const seen = new IntersectionObserver(([entry]) => setHeroInView(entry.isIntersecting), {
-      // Count the hero raccoon as gone once it is behind the bar.
-      rootMargin: '-72px 0px 0px 0px',
-    })
-    seen.observe(raccoon)
-    return () => seen.disconnect()
-  }, [pathname])
+    const seen = (e: Event) => setHeroInView((e as CustomEvent<boolean>).detail)
+    addEventListener(HERO_EVENT, seen)
+    return () => removeEventListener(HERO_EVENT, seen)
+  }, [])
 
   return (
     <header className="sn" data-hero={heroInView}>
