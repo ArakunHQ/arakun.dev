@@ -20,6 +20,17 @@
       "semicolons": "asNeeded"
     }
   },
+  "css": {
+    "formatter": {
+      "lineWidth": 100,
+      "quoteStyle": "single"
+    }
+  },
+  "json": {
+    "formatter": {
+      "lineWidth": 100
+    }
+  },
   "yaml": {
     "formatter": {
       "bracketSpacing": false
