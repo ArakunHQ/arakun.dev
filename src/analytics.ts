@@ -1,6 +1,6 @@
-import { useSyncExternalStore } from 'react'
-import { initPostHog, withPostHog } from '@rivi-software/posthog-tanstack-start/browser'
 import type { PostHogBrowserConfig } from '@rivi-software/posthog-tanstack-start/browser'
+import { initPostHog, withPostHog } from '@rivi-software/posthog-tanstack-start/browser'
+import { useSyncExternalStore } from 'react'
 
 /**
  * PostHog runs only after the visitor accepts the cookie banner. Until then posthog-js
@@ -12,7 +12,7 @@ export type Consent = 'granted' | 'denied' | 'unset'
 
 const KEY = 'analytics-consent'
 
-type State = {
+interface State {
   /** PostHog's settings from the Worker; null until the router hydrates, or when PostHog is off. */
   config: PostHogBrowserConfig | null
   consent: Consent
@@ -25,7 +25,9 @@ const listeners = new Set<() => void>()
 
 function update(next: Partial<State>) {
   state = { ...state, ...next }
-  for (const listener of listeners) listener()
+  for (const listener of listeners) {
+    listener()
+  }
 }
 
 function readConsent(): Consent {
@@ -62,25 +64,38 @@ function start() {
   })
   withPostHog((posthog) => {
     // Withdrawn while the SDK loaded: stop now, before the opt-in below can send anything.
-    if (state.consent !== 'granted') posthog.opt_out_capturing()
+    if (state.consent !== 'granted') {
+      posthog.opt_out_capturing()
+    }
     // A visitor who declined and then accepts on the same page: posthog-js remembers the opt-out.
-    else if (posthog.has_opted_out_capturing()) posthog.opt_in_capturing()
+    else if (posthog.has_opted_out_capturing()) {
+      posthog.opt_in_capturing()
+    }
   })
 }
 
 /** Called once in the browser, from the router's hydrate. */
 export function setupAnalytics(config: PostHogBrowserConfig | null) {
   update({ config, consent: readConsent() })
-  if (state.consent === 'granted') start()
+  if (state.consent === 'granted') {
+    start()
+  }
   // A choice made in another tab of the site applies here too, so a "No thanks" there
   // stops PostHog in a tab that accepted earlier.
   addEventListener('storage', (event) => {
-    if (event.key !== KEY && event.key !== null) return
+    if (event.key !== KEY && event.key !== null) {
+      return
+    }
     const consent = readConsent()
-    if (consent === state.consent) return
+    if (consent === state.consent) {
+      return
+    }
     update({ consent, reopened: false })
-    if (consent === 'granted') start()
-    else stop()
+    if (consent === 'granted') {
+      start()
+    } else {
+      stop()
+    }
   })
 }
 
@@ -112,7 +127,11 @@ const subscribe = (listener: () => void) => {
 const SERVER_STATE: State = { config: null, consent: 'unset', reopened: false }
 
 export function useAnalytics() {
-  const current = useSyncExternalStore(subscribe, () => state, () => SERVER_STATE)
+  const current = useSyncExternalStore(
+    subscribe,
+    () => state,
+    () => SERVER_STATE
+  )
   return {
     /** PostHog is configured, so there is something to consent to. */
     available: current.config !== null,

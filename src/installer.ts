@@ -23,10 +23,15 @@ export type Installer = (typeof INSTALLERS)[keyof typeof INSTALLERS]
 export async function installer(spec: Installer, fetcher: typeof fetch = fetch): Promise<Response> {
   let body: string = spec.fail
   try {
-    const res = await fetcher(`https://raw.githubusercontent.com/arakunhq/arakun/main/${spec.file}`, {
-      cf: { cacheTtl: 300, cacheEverything: true },
-    } as RequestInit)
-    if (res.ok) body = await res.text()
+    const res = await fetcher(
+      `https://raw.githubusercontent.com/arakunhq/arakun/main/${spec.file}`,
+      {
+        cf: { cacheTtl: 300, cacheEverything: true },
+      } as RequestInit
+    )
+    if (res.ok) {
+      body = await res.text()
+    }
   } catch {
     // Same as a failed fetch: a script that stops.
   }

@@ -1,8 +1,8 @@
-import { Children, createContext, isValidElement, useContext, useId, useRef, useState } from 'react'
-import type { ComponentProps, ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { MDXComponents } from 'mdx/types'
-import { useCelebrate } from './Celebrate'
+import type { ComponentProps, ReactNode } from 'react'
+import { Children, createContext, isValidElement, useContext, useId, useRef, useState } from 'react'
+import { useCelebrate } from './celebrate-context'
 
 /**
  * The components a docs page can use in MDX, after Fumadocs UI's: Callout, Steps,
@@ -29,47 +29,89 @@ function SmartLink({ href = '', children, ...props }: ComponentProps<'a'>) {
 
 const icon = {
   info: <path d="M12 16v-5m0-3h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />,
-  tip: <path d="M9 18h6m-5 3h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3Z" />,
-  warn: <path d="M12 9v4m0 3h.01M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />,
+  tip: (
+    <path d="M9 18h6m-5 3h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3Z" />
+  ),
+  warn: (
+    <path d="M12 9v4m0 3h.01M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+  ),
   error: <path d="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />,
   success: <path d="m8 12.5 2.5 2.5L16 9.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />,
 }
 type CalloutType = keyof typeof icon
 // The names Fumadocs and Docusaurus use, so pages written for either work here.
-const alias: Record<string, CalloutType> = { note: 'info', idea: 'tip', warning: 'warn', danger: 'error', caution: 'warn' }
+const alias: Record<string, CalloutType> = {
+  note: 'info',
+  idea: 'tip',
+  warning: 'warn',
+  danger: 'error',
+  caution: 'warn',
+}
 
-export function Callout({ type = 'info', title, children }: { type?: string; title?: ReactNode; children?: ReactNode }) {
+export function Callout({
+  type = 'info',
+  title,
+  children,
+}: {
+  type?: string
+  title?: ReactNode
+  children?: ReactNode
+}) {
   const tone: CalloutType = type in icon ? (type as CalloutType) : (alias[type] ?? 'info')
   return (
     <aside className="callout" data-type={tone}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg
+        aria-hidden="true"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.75"
+        viewBox="0 0 24 24"
+        width="18"
+      >
         {icon[tone]}
       </svg>
       <div>
-        {title && <p className="callout-title">{title}</p>}
+        {title ? <p className="callout-title">{title}</p> : null}
         {children}
       </div>
     </aside>
   )
 }
 
-export const Steps = ({ children }: { children?: ReactNode }) => <div className="steps">{children}</div>
-export const Step = ({ children }: { children?: ReactNode }) => <div className="step">{children}</div>
+export const Steps = ({ children }: { children?: ReactNode }) => (
+  <div className="steps">{children}</div>
+)
+export const Step = ({ children }: { children?: ReactNode }) => (
+  <div className="step">{children}</div>
+)
 
 export function Cards({ children }: { children?: ReactNode }) {
   return <div className="cards">{children}</div>
 }
 
-export function Card({ title, description, href, children }: { title: ReactNode; description?: ReactNode; href?: string; children?: ReactNode }) {
+export function Card({
+  title,
+  description,
+  href,
+  children,
+}: {
+  title: ReactNode
+  description?: ReactNode
+  href?: string
+  children?: ReactNode
+}) {
   const body = (
     <>
       <span className="card-title">{title}</span>
-      {description && <span className="card-text">{description}</span>}
-      {children && <span className="card-text">{children}</span>}
+      {description ? <span className="card-text">{description}</span> : null}
+      {children ? <span className="card-text">{children}</span> : null}
     </>
   )
   return href ? (
-    <SmartLink href={href} className="card">
+    <SmartLink className="card" href={href}>
       {body}
     </SmartLink>
   ) : (
@@ -81,7 +123,15 @@ const TabsContext = createContext<{ id: string; value: string } | null>(null)
 const TabIndex = createContext(-1)
 
 /** Tabs with `items`; each <Tab value> shows when its item is picked. All panels stay in the page for search engines. */
-export function Tabs({ items, defaultIndex = 0, children }: { items: string[]; defaultIndex?: number; children?: ReactNode }) {
+export function Tabs({
+  items,
+  defaultIndex = 0,
+  children,
+}: {
+  items: string[]
+  defaultIndex?: number
+  children?: ReactNode
+}) {
   const id = useId()
   const [value, setValue] = useState(items[defaultIndex] ?? items[0])
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
@@ -92,24 +142,28 @@ export function Tabs({ items, defaultIndex = 0, children }: { items: string[]; d
   }
   return (
     <div className="tabs">
-      <div role="tablist" className="tabs-list">
+      <div className="tabs-list" role="tablist">
         {items.map((item, index) => (
           <button
+            aria-controls={`${id}-panel-${index}`}
+            aria-selected={item === value}
+            id={`${id}-tab-${index}`}
             key={item}
+            onClick={() => setValue(item)}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight') {
+                pick(index + 1)
+              }
+              if (e.key === 'ArrowLeft') {
+                pick(index - 1)
+              }
+            }}
             ref={(el) => {
               buttons.current[index] = el
             }}
-            type="button"
             role="tab"
-            id={`${id}-tab-${index}`}
-            aria-controls={`${id}-panel-${index}`}
-            aria-selected={item === value}
             tabIndex={item === value ? 0 : -1}
-            onClick={() => setValue(item)}
-            onKeyDown={(e) => {
-              if (e.key === 'ArrowRight') pick(index + 1)
-              if (e.key === 'ArrowLeft') pick(index - 1)
-            }}
+            type="button"
           >
             {item}
           </button>
@@ -121,7 +175,7 @@ export function Tabs({ items, defaultIndex = 0, children }: { items: string[]; d
             <TabIndex.Provider value={items.indexOf(child.props.value)}>{child}</TabIndex.Provider>
           ) : (
             child
-          ),
+          )
         )}
       </TabsContext>
     </div>
@@ -133,26 +187,34 @@ export function Tab({ value, children }: { value: string; children?: ReactNode }
   const index = useContext(TabIndex)
   return (
     <div
-      role="tabpanel"
-      className="tabs-panel"
-      id={tabs ? `${tabs.id}-panel-${index}` : undefined}
       aria-labelledby={tabs ? `${tabs.id}-tab-${index}` : undefined}
+      className="tabs-panel"
       hidden={tabs ? tabs.value !== value : false}
+      id={tabs ? `${tabs.id}-panel-${index}` : undefined}
+      role="tabpanel"
     >
       {children}
     </div>
   )
 }
 
-export const Accordions = ({ children }: { children?: ReactNode }) => <div className="accordions">{children}</div>
+export const Accordions = ({ children }: { children?: ReactNode }) => (
+  <div className="accordions">{children}</div>
+)
 
 export function Accordion({ title, children }: { title: ReactNode; children?: ReactNode }) {
   return (
     <details className="accordion">
       <summary>
         {title}
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+        <svg aria-hidden="true" fill="none" height="16" viewBox="0 0 24 24" width="16">
+          <path
+            d="m6 9 6 6 6-6"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.75"
+          />
         </svg>
       </summary>
       <div>{children}</div>
@@ -168,33 +230,82 @@ function CodeBlock({ title, children, ...props }: ComponentProps<'pre'>) {
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   return (
     <figure className="code" data-titled={title ? '' : undefined}>
-      {title && <figcaption>{title}</figcaption>}
+      {title ? <figcaption>{title}</figcaption> : null}
       <button
-        type="button"
+        aria-label={copied ? 'Copied' : 'Copy the code'}
         className="code-copy"
         data-state={copied ? 'copied' : 'idle'}
-        aria-label={copied ? 'Copied' : 'Copy the code'}
         onClick={async (e) => {
           const button = e.currentTarget
           try {
             // Throws when the clipboard is missing or the browser says no, so "Copied" is never a lie.
-            await navigator.clipboard.writeText(pre.current?.querySelector('code')?.innerText ?? '')
+            await navigator.clipboard.writeText(
+              pre.current?.querySelector('code')?.textContent ?? ''
+            )
           } catch {
-            celebrate(button, { text: 'Could not copy. Select the code and copy it by hand.', label: 'Not copied', tone: 'error' }, 0)
+            celebrate(
+              button,
+              {
+                text: 'Could not copy. Select the code and copy it by hand.',
+                label: 'Not copied',
+                tone: 'error',
+              },
+              0
+            )
             return
           }
           setCopied(true)
           clearTimeout(timer.current)
           timer.current = setTimeout(() => setCopied(false), 2000)
-          celebrate(button, { text: 'Copied. Paste it in a terminal.', label: 'Copied', tone: 'success' }, 12)
+          celebrate(
+            button,
+            { text: 'Copied. Paste it in a terminal.', label: 'Copied', tone: 'success' },
+            12
+          )
         }}
+        type="button"
       >
-        <svg className="c" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <rect x="9" y="9" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round" />
-          <path d="M15 9V6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h3" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+        <svg
+          aria-hidden="true"
+          className="c"
+          fill="none"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <rect
+            height="12"
+            rx="3"
+            stroke="currentColor"
+            strokeLinejoin="round"
+            strokeWidth="1.75"
+            width="12"
+            x="9"
+            y="9"
+          />
+          <path
+            d="M15 9V6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h3"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.75"
+          />
         </svg>
-        <svg className="ok" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+        <svg
+          aria-hidden="true"
+          className="ok"
+          fill="none"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M5 12.5l4.5 4.5L19 7.5"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.75"
+          />
         </svg>
       </button>
       <pre ref={pre} {...props}>
@@ -207,10 +318,12 @@ function CodeBlock({ title, children, ...props }: ComponentProps<'pre'>) {
 /** A heading with a link to itself, shown on hover. */
 function heading(Tag: 'h2' | 'h3') {
   return function Heading({ id, children, ...props }: ComponentProps<'h2'>) {
-    if (!id) return <Tag {...props}>{children}</Tag>
+    if (!id) {
+      return <Tag {...props}>{children}</Tag>
+    }
     return (
       <Tag id={id} {...props}>
-        <a href={`#${id}`} className="anchor">
+        <a className="anchor" href={`#${id}`}>
           {children}
         </a>
       </Tag>

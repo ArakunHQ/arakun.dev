@@ -10,20 +10,20 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
-    schedule: { interval: weekly }
-    cooldown: { default-days: 7 }
-    commit-message: { prefix: ci }
+    schedule: {interval: weekly}
+    cooldown: {default-days: 7}
+    commit-message: {prefix: ci}
     groups:
-      actions: { patterns: ["*"] }
+      actions: {patterns: ["*"]}
 
   # pnpm uses the npm ecosystem; Dependabot updates pnpm-lock.yaml. Major
   # versions come as pull requests of their own, as they often need code
   # changes.
   - package-ecosystem: npm
     directory: /
-    schedule: { interval: weekly }
-    cooldown: { default-days: 7 }
-    commit-message: { prefix: build }
+    schedule: {interval: weekly}
+    cooldown: {default-days: 7}
+    commit-message: {prefix: build}
     groups:
       packages:
         patterns: ["*"]

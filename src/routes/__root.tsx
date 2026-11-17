@@ -1,6 +1,6 @@
-import { HeadContent, Outlet, Scripts, createRootRoute, useLocation } from '@tanstack/react-router'
-import type { ReactNode } from 'react'
 import { BuildMeta } from '@rivi-software/deploy-watch/react'
+import { createRootRoute, HeadContent, Outlet, Scripts, useLocation } from '@tanstack/react-router'
+import type { ReactNode } from 'react'
 import { CelebrateProvider } from '#/components/Celebrate'
 import { ConsentBanner } from '#/components/ConsentBanner'
 import { SiteFooter, SiteNav, useReveal } from '#/components/chrome'
@@ -47,6 +47,7 @@ function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: a fixed string of ours. It sets the theme before the first paint, so the page never flashes the wrong one. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <HeadContent />
         <BuildMeta />

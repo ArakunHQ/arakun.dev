@@ -1,5 +1,17 @@
 import type { ReactNode } from 'react'
 
+const NEWLINE = /\r\n?/gu
+const FENCE = '```'
+const HEADING = /^#{1,6}\s+(?<text>.*)$/u
+const LIST_ITEM = /^\s*[-*+]\s+(?<text>.*)$/u
+const INDENTED = /^\s+\S/u
+const INLINE =
+  /(?<code>`[^`]+`)|(?<bold>\*\*[^*]+\*\*)|(?<link>\[(?<label>[^\]]+)\]\((?<href>[^)\s]+)\))|(?<url>https?:\/\/[^\s<>)]+[^\s<>).,;:!?])/gu
+const GITHUB_PULL = /github\.com\/[^/]+\/[^/]+\/(?:pull|issues)\/(?<number>\d+)/u
+const GITHUB_COMPARE = /github\.com\/[^/]+\/[^/]+\/(?:compare|commits)\/(?<range>.+)$/u
+const SCHEME = /^https?:\/\//u
+const HTTP = /^https?:\/\//iu
+
 /**
  * Renders the markdown GitHub release notes use: headings, lists, paragraphs,
  * code blocks, and inline code, bold, links and bare URLs.
@@ -9,97 +21,134 @@ import type { ReactNode } from 'react'
  * http(s). Anything it does not know is shown as plain text.
  */
 export function Markdown({ source }: { source: string }) {
-  const blocks: ReactNode[] = []
-  const lines = source.replace(/\r\n?/g, '\n').split('\n')
+  return <div className="md">{blocks(source)}</div>
+}
+
+function blocks(source: string): ReactNode[] {
+  const out: ReactNode[] = []
   let paragraph: string[] = []
   let items: string[] = []
+  // The lines of an open code block, or null outside one.
+  let code: string[] | null = null
 
   const flush = () => {
-    if (paragraph.length) blocks.push(<p key={blocks.length}>{inline(paragraph.join(' '))}</p>)
+    if (paragraph.length) {
+      out.push(<p key={out.length}>{inline(paragraph.join(' '))}</p>)
+    }
     if (items.length) {
-      blocks.push(
-        <ul key={blocks.length}>
+      out.push(
+        <ul key={out.length}>
           {items.map((item, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: the list is built once and never reorders.
             <li key={i}>{inline(item)}</li>
           ))}
-        </ul>,
+        </ul>
       )
     }
     paragraph = []
     items = []
   }
+  const closeCode = (lines: string[]) => {
+    out.push(
+      <pre key={out.length}>
+        <code>{lines.join('\n')}</code>
+      </pre>
+    )
+    code = null
+  }
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    const fence = line.match(/^```/)
-    if (fence) {
-      flush()
-      const code: string[] = []
-      while (++i < lines.length && !lines[i].startsWith('```')) code.push(lines[i])
-      blocks.push(
-        <pre key={blocks.length}>
-          <code>{code.join('\n')}</code>
-        </pre>,
-      )
+  for (const line of source.replace(NEWLINE, '\n').split('\n')) {
+    if (code) {
+      if (line.startsWith(FENCE)) {
+        closeCode(code)
+      } else {
+        code.push(line)
+      }
       continue
     }
-    const heading = line.match(/^#{1,6}\s+(.*)$/)
-    const item = line.match(/^\s*[-*+]\s+(.*)$/)
-    if (heading) {
+    if (line.startsWith(FENCE)) {
+      flush()
+      code = []
+      continue
+    }
+    const heading = HEADING.exec(line)?.groups?.text
+    const item = LIST_ITEM.exec(line)?.groups?.text
+    if (heading !== undefined) {
       flush()
       // Release notes sit under the release's own title, so every heading is a small one.
-      blocks.push(<h4 key={blocks.length}>{inline(heading[1])}</h4>)
-    } else if (item) {
-      if (paragraph.length) flush()
-      items.push(item[1])
+      out.push(<h4 key={out.length}>{inline(heading)}</h4>)
+    } else if (item !== undefined) {
+      if (paragraph.length) {
+        flush()
+      }
+      items.push(item)
     } else if (!line.trim()) {
       flush()
-    } else if (items.length && /^\s+\S/.test(line)) {
+    } else if (items.length && INDENTED.test(line)) {
       // An indented line continues the list item above it.
       items[items.length - 1] += ` ${line.trim()}`
     } else {
-      if (items.length) flush()
+      if (items.length) {
+        flush()
+      }
       paragraph.push(line.trim())
     }
   }
+  // A code block nobody closed runs to the end of the notes.
+  if (code) {
+    closeCode(code)
+  }
   flush()
-  return <div className="md">{blocks}</div>
+  return out
 }
-
-const INLINE = /(`[^`]+`)|(\*\*[^*]+\*\*)|(\[[^\]]+\]\([^)\s]+\))|(https?:\/\/[^\s<>)]+[^\s<>).,;:!?])/g
 
 /** GitHub writes pull requests and comparisons as full URLs. Show them the way GitHub does. */
 function linkLabel(url: string) {
-  const pull = url.match(/github\.com\/[^/]+\/[^/]+\/(?:pull|issues)\/(\d+)/)
-  if (pull) return `#${pull[1]}`
-  const compare = url.match(/github\.com\/[^/]+\/[^/]+\/(?:compare|commits)\/(.+)$/)
-  if (compare) return compare[1]
-  return url.replace(/^https?:\/\//, '')
+  const pull = GITHUB_PULL.exec(url)?.groups?.number
+  if (pull) {
+    return `#${pull}`
+  }
+  const range = GITHUB_COMPARE.exec(url)?.groups?.range
+  if (range) {
+    return range
+  }
+  return url.replace(SCHEME, '')
 }
-
-const safe = (url: string) => (/^https?:\/\//i.test(url) ? url : undefined)
 
 function inline(text: string): ReactNode[] {
   const out: ReactNode[] = []
   let last = 0
   for (const match of text.matchAll(INLINE)) {
-    if (match.index > last) out.push(text.slice(last, match.index))
-    const [token, code, bold, link, url] = match
+    if (match.index > last) {
+      out.push(text.slice(last, match.index))
+    }
+    const { code, bold, label, href, url } = match.groups ?? {}
     const key = out.length
-    if (code) out.push(<code key={key}>{code.slice(1, -1)}</code>)
-    else if (bold) out.push(<strong key={key}>{bold.slice(2, -2)}</strong>)
-    else if (link) {
-      const [, label, href] = link.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/)!
-      out.push(safe(href) ? <a key={key} href={href}>{label}</a> : label)
+    if (code) {
+      out.push(<code key={key}>{code.slice(1, -1)}</code>)
+    } else if (bold) {
+      out.push(<strong key={key}>{bold.slice(2, -2)}</strong>)
+    } else if (label && href) {
+      out.push(
+        HTTP.test(href) ? (
+          <a href={href} key={key}>
+            {label}
+          </a>
+        ) : (
+          label
+        )
+      )
     } else if (url) {
       out.push(
-        <a key={key} href={url}>
+        <a href={url} key={key}>
           {linkLabel(url)}
-        </a>,
+        </a>
       )
     }
-    last = match.index + token.length
+    last = match.index + match[0].length
   }
-  if (last < text.length) out.push(text.slice(last))
+  if (last < text.length) {
+    out.push(text.slice(last))
+  }
   return out
 }

@@ -22,7 +22,10 @@ export const site = {
    * Who runs the site, for the privacy page. Provisional: CoderLabs runs it until Arakun
    * has an organization of its own. Then change this, and sign a new PostHog DPA in its name.
    */
-  operator: { name: 'CoderLabs, Inc.', address: '131 Continental Dr, Suite 305, Newark, DE 19713, USA' },
+  operator: {
+    name: 'CoderLabs, Inc.',
+    address: '131 Continental Dr, Suite 305, Newark, DE 19713, USA',
+  },
   downloads: {
     Linux: `${release}/arakun-v${version}-linux-x86_64.tar.gz`,
     Windows: `${release}/arakun-v${version}-windows-x86_64.zip`,
@@ -99,8 +102,28 @@ export const pillars = [
 ]
 
 export const sessions = [
-  { text: 'Opus 5.5 needs an answer in env/brave-otter.', time: 'now', tone: 'accent', label: 'Needs you' },
-  { text: 'Droid finished in env/quiet-heron. 12 files changed.', time: '4 min ago', tone: 'success', label: 'Finished' },
-  { text: 'OpenCode is running the project check in env/slow-lynx.', time: '6 min ago', tone: 'attention', label: 'Running' },
-  { text: 'Workers AI failed in env/pale-finch. The check found 2 errors.', time: '19 min ago', tone: 'error', label: 'Failed' },
+  {
+    text: 'Opus 5.5 needs an answer in env/brave-otter.',
+    time: 'now',
+    tone: 'accent',
+    label: 'Needs you',
+  },
+  {
+    text: 'Droid finished in env/quiet-heron. 12 files changed.',
+    time: '4 min ago',
+    tone: 'success',
+    label: 'Finished',
+  },
+  {
+    text: 'OpenCode is running the project check in env/slow-lynx.',
+    time: '6 min ago',
+    tone: 'attention',
+    label: 'Running',
+  },
+  {
+    text: 'Workers AI failed in env/pale-finch. The check found 2 errors.',
+    time: '19 min ago',
+    tone: 'error',
+    label: 'Failed',
+  },
 ] as const

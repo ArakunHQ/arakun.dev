@@ -1,5 +1,5 @@
-import { defineConfig, defineDocs } from 'fumadocs-mdx/config'
 import { pageSchema } from 'fumadocs-core/source/schema'
+import { defineConfig, defineDocs } from 'fumadocs-mdx/config'
 import { remarkSite } from './src/mdx/remark-site.ts'
 
 /**

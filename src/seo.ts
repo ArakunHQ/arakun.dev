@@ -8,7 +8,15 @@ export const ogImagePath = (path: string) => `/og/${path === '/' ? 'home' : path
  * The card itself comes from src/og-cards.ts: give a page a card there before
  * pointing its meta at it.
  */
-export function pageMeta({ path, title, description }: { path: string; title: string; description: string }) {
+export function pageMeta({
+  path,
+  title,
+  description,
+}: {
+  path: string
+  title: string
+  description: string
+}) {
   const image = `${site.url}${ogImagePath(path)}`
   return [
     { property: 'og:title', content: title },

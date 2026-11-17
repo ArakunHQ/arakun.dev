@@ -1,8 +1,8 @@
-import { use } from 'react'
-import { Link, createFileRoute, notFound } from '@tanstack/react-router'
+import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { AnchorProvider, TOCItem } from 'fumadocs-core/toc'
+import { use } from 'react'
 import { mdxComponents } from '#/components/mdx'
-import { Words, step } from '#/components/ui'
+import { step, Words } from '#/components/ui'
 import { docs, groups, loadBody } from '#/docs'
 import { pageMeta } from '#/seo'
 import { site } from '#/site'
@@ -10,7 +10,9 @@ import { site } from '#/site'
 export const Route = createFileRoute('/docs/$slug')({
   loader: async ({ params }) => {
     const index = docs.findIndex((doc) => doc.slug === params.slug)
-    if (index < 0) throw notFound()
+    if (index < 0) {
+      throw notFound()
+    }
     // Fetch the page's chunk before it renders. Only plain data crosses the loader;
     // the page reads the compiled body from the same cache.
     await loadBody(docs[index].slug)
@@ -20,7 +22,11 @@ export const Route = createFileRoute('/docs/$slug')({
     meta: [
       { title: `${loaderData?.title ?? 'Docs'} · ${site.name} docs` },
       ...(loaderData
-        ? pageMeta({ path: `/docs/${loaderData.slug}`, title: loaderData.title, description: loaderData.summary })
+        ? pageMeta({
+            path: `/docs/${loaderData.slug}`,
+            title: loaderData.title,
+            description: loaderData.summary,
+          })
         : []),
     ],
   }),
@@ -34,17 +40,17 @@ function DocPage() {
   const previous = docs[index - 1]
   const next = docs[index + 1]
   return (
-    <AnchorProvider toc={toc} single>
+    <AnchorProvider single toc={toc}>
       <div className="wrap doc">
-        <nav className="doc-nav" aria-label="Docs">
-          <Link to="/docs" className="mono-label all">
+        <nav aria-label="Docs" className="doc-nav">
+          <Link className="mono-label all" to="/docs">
             All docs
           </Link>
           {groups.map((group) => (
             <div key={group.title}>
               <span className="mono-label">{group.title}</span>
               {group.docs.map((item) => (
-                <Link key={item.slug} to="/docs/$slug" params={{ slug: item.slug }}>
+                <Link key={item.slug} params={{ slug: item.slug }} to="/docs/$slug">
                   {item.title}
                 </Link>
               ))}
@@ -69,27 +75,27 @@ function DocPage() {
 
           <footer className="doc-next">
             {previous ? (
-              <Link to="/docs/$slug" params={{ slug: previous.slug }}>
+              <Link params={{ slug: previous.slug }} to="/docs/$slug">
                 <span className="mono-label">Previous</span>
                 {previous.title}
               </Link>
             ) : (
               <span />
             )}
-            {next && (
-              <Link to="/docs/$slug" params={{ slug: next.slug }} className="n">
+            {next ? (
+              <Link className="n" params={{ slug: next.slug }} to="/docs/$slug">
                 <span className="mono-label">Next</span>
                 {next.title}
               </Link>
-            )}
+            ) : null}
           </footer>
         </article>
 
         {toc.length > 1 && (
-          <nav className="doc-toc" aria-label="On this page" key={`toc-${doc.slug}`}>
+          <nav aria-label="On this page" className="doc-toc" key={`toc-${doc.slug}`}>
             <span className="mono-label">On this page</span>
             {toc.map((item) => (
-              <TOCItem key={item.url} href={item.url} data-depth={item.depth}>
+              <TOCItem data-depth={item.depth} href={item.url} key={item.url}>
                 {item.title}
               </TOCItem>
             ))}
