@@ -1,17 +1,80 @@
 ---
 title: Workers AI
-description: A tool loop Arakun runs against the Workers AI API.
+description: Run Cloudflare Workers AI models as an agent in Arakun. Nothing to install; give it an API token, then pick a model.
 ---
 
-For Cloudflare Workers AI there is no outside CLI. Arakun runs the tool loop itself against the Workers AI API.
+For Cloudflare Workers AI there is no outside CLI. Arakun runs the tool loop itself against the Workers AI API, so there is nothing to install.
 
-## What you need
+## Sign in
 
-A Cloudflare API token with Workers AI access. Give it to Arakun in one of two ways:
+You need a Cloudflare API token with Workers AI access, and your account id. Give them to Arakun in one of two ways:
 
-- Store it through `opencode auth login`.
-- Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+- Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in the environment Arakun starts in.
+- Or run `opencode auth login`, pick Cloudflare Workers AI and paste the token. This needs the [OpenCode](/docs/opencode) CLI. If the account id is not saved with it, put it in `~/.config/opencode/cf-account-id`.
 
-## Good to know
+Workers AI has no section in Settings. When a session is not signed in, the error has a **Sign in in a terminal** button that runs `opencode auth login`. The token goes only to api.cloudflare.com.
 
-[Headless agents](/docs/headless-agents) use Workers AI models for now.
+## Pick a model
+
+| Model | Price per million tokens, in / out | Context |
+| --- | --- | --- |
+| DeepSeek V4.1 Flash (the default) | $0.30 / $1.20 | 1M |
+| GLM 5.3 | $1.40 / $4.40 | 1M |
+| GPT-OSS 120B | $0.35 / $0.75 | 128K |
+| Claude Sonnet 5.5 | $2.00 / $10.00 | 1M |
+
+Pick the model and the reasoning level in the composer. Switching models sets the reasoning level back to that model's default. The session shows its tokens and cost as it goes, worked out from these prices.
+
+<Callout type="info" title="Claude Sonnet 5.5 is not a Workers AI model">
+
+Arakun sends it to Anthropic's API, so it needs an Anthropic API key (pay per use). Put the key in `~/.config/arakun/anthropic-key`, one line, or set `ARAKUN_ANTHROPIC_KEY`. Arakun ignores `ANTHROPIC_API_KEY`.
+
+</Callout>
+
+## What it can do
+
+The agent can run shell commands, read, write and edit files, search the code, and fetch and search the web. It asks before each shell command and each edit: **Allow**, **Always allow commands** (or **edits**), or **Deny**, which stops the turn. It reads the project's `AGENTS.md`, or `CLAUDE.md` if there is none.
+
+Sessions are saved, so you can resume one after a restart. [Headless agents](/docs/headless-agents) use Workers AI models too.
+
+## What does not work yet
+
+- No MCP servers and no plan mode.
+- The Workers AI models can't see images. Arakun has a vision model describe each attached photo and passes the description on. Claude Sonnet 5.5 sees photos itself.
+- Sessions are not compacted. When the next request would not fit in the model's context, the session stops; start a new one to go on.
+- The Usage tab doesn't show Workers AI.
+- A turn makes at most 200 model calls.
+
+## Rate limits
+
+Arakun keeps to 20 requests a minute per model, across all sessions; GPT-OSS 120B allows 300. Set `ARAKUN_WORKERS_AI_RPM` to change the limit. When Cloudflare answers 429, Arakun waits and retries, up to 8 tries.
+
+## Common errors
+
+<Accordions>
+
+<Accordion title="Workers AI is not signed in">
+
+Arakun found no token, or Cloudflare refused it. Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, or run `opencode auth login` and paste a token with Workers AI access. Then retry.
+
+</Accordion>
+
+<Accordion title="Anthropic has no API key">
+
+You picked Claude Sonnet 5.5 without an Anthropic key. See the note under "Pick a model".
+
+</Accordion>
+
+<Accordion title="Workers AI: rate limited (429) … gave up after 8 tries">
+
+Cloudflare kept refusing requests. Wait a minute, or lower `ARAKUN_WORKERS_AI_RPM` if several sessions run at once.
+
+</Accordion>
+
+<Accordion title="Stopped: the next request would not fit in the model's context">
+
+Start a new session. GPT-OSS 120B fills up first, at 128K tokens.
+
+</Accordion>
+
+</Accordions>
