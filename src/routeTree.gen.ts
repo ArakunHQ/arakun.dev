@@ -13,6 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as InstallRouteImport } from './routes/install'
+import { Route as InstallDotps1RouteImport } from './routes/install[.]ps1'
+import { Route as InstallDotshRouteImport } from './routes/install[.]sh'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as DocsIndexRouteImport } from './routes/docs.index'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
@@ -37,6 +40,21 @@ const FeaturesRoute = FeaturesRouteImport.update({
   path: '/features',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallDotps1Route = InstallDotps1RouteImport.update({
+  id: '/install.ps1',
+  path: '/install.ps1',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallDotshRoute = InstallDotshRouteImport.update({
+  id: '/install.sh',
+  path: '/install.sh',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -58,6 +76,9 @@ export interface FileRoutesByFullPath {
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/install': typeof InstallRoute
+  '/install.ps1': typeof InstallDotps1Route
+  '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
@@ -67,6 +88,9 @@ export interface FileRoutesByTo {
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/install': typeof InstallRoute
+  '/install.ps1': typeof InstallDotps1Route
+  '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs': typeof DocsIndexRoute
@@ -77,6 +101,9 @@ export interface FileRoutesById {
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/install': typeof InstallRoute
+  '/install.ps1': typeof InstallDotps1Route
+  '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
@@ -88,6 +115,9 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/download'
     | '/features'
+    | '/install'
+    | '/install.ps1'
+    | '/install.sh'
     | '/privacy'
     | '/docs/$slug'
     | '/docs/'
@@ -97,6 +127,9 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/download'
     | '/features'
+    | '/install'
+    | '/install.ps1'
+    | '/install.sh'
     | '/privacy'
     | '/docs/$slug'
     | '/docs'
@@ -106,6 +139,9 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/download'
     | '/features'
+    | '/install'
+    | '/install.ps1'
+    | '/install.sh'
     | '/privacy'
     | '/docs/$slug'
     | '/docs/'
@@ -116,6 +152,9 @@ export interface RootRouteChildren {
   ChangelogRoute: typeof ChangelogRoute
   DownloadRoute: typeof DownloadRoute
   FeaturesRoute: typeof FeaturesRoute
+  InstallRoute: typeof InstallRoute
+  InstallDotps1Route: typeof InstallDotps1Route
+  InstallDotshRoute: typeof InstallDotshRoute
   PrivacyRoute: typeof PrivacyRoute
   DocsSlugRoute: typeof DocsSlugRoute
   DocsIndexRoute: typeof DocsIndexRoute
@@ -151,6 +190,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeaturesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install.ps1': {
+      id: '/install.ps1'
+      path: '/install.ps1'
+      fullPath: '/install.ps1'
+      preLoaderRoute: typeof InstallDotps1RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install.sh': {
+      id: '/install.sh'
+      path: '/install.sh'
+      fullPath: '/install.sh'
+      preLoaderRoute: typeof InstallDotshRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -180,6 +240,9 @@ const rootRouteChildren: RootRouteChildren = {
   ChangelogRoute: ChangelogRoute,
   DownloadRoute: DownloadRoute,
   FeaturesRoute: FeaturesRoute,
+  InstallRoute: InstallRoute,
+  InstallDotps1Route: InstallDotps1Route,
+  InstallDotshRoute: InstallDotshRoute,
   PrivacyRoute: PrivacyRoute,
   DocsSlugRoute: DocsSlugRoute,
   DocsIndexRoute: DocsIndexRoute,
