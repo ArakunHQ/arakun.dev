@@ -3,8 +3,10 @@ import { defineConfig } from 'vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { cloudflare } from '@cloudflare/vite-plugin'
+import mdx from 'fumadocs-mdx/vite'
 import { deployWatch } from '@rivi-software/deploy-watch/vite'
 import { ogCards } from './vite/og.ts'
+import * as docsConfig from './source.config.ts'
 
 // deploy-watch reads the commit from these CI variables itself.
 const CI_COMMIT_VARS = ['WORKERS_CI_COMMIT_SHA', 'CF_PAGES_COMMIT_SHA', 'GITHUB_SHA', 'CI_COMMIT_SHA']
@@ -31,6 +33,8 @@ function localBuildId(): string | undefined {
 export default defineConfig(({ command }) => ({
   resolve: { tsconfigPaths: true },
   plugins: [
+    // Compiles content/docs/*.mdx; see source.config.ts.
+    mdx(docsConfig),
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tanstackStart(),
     viteReact(),

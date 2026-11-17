@@ -21,7 +21,8 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 ## Where things are
 
 - `src/site.ts`: the facts and links every page shares (version, release date, license, install URL, GitHub and download URLs).
-- `src/docs.tsx`: every docs page, written from the app's README at github.com/ArakunHQ/arakun. Add an entry to add a page.
+- `content/docs/`: every docs page as MDX, written from the app's README at github.com/ArakunHQ/arakun. See "Writing docs" below.
+- `src/docs.ts`, `src/components/mdx.tsx`, `source.config.ts`: how the docs load, the components pages can use, and the MDX build.
 - `src/styles.css`: the Brandbook tokens and every component's styles. Dark is the default; light is `data-theme="light"` on `<html>`.
 - `src/routes/`: one file per page (`index`, `features`, `download`, `changelog`, `docs.index`, `docs.$slug`).
 - `src/releases.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the changelog's GitHub sync (see below).
@@ -31,6 +32,53 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 - `src/components/HeroRaccoon.tsx`: the animated mascot in the home hero.
 - `src/components/Celebrate.tsx`: the toast and ASCII burst after a download or copy.
 - `public/img/`: real captures of the app, one per theme.
+
+## Writing docs
+
+Each docs page is one MDX file in `content/docs/`: Markdown, plus a few components.
+[Fumadocs MDX](https://fumadocs.dev/docs/mdx) compiles them when the site builds.
+
+````mdx
+---
+title: Read a terminal
+description: arakun run and arakun logs.
+---
+
+## Start a command and wait for it
+
+```sh
+arakun run --port 5173 npm run dev
+```
+````
+
+- **Add a page:** add `content/docs/<slug>.mdx`, then put `<slug>` in
+  `content/docs/meta.json`. Its place there sets the order, and the `---Group---` line
+  above it sets its group. The build fails if a page is missing from `meta.json`. The
+  page is served at `/docs/<slug>`.
+- **title** and **description** are required. The description is the line under the
+  title, in the docs index and on the link preview card.
+- **Facts from `src/site.ts`:** write `{site.version}`, `{site.installUrl}`,
+  `{site.privacyEmail}` and so on. They work in text, code, code blocks and links
+  (`[mail](mailto:{site.privacyEmail})`). A name that doesn't exist fails the build.
+- **Headings:** `##` and `###` make the "On this page" list and get a link to themselves.
+- **Code blocks** are highlighted at build time and get a copy button.
+  `title="hyprland.conf"` after the language adds a title. `tab="Windows"` on code blocks
+  next to each other turns them into tabs. `// [!code highlight]` at the end of a line
+  marks the line.
+- **Components**, no import needed:
+
+| Component | Use |
+| --- | --- |
+| `<Callout type="info\|tip\|warn\|error\|success" title="…">` | A note set apart from the text. `type` and `title` are optional. |
+| `<Steps>` with a `<Step>` per step | Numbered steps. Start each step with a `###` heading. |
+| `<Tabs items={['a', 'b']}>` with `<Tab value="a">` | Content that differs per platform or option. |
+| `<Cards>` with `<Card title="…" href="/docs/…" description="…" />` | Links to other pages. |
+| `<Accordions>` with `<Accordion title="…">` | Details a reader can open. |
+| `<kbd>Ctrl+T</kbd>` | A key. |
+
+Inside a component, leave a blank line after the opening tag and before the closing
+one, so the Markdown in between is read as Markdown. `pnpm dev` reloads a page when its
+file changes.
 
 ## The changelog syncs from GitHub
 

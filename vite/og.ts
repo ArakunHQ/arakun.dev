@@ -5,6 +5,8 @@ import { Resvg } from '@resvg/resvg-js'
 import satori from 'satori'
 import { runnerImport } from 'vite'
 import type { Plugin } from 'vite'
+import mdx from 'fumadocs-mdx/vite'
+import * as docsConfig from '../source.config.ts'
 import type * as Cards from '../src/og-cards'
 
 type OgCard = Cards.OgCard
@@ -105,6 +107,8 @@ export function ogCards(): Plugin {
       root,
       logLevel: 'error',
       resolve: { tsconfigPaths: true },
+      // The docs' titles come from the frontmatter of content/docs/*.mdx.
+      plugins: [mdx(docsConfig)],
     })
     return module.ogCards.map((card) => ({ card, file: module.ogImagePath(card.path) }))
   }

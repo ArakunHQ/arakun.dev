@@ -1,0 +1,17 @@
+---
+title: Workers AI
+description: A tool loop Arakun runs against the Workers AI API.
+---
+
+For Cloudflare Workers AI there is no outside CLI. Arakun runs the tool loop itself against the Workers AI API.
+
+## What you need
+
+A Cloudflare API token with Workers AI access. Give it to Arakun in one of two ways:
+
+- Store it through `opencode auth login`.
+- Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+
+## Good to know
+
+[Headless agents](/docs/headless-agents) use Workers AI models for now.
