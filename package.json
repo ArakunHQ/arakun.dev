@@ -14,7 +14,9 @@
     "preview": "pnpm run build && vite preview",
     "typecheck": "fumadocs-mdx && tsc --noEmit",
     "deploy": "pnpm run build && wrangler deploy",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "check": "ultracite check",
+    "fix": "ultracite fix"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
@@ -31,6 +33,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.6.4",
     "@cloudflare/vite-plugin": "^1.26.0",
     "@fontsource/geist": "^5.3.0",
     "@fontsource/geist-mono": "^5.3.0",
@@ -43,6 +46,7 @@
     "@vitejs/plugin-react": "^6.0.1",
     "satori": "^0.63.2",
     "typescript": "^7.0.2",
+    "ultracite": "8.2.1",
     "vite": "^8.0.0",
     "wrangler": "^4.162.0"
   },
