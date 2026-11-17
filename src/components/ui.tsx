@@ -286,7 +286,7 @@ export function FeatureCard({
       <div className="v">{children}</div>
       <div className="b">
         <span className="l">{label}</span>
-        <h3>{title}</h3>
+        <h2>{title}</h2>
         <p>{body}</p>
       </div>
     </article>

@@ -65,7 +65,7 @@ function Download() {
         {platforms.map((platform) => (
           <article className="pc" key={platform.name}>
             <div className="h">
-              <h3>{platform.name}</h3>
+              <h2>{platform.name}</h2>
               <StatusPill label={platform.status} tone={platform.tone} />
             </div>
             <p>{platform.note}</p>

@@ -747,7 +747,7 @@ svg {
 .fc:hover .l {
   color: var(--color-accent-ink);
 }
-.fc h3 {
+.fc h2 {
   font-size: var(--text-title);
   font-weight: 600;
   line-height: var(--leading-snug);
@@ -814,7 +814,7 @@ svg {
   align-items: center;
   justify-content: space-between;
 }
-.pc h3 {
+.pc h2 {
   font-size: var(--text-2xl);
   font-weight: 600;
   letter-spacing: var(--tracking-tight);
@@ -871,7 +871,7 @@ svg {
 .re:hover .c::before {
   transform: scale(1.5);
 }
-.re h3 {
+.re h2 {
   font-size: var(--text-2xl);
   font-weight: 600;
   line-height: var(--leading-snug);
@@ -927,7 +927,7 @@ svg {
   font-size: var(--text-xl);
   color: var(--color-text-muted);
 }
-.md h4 {
+.md h3 {
   margin-top: var(--spacing-3);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
@@ -1036,7 +1036,7 @@ svg {
   color: var(--color-text);
   border-color: var(--color-text-faint);
 }
-.dr h4 {
+.dr h2 {
   font-size: var(--text-xl);
   font-weight: 500;
   color: var(--color-text);

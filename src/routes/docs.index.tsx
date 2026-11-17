@@ -40,7 +40,7 @@ function DocsIndex() {
             {group.docs.map((doc) => (
               <Link className="dr" key={doc.slug} params={{ slug: doc.slug }} to="/docs/$slug">
                 <div>
-                  <h4>{doc.title}</h4>
+                  <h2>{doc.title}</h2>
                   <p>{doc.summary}</p>
                 </div>
                 <Arrow />

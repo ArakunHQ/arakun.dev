@@ -75,7 +75,7 @@ function ReleaseEntry({ release }: { release: Release }) {
         {release.prerelease ? <StatusPill label="Pre-release" tone="attention" /> : null}
       </div>
       <div className="c">
-        <h3>{title}</h3>
+        <h2>{title}</h2>
         <ReleaseNotes release={release} />
         {release.rewritten ? (
           <p className="by mono-label">Summarized by Workers AI from the GitHub notes</p>
