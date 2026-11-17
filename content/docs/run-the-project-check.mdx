@@ -1,0 +1,24 @@
+---
+title: Run the project check
+description: One command that runs after each turn that edits files.
+---
+
+The project check is a command you set per project, such as `cargo test` or `npm test`.
+
+## When it runs
+
+It runs after each turn that edits files. When it fails, the tail of the output goes back to the agent, up to three times in a row.
+
+To run it yourself in the current environment:
+
+```sh
+arakun check
+```
+
+## It does not stall your computer
+
+Checks run one at a time across all sessions, at low priority, with half the cores for builds. Several agents finishing together don't slow the machine down.
+
+## Loops
+
+Arakun notices when an agent loops: the same failing command or the same edit, over and over. It offers to stop and rethink.

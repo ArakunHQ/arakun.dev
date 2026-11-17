@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "---Get started---",
+    "install",
+    "start-a-session",
+    "review-the-work",
+    "---Agents---",
+    "claude-code",
+    "droid",
+    "opencode",
+    "workers-ai",
+    "---The arakun command---",
+    "the-arakun-command",
+    "open-pages-and-files",
+    "read-a-terminal",
+    "run-the-project-check",
+    "leave-a-review-draft",
+    "---Know what they are doing---",
+    "dynamic-island",
+    "inbox",
+    "phone-remote",
+    "---Go further---",
+    "keyboard-shortcuts",
+    "memory",
+    "headless-agents",
+    "server",
+    "crash-reports"
+  ]
+}

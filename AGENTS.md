@@ -85,8 +85,9 @@ hooks.
 - Styles use the CSS variables in `src/styles.css` (colors, fonts, text sizes, radii),
   never hand-written values. Check both themes: dark is the default, light is
   `data-theme="light"` on `<html>`.
-- Docs pages in `src/docs.tsx` follow the README of ArakunHQ/arakun. Keep them in step
-  when the app changes.
+- Docs pages are MDX in `content/docs/` and follow the README of ArakunHQ/arakun. Keep
+  them in step when the app changes. Write `{site.version}` and the like for facts from
+  `src/site.ts`; "Writing docs" in the README lists the components.
 - Comments say why, not what. Comments and text on the site use plain, short sentences.
 - Never commit a token. `GITHUB_TOKEN` is a Wrangler secret (`wrangler secret put`),
   and `.dev.vars` is ignored by git.

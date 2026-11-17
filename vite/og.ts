@@ -2,9 +2,11 @@ import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { Resvg } from '@resvg/resvg-js'
+import mdx from 'fumadocs-mdx/vite'
 import satori from 'satori'
 import type { Plugin } from 'vite'
 import { runnerImport } from 'vite'
+import * as docsConfig from '../source.config.ts'
 import type * as Cards from '../src/og-cards'
 
 type OgCard = Cards.OgCard
@@ -177,6 +179,8 @@ export function ogCards(): Plugin {
       root,
       logLevel: 'error',
       resolve: { tsconfigPaths: true },
+      // The docs' titles come from the frontmatter of content/docs/*.mdx.
+      plugins: [mdx(docsConfig)],
     })
     return module.ogCards.map((card) => ({ card, file: module.ogImagePath(card.path) }))
   }
