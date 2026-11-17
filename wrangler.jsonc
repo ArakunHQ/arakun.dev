@@ -17,7 +17,8 @@
 	// browser and the Worker.
 	//
 	// Why US Cloud and not EU Cloud (https://eu.i.posthog.com, data in Frankfurt):
-	// - Arakun is a US company, so the data it controls is in the US either way.
+	// - The site is run by a US company (CoderLabs, Inc. for now; see operator in
+	//   src/site.ts), so the data it controls is in the US either way.
 	// - EU Cloud still has PostHog, Inc. as the processor, and its DPA says it may process
 	//   data in the US too (clause 10.2).
 	// - EU Cloud is a separate instance. Moving means a new project and token, and the

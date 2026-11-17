@@ -19,10 +19,10 @@ export const site = {
   sourceUrl: `${repo}#build-from-source`,
   privacyEmail: 'privacy@arakun.dev',
   /**
-   * Who runs the site, for the privacy page. TODO(Karlo): the legal entity's full name
-   * (such as "Arakun, Inc.") and its postal address.
+   * Who runs the site, for the privacy page. Provisional: CoderLabs runs it until Arakun
+   * has an organization of its own. Then change this, and sign a new PostHog DPA in its name.
    */
-  operator: { name: 'Arakun', address: '' },
+  operator: { name: 'CoderLabs, Inc.', address: '131 Continental Dr, Suite 305, Newark, DE 19713, USA' },
   /** Release v0.1.0 has no macOS archive, so macOS has no direct download. */
   downloads: {
     Linux: `${release}/arakun-v${version}-linux-x86_64.tar.gz`,
