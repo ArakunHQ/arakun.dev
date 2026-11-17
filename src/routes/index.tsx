@@ -31,8 +31,8 @@ function Home() {
             <Words text={site.line} />
           </h1>
           <p className="sub rise" style={step(0, 480)}>
-            Claude Code, Droid, OpenCode and Workers AI work side by side. Each task gets its own
-            git worktree, so agents don't step on each other.
+            Claude Code, Droid, OpenCode, Codex and Workers AI work side by side. Each task gets its
+            own git worktree, so agents don't step on each other.
           </p>
           <div className="cta rise" style={step(1, 480)}>
             <DownloadButton platform={platform} />
