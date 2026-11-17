@@ -7,8 +7,10 @@ reviews:
   auto_approvals:
     enabled: true
     # Approve up to high risk. Critical risk waits for a person.
+    # No max_security_risk: CodeRabbit runs that assessment only on a few
+    # pull requests and withholds approval on all others, so the limit would
+    # block nearly every approval. merge_risk_instructions covers it instead.
     max_merge_risk: high
-    max_security_risk: high
     overrides:
       # CI and the approval rules themselves always need a person, whatever
       # the risk rating says.
@@ -20,13 +22,13 @@ reviews:
     accounts. Changes to text, docs, styles, images and dependency updates
     that pass CI are low risk. Changes to wrangler.jsonc, src/site.ts
     (versions and download links), src/releases.ts (release data from
-    GitHub) or the Worker entry
-    are moderate risk. Changes that could break every page or every
-    download link are high risk.
+    GitHub) or the Worker entry are moderate risk. Changes that could break
+    every page or every download link, or that change how the Worker handles
+    requests or secrets, are high risk. A change that could expose
+    GITHUB_TOKEN, or that could serve a download link outside
+    github.com/ArakunHQ, is critical risk, so a person must approve it.
   security_risk_instructions: >-
     The site is public and serves static pages and assets. The only secret
     is GITHUB_TOKEN, a Wrangler secret used to read public release data from
-    GitHub. A change that could expose that token, or that could serve a
-    download link outside github.com/ArakunHQ, is critical risk, so a person
-    must approve it. Other changes to how the Worker handles requests or
-    secrets are high risk.
+    GitHub. Exposing that token, or serving a download link outside
+    github.com/ArakunHQ, is critical risk.
