@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { MOOD_EVENT } from './Celebrate'
+import { HERO_EVENT } from './chrome'
 
 type Mood = 'enter' | 'awake' | 'asleep' | 'wink' | 'hello' | 'happy'
 
@@ -15,6 +16,7 @@ const ENTER = 2200
  * peeks on the first pointer move after that, winks on click,
  * hops when something is celebrated and sleeps after 9 s without movement.
  * The dotted sky behind it lights up around the pointer (see `.hero .lit`).
+ * While it is on screen the small raccoon in the top bar steps out (see `SiteNav`).
  */
 export function HeroRaccoon() {
   const root = useRef<HTMLDivElement>(null)
@@ -86,6 +88,13 @@ export function HeroRaccoon() {
       frame = requestAnimationFrame(tick)
     }
 
+    const tell = (inView: boolean) => dispatchEvent(new CustomEvent(HERO_EVENT, { detail: inView }))
+    const seen = new IntersectionObserver(([entry]) => tell(entry.isIntersecting), {
+      // Count it as gone once it is behind the top bar.
+      rootMargin: '-72px 0px 0px 0px',
+    })
+    seen.observe(el)
+
     addEventListener('pointermove', move)
     addEventListener(MOOD_EVENT, asked)
     document.documentElement.addEventListener('pointerleave', leave)
@@ -93,6 +102,8 @@ export function HeroRaccoon() {
     frame = requestAnimationFrame(tick)
     wake()
     return () => {
+      seen.disconnect()
+      tell(false)
       removeEventListener('pointermove', move)
       removeEventListener(MOOD_EVENT, asked)
       document.documentElement.removeEventListener('pointerleave', leave)
