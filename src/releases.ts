@@ -20,7 +20,10 @@ export type Release = {
   publishedAt: string | null
   url: string
   prerelease: boolean
-  /** The release notes written on GitHub, as markdown. Empty when there are none worth showing. */
+  /**
+   * The release notes written on GitHub, as markdown. Empty when there are none worth
+   * showing, or when `release-notes.ts` has notes of its own for this tag.
+   */
   body: string
   source: 'github' | 'fallback'
 }
@@ -56,7 +59,7 @@ function fromGitHub(list: GitHubRelease[]): Release[] {
       publishedAt: release.published_at,
       url: release.html_url,
       prerelease: release.prerelease,
-      body: onlyCompareLink.test(release.body ?? '') ? '' : (release.body ?? '').trim(),
+      body: notes[release.tag_name] || onlyCompareLink.test(release.body ?? '') ? '' : (release.body ?? '').trim(),
       source: 'github' as const,
     }))
 }
@@ -83,7 +86,7 @@ function fallback(): Release[] {
 const edgeCache = () => (caches as unknown as { default: Cache }).default
 
 const shared = {
-  key: new Request('https://releases.arakun.internal/v1'),
+  key: new Request('https://releases.arakun.internal/v2'),
   async read(): Promise<{ at: number; releases: Release[] } | undefined> {
     try {
       const hit = await edgeCache().match(this.key)

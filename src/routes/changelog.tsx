@@ -12,7 +12,7 @@ const page = pages.changelog
 /**
  * The changelog. Its releases come from GitHub: see `releases.ts` for how they
  * are read and cached, and `release-notes.ts` for the hand-written notes shown
- * when a release has none on GitHub.
+ * in place of a release's GitHub notes.
  */
 export const Route = createFileRoute('/changelog')({
   loader: () => getReleases(),
