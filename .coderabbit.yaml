@@ -9,13 +9,18 @@ reviews:
     # Approve up to high risk. Critical risk waits for a person.
     max_merge_risk: high
     max_security_risk: high
+    overrides:
+      # CI and the approval rules themselves always need a person, whatever
+      # the risk rating says.
+      - paths: [".github/**", ".coderabbit.yaml"]
+        enabled: false
   merge_risk_instructions: >-
     This repository is the marketing and docs website for Arakun. It is
     TanStack Start on Cloudflare Workers, with no database and no user
     accounts. Changes to text, docs, styles, images and dependency updates
     that pass CI are low risk. Changes to wrangler.jsonc, src/site.ts
     (versions and download links), src/releases.ts (release data from
-    GitHub), the Worker entry or .github/workflows
+    GitHub) or the Worker entry
     are moderate risk. Changes that could break every page or every
     download link are high risk.
   security_risk_instructions: >-
