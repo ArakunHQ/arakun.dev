@@ -85,7 +85,7 @@ export const installCommands = {
 export const pillars = [
   {
     title: 'Many agents, one place',
-    body: "Claude Code, Droid, OpenCode and Workers AI side by side. Each task gets its own worktree, so agents don't step on each other.",
+    body: "Claude Code, Droid, OpenCode, Codex and Workers AI side by side. Each task gets its own worktree, so agents don't step on each other.",
   },
   {
     title: 'Agents can use the app',

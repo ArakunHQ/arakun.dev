@@ -13,7 +13,7 @@ import appCss from '#/styles.css?url'
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.dataset.theme=t}catch(e){}})()`
 
 const description =
-  'Arakun is a native app where Claude Code, Droid, OpenCode and Workers AI work side by side, each on its own git worktree.'
+  'Arakun is a native app where Claude Code, Droid, OpenCode, Codex and Workers AI work side by side, each on its own git worktree.'
 
 export const Route = createRootRoute({
   head: () => ({
