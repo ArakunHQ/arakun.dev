@@ -9,7 +9,7 @@ import { ogCards } from './vite/og.ts'
 // deploy-watch reads the commit from these CI variables itself.
 const CI_COMMIT_VARS = ['WORKERS_CI_COMMIT_SHA', 'CF_PAGES_COMMIT_SHA', 'GITHUB_SHA', 'CI_COMMIT_SHA']
 
-// `pnpm deploy` runs by hand, where no CI variable names the commit. Without an id the
+// `pnpm run deploy` runs by hand, where no CI variable names the commit. Without an id the
 // watch stays off, so name the build after the commit. A build of uncommitted changes
 // gets a time on the end, so it never shares an id with another build.
 function localBuildId(): string | undefined {

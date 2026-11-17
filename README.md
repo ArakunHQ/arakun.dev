@@ -16,7 +16,7 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 | `pnpm build` | Builds the Worker and its static assets into `dist/`, then checks the build: no source map the site would serve, no value shaped like a secret (`workers-bundle-check.config.ts`). |
 | `pnpm preview` | Builds, then serves the production build locally. |
 | `pnpm typecheck` | Runs TypeScript without emitting. |
-| `pnpm deploy` | Builds and deploys with Wrangler. Needs `wrangler login` first. |
+| `pnpm run deploy` | Builds and deploys with Wrangler, by hand. Needs `wrangler login` first. Not `pnpm deploy`, which is a pnpm command of its own. |
 
 ## Where things are
 
@@ -27,7 +27,7 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 - `src/releases.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the changelog's GitHub sync (see below).
 - `src/components/ui.tsx`: buttons, the install line, cards and other shared pieces.
 - `src/components/chrome.tsx`: the sticky header, the theme switch and the footer.
-- `src/router.tsx`, `vite.config.ts`: [deploy-watch](https://github.com/rivi-software/tools/tree/main/packages/deploy-watch#readme) moves a tab left open across a deploy onto the new build at its next page change. A build in CI is named after its commit; `pnpm deploy` by hand names it after `HEAD`.
+- `src/router.tsx`, `vite.config.ts`: [deploy-watch](https://github.com/rivi-software/tools/tree/main/packages/deploy-watch#readme) moves a tab left open across a deploy onto the new build at its next page change. A build in CI is named after its commit; `pnpm run deploy` by hand names it after `HEAD`.
 - `src/components/HeroRaccoon.tsx`: the animated mascot in the home hero.
 - `src/components/Celebrate.tsx`: the toast and ASCII burst after a download or copy.
 - `public/img/`: real captures of the app, one per theme.
@@ -70,10 +70,27 @@ The changelog needs nothing. The version and the download links do: change
 `version` and `released` in `src/site.ts`, and check that the archive names in
 `site.downloads` still match the files on the GitHub release.
 
-## Before launch
+## Deploys
 
-The custom domain is not configured. Add a `routes` entry to `wrangler.jsonc`
-(or attach the domain in the Cloudflare dashboard) to serve the site at arakun.dev.
+Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
+"Deploy to arakun.dev" job in `.github/workflows/ci.yml`). Pull requests never deploy.
+
+- `wrangler.jsonc` attaches arakun.dev and www.arakun.dev to the Worker as custom
+  domains. A deploy without one of them detaches it, so keep both. The `workers.dev`
+  address is off.
+- Deploys queue and run one at a time. When a deploy's turn comes and `main` has
+  moved on, it skips, and the newer commit's run deploys.
+- The job runs in the `production` environment of the GitHub repository. It needs:
+  - `CLOUDFLARE_API_TOKEN`, an environment secret: a Cloudflare API token with
+    "Edit Cloudflare Workers" on the account and zone that hold arakun.dev.
+  - `CLOUDFLARE_ACCOUNT_ID`, an environment variable: the ID of that account.
+- Limit the environment to `main` (Settings > Environments > production >
+  Deployment branches), so no other branch can read the token.
+- To roll back, first cancel any "Deploy to arakun.dev" job that is queued or running
+  in the Actions tab, or it deploys `main` again after you. Then run
+  `pnpm exec wrangler rollback`, or pick an older version under Workers >
+  arakun-website > Deployments in the Cloudflare dashboard. Then revert the commit on
+  `main`, or the next push deploys it again.
 
 ## Contributing
 

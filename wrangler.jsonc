@@ -8,6 +8,8 @@
 	"compatibility_date": "2026-11-13",
 	"compatibility_flags": ["nodejs_compat"],
 	"main": "@tanstack/react-start/server-entry",
+	// Only the domains below serve the site; no workers.dev address.
+	"workers_dev": false,
 	"observability": {
 		"enabled": true
 	},
