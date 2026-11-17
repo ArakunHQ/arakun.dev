@@ -2,6 +2,7 @@ import { HeadContent, Outlet, Scripts, createRootRoute, useLocation } from '@tan
 import type { ReactNode } from 'react'
 import { CelebrateProvider } from '#/components/Celebrate'
 import { SiteFooter, SiteNav, useReveal } from '#/components/chrome'
+import { pageMeta } from '#/seo'
 import { site } from '#/site'
 import appCss from '#/styles.css?url'
 
@@ -20,13 +21,19 @@ export const Route = createRootRoute({
       { title: `${site.name} · ${site.line}` },
       { name: 'description', content: description },
       { property: 'og:site_name', content: site.name },
-      { property: 'og:title', content: site.name },
-      { property: 'og:description', content: site.line },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      // The home card. Pages override these with their own (pageMeta); a page that doesn't keeps this one.
+      ...pageMeta({ path: '/', title: site.name, description: site.line }),
       { name: 'theme-color', content: '#0b0b0b' },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
       { rel: 'icon', type: 'image/svg+xml', href: '/brand/favicon.svg' },
+      { rel: 'apple-touch-icon', sizes: '180x180', href: '/brand/apple-touch-icon.png' },
+      { rel: 'manifest', href: '/manifest.webmanifest' },
     ],
   }),
   shellComponent: RootDocument,

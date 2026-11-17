@@ -1,21 +1,24 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { AppShot, FeatureCard, InstallBand, PageHeader, Principle, SessionRow } from '#/components/ui'
-import { sessions, site } from '#/site'
+import { pageMeta } from '#/seo'
+import { pages, sessions, site } from '#/site'
+
+const page = pages.features
 
 export const Route = createFileRoute('/features')({
-  head: () => ({ meta: [{ title: `Features · ${site.name}` }] }),
+  head: () => ({
+    meta: [
+      { title: `Features · ${site.name}` },
+      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
+    ],
+  }),
   component: Features,
 })
 
 function Features() {
   return (
     <>
-      <PageHeader
-        num="01"
-        label="Features"
-        title="Many agents. One calm window."
-        lead="Arakun is quiet, quick, and awake while you are away. This is what it does."
-      />
+      <PageHeader {...page} />
 
       <section className="wrap" style={{ paddingTop: 'var(--spacing-16)' }}>
         <AppShot eager />
