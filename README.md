@@ -86,9 +86,11 @@ Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
   - `CLOUDFLARE_ACCOUNT_ID`, an environment variable: the ID of that account.
 - Limit the environment to `main` (Settings > Environments > production >
   Deployment branches), so no other branch can read the token.
-- To roll back, run `pnpm exec wrangler rollback`, or pick an older version under
-  Workers > arakun-website > Deployments in the Cloudflare dashboard. Then revert the
-  commit on `main`, or the next push deploys it again.
+- To roll back, first cancel any "Deploy to arakun.dev" job that is queued or running
+  in the Actions tab, or it deploys `main` again after you. Then run
+  `pnpm exec wrangler rollback`, or pick an older version under Workers >
+  arakun-website > Deployments in the Cloudflare dashboard. Then revert the commit on
+  `main`, or the next push deploys it again.
 
 ## Contributing
 
