@@ -3,19 +3,18 @@
   "private": true,
   "license": "AGPL-3.0-only",
   "type": "module",
-  "packageManager": "pnpm@12.15.0",
   "imports": {
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "vite dev --port 3000",
     "build": "vite build && workers-bundle-check",
-    "preview": "pnpm run build && vite preview",
-    "typecheck": "tsc --noEmit",
-    "deploy": "pnpm run build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "check": "ultracite check",
-    "fix": "ultracite fix"
+    "deploy": "pnpm run build && wrangler deploy",
+    "dev": "vite dev --port 3000",
+    "fix": "ultracite fix",
+    "preview": "pnpm run build && vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
@@ -46,6 +45,7 @@
     "vite": "^8.0.0",
     "wrangler": "^4.162.0"
   },
+  "packageManager": "pnpm@12.15.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
-import { PageHeader } from '#/components/ui'
 import { reopenConsent, useAnalytics } from '#/analytics'
+import { PageHeader } from '#/components/ui'
 import { pageMeta } from '#/seo'
 import { pages, site } from '#/site'
 
@@ -31,133 +31,150 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 function Privacy() {
   return (
     <>
-      <PageHeader num={page.num} label={page.label} title={page.title} lead={page.lead} />
+      <PageHeader label={page.label} lead={page.lead} num={page.num} title={page.title} />
       <div className="wrap">
         <article className="prose privacy">
           <Section title="Who runs this site">
             <p>
-              arakun.dev is run by {site.operator.name}
-              {site.operator.address ? `, ${site.operator.address}` : ''}. {site.operator.name} is also responsible
-              for the reports the Arakun app sends. Questions about your data go to {mail}.
+              arakun.dev is run by {site.operator.name}, {site.operator.address}.{' '}
+              {site.operator.name} is also responsible for the reports the Arakun app sends.
+              Questions about your data go to {mail}.
             </p>
           </Section>
 
           <Section title="Without your consent">
-            <p>Until you accept the cookie banner, the site sets no cookie and loads no analytics. It keeps two things in your browser's local storage, and they never leave it:</p>
+            <p>
+              Until you accept the cookie banner, the site sets no cookie and loads no analytics. It
+              keeps two things in your browser's local storage, and they never leave it:
+            </p>
             <ul>
               <li>your answer to the banner, so it does not ask again</li>
               <li>your light or dark theme</li>
             </ul>
             <p>
-              Cloudflare runs the site. It sees each request, including your IP address, to deliver the page and keep the
-              site safe from abuse.
+              Cloudflare runs the site. It sees each request, including your IP address, to deliver
+              the page and keep the site safe from abuse.
             </p>
           </Section>
 
           <Section title="If you accept: analytics">
-            <p>We use PostHog to learn which pages people read and where the site breaks. PostHog then collects:</p>
+            <p>
+              We use PostHog to learn which pages people read and where the site breaks. PostHog
+              then collects:
+            </p>
             <ul>
               <li>the pages you visit and the page that sent you here</li>
               <li>the links and buttons you click, but never what you type</li>
-              <li>your browser, operating system, screen size and rough location (country and city)</li>
+              <li>
+                your browser, operating system, screen size and rough location (country and city)
+              </li>
               <li>how fast pages load</li>
               <li>errors in the page</li>
             </ul>
             <p>
-              PostHog stores a cookie with a random id, so it can tell one visit from the next. It uses your IP address
-              to estimate your location and does not keep it. It does not record your screen, and it does not build a
-              profile with your name or email: we never ask for them.
+              PostHog stores a cookie with a random id, so it can tell one visit from the next. It
+              uses your IP address to estimate your location and does not keep it. It does not
+              record your screen, and it does not build a profile with your name or email: we never
+              ask for them.
             </p>
             <p>We use this data only to improve the site. We do not sell it or use it for ads.</p>
           </Section>
 
           <Section title="Error reports from the server">
             <p>
-              When the site's server fails, it reports the error to PostHog, with or without your consent: the address
-              of the page without its query, the kind of request, and the error. It sets no cookie and does not send
-              your IP address or browser. If you accepted analytics, the report carries your PostHog id, so we can see
-              what led to the error.
+              When the site's server fails, it reports the error to PostHog, with or without your
+              consent: the address of the page without its query, the kind of request, and the
+              error. It sets no cookie and does not send your IP address or browser. If you accepted
+              analytics, the report carries your PostHog id, so we can see what led to the error.
             </p>
           </Section>
 
           <Section title="In the Arakun app">
             <p>
-              The app can send crash reports and usage counts to the same PostHog project. It sends nothing until you
-              answer. On first launch it asks "Send crash reports and usage counts?". Closing the question answers
-              nothing, and the app asks again the next time it starts.
+              The app can send crash reports and usage counts to the same PostHog project. It sends
+              nothing until you answer. On first launch it asks "Send crash reports and usage
+              counts?". Closing the question answers nothing, and the app asks again the next time
+              it starts.
             </p>
             <p>You choose each of these on its own. Both stay off until you agree:</p>
             <ul>
               <li>
-                <strong>Crash reports:</strong> when the app crashes, the error message and the place in the code where
-                it happened (the stack trace). Before the message leaves your computer, the app replaces your home
-                folder with <code>~</code> and removes paths, links, email addresses and anything that looks like a key
-                or token. When an agent stops with an error, the report holds only the agent's name and a fixed
+                <strong>Crash reports:</strong> when the app crashes, the error message and the
+                place in the code where it happened (the stack trace). Before the message leaves
+                your computer, the app replaces your home folder with <code>~</code> and removes
+                paths, links, email addresses and anything that looks like a key or token. When an
+                agent stops with an error, the report holds only the agent's name and a fixed
                 category such as "rate limited" or "not signed in", never the error's text.
               </li>
               <li>
-                <strong>Usage counts:</strong> app launched, session started (with the agent's name), agent turn
-                finished, project added, environment created, a built-in view opened (with its name) and a browser tab
-                opened.
+                <strong>Usage counts:</strong> app launched, session started (with the agent's
+                name), agent turn finished, project added, environment created, a built-in view
+                opened (with its name) and a browser tab opened.
               </li>
             </ul>
             <p>
-              Every report carries the app's version, your operating system and its CPU architecture. The app never
-              sends your prompts, the agents' replies, file contents, URLs or project names.
+              Every report carries the app's version, your operating system and its CPU
+              architecture. The app never sends your prompts, the agents' replies, file contents,
+              URLs or project names.
             </p>
             <p>
-              Reports carry a random id, kept in a file named <code>telemetry-id</code> in the app's data folder. It is
-              not tied to any account. PostHog builds no profile from it, and it does not keep your IP address or use
-              it to find your location. If you delete the file, the app makes a new id. The{' '}
-              <a href="/docs/crash-reports">docs</a> say where the folder is.
+              Reports carry a random id, kept in a file named <code>telemetry-id</code> in the app's
+              data folder. It is not tied to any account. PostHog builds no profile from it, and it
+              does not keep your IP address or use it to find your location. If you delete the file,
+              the app makes a new id. The <a href="/docs/crash-reports">docs</a> say where the
+              folder is.
             </p>
           </Section>
 
           <Section title="Why we may do this">
             <p>
-              Analytics on the site, and the app's crash reports and usage counts, run on your consent (GDPR Art.
-              6(1)(a)). Server error reports run on our legitimate interest in keeping the site working (Art. 6(1)(f)).
+              Analytics on the site, and the app's crash reports and usage counts, run on your
+              consent (GDPR Art. 6(1)(a)). Server error reports run on our legitimate interest in
+              keeping the site working (Art. 6(1)(f)).
             </p>
           </Section>
 
           <Section title="Where it is stored">
             <p>
-              PostHog, Inc. stores the data from the site and the app on its servers in the United States, as our
-              processor under a data
-              processing agreement. For visitors in the EU, the UK and Switzerland, that agreement relies on PostHog's
-              Data Privacy Framework certification and on the EU Standard Contractual Clauses.
+              PostHog, Inc. stores the data from the site and the app on its servers in the United
+              States, as our processor under a data processing agreement. For visitors in the EU,
+              the UK and Switzerland, that agreement relies on PostHog's Data Privacy Framework
+              certification and on the EU Standard Contractual Clauses.
             </p>
           </Section>
 
           <Section title="How long we keep it">
             <p>
-              We keep the site's analytics and error reports, and the app's reports, for one year. Then PostHog deletes
-              them. PostHog's cookie expires after a year.
+              We keep the site's analytics and error reports, and the app's reports, for one year.
+              Then PostHog deletes them. PostHog's cookie expires after a year.
             </p>
           </Section>
 
           <Section title="Your choices">
             <ul>
               <li>
-                Change your answer at any time with <ConsentLink /> in the footer. Saying no stops PostHog and deletes its
-                cookie.
+                Change your answer at any time with <ConsentLink /> in the footer. Saying no stops
+                PostHog and deletes its cookie.
               </li>
               <li>
-                In the app, change your answer at any time in Settings › General, with the Crash reports and Usage
-                counts switches.
+                In the app, change your answer at any time in Settings › General, with the Crash
+                reports and Usage counts switches.
               </li>
               <li>
-                Set <code>DO_NOT_TRACK=1</code> or <code>ARAKUN_TELEMETRY=0</code> to turn both off. The app then does
-                not ask.
+                Set <code>DO_NOT_TRACK=1</code> or <code>ARAKUN_TELEMETRY=0</code> to turn both off.
+                The app then does not ask.
               </li>
               <li>
                 Delete <code>telemetry-id</code> to start again with a new id.
               </li>
               <li>
-                Ask us what we hold about you, or ask us to delete it, at {mail}. For the app's reports, send us the id
-                in <code>telemetry-id</code>, so we can find them.
+                Ask us what we hold about you, or ask us to delete it, at {mail}. For the app's
+                reports, send us the id in <code>telemetry-id</code>, so we can find them.
               </li>
-              <li>If you are in the EU or the UK, you can also complain to your data protection authority.</li>
+              <li>
+                If you are in the EU or the UK, you can also complain to your data protection
+                authority.
+              </li>
             </ul>
           </Section>
 
@@ -171,9 +188,11 @@ function Privacy() {
 // A button where PostHog is on, so the sentence works as the control it describes.
 function ConsentLink() {
   const { available } = useAnalytics()
-  if (!available) return <>"Cookies"</>
+  if (!available) {
+    return <>"Cookies"</>
+  }
   return (
-    <button type="button" className="inline" onClick={reopenConsent}>
+    <button className="inline" onClick={reopenConsent} type="button">
       Cookies
     </button>
   )

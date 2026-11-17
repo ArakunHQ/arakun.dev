@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { InstallBand, PageHeader } from '#/components/ui'
 import { groupSlug, groups } from '#/docs'
 import { pageMeta } from '#/seo'
@@ -17,8 +17,14 @@ export const Route = createFileRoute('/docs/')({
 })
 
 export const Arrow = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+  <svg aria-hidden="true" fill="none" height="18" viewBox="0 0 24 24" width="18">
+    <path
+      d="M5 12h14M13 6l6 6-6 6"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.75"
+    />
   </svg>
 )
 
@@ -29,10 +35,10 @@ function DocsIndex() {
 
       <section className="wrap docs" style={{ paddingTop: 'var(--spacing-16)' }}>
         {groups.map((group) => (
-          <div key={group.title} id={groupSlug(group.title)}>
+          <div id={groupSlug(group.title)} key={group.title}>
             <div className="grp mono-label">{group.title}</div>
             {group.docs.map((doc) => (
-              <Link className="dr" key={doc.slug} to="/docs/$slug" params={{ slug: doc.slug }}>
+              <Link className="dr" key={doc.slug} params={{ slug: doc.slug }} to="/docs/$slug">
                 <div>
                   <h4>{doc.title}</h4>
                   <p>{doc.summary}</p>

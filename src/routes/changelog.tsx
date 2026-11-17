@@ -1,9 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Markdown } from '#/components/Markdown'
 import { InstallBand, PageHeader, StatusPill } from '#/components/ui'
+import type { ReleaseNote } from '#/release-notes'
 import { notes } from '#/release-notes'
-import { getReleases } from '#/releases'
 import type { Release } from '#/releases'
+import { getReleases } from '#/releases'
 import { pageMeta } from '#/seo'
 import { pages, site } from '#/site'
 
@@ -26,35 +27,49 @@ export const Route = createFileRoute('/changelog')({
 })
 
 const day = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' })
+const LEADING_V = /^v/u
+
+function ReleaseNotes({ release, note }: { release: Release; note?: ReleaseNote }) {
+  if (release.body) {
+    return <Markdown source={release.body} />
+  }
+  if (note) {
+    return (
+      <ul className="areas">
+        {note.changes.map(([area, change]) => (
+          <li key={area}>
+            <b>{area}</b>
+            <span>{change}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  return <p className="none">This release has no written notes.</p>
+}
 
 function ReleaseEntry({ release }: { release: Release }) {
   const note = notes[release.tag]
   // "Arakun v0.1.0" says nothing the version beside it doesn't: prefer the written title.
-  const plainName = new RegExp(`^(${site.name}\\s+)?v?${release.tag.replace(/^v/, '')}$`, 'i').test(release.name)
+  const plainName = new RegExp(
+    `^(?:${site.name}\\s+)?v?${release.tag.replace(LEADING_V, '')}$`,
+    'iu'
+  ).test(release.name)
   const title = plainName ? (note?.title ?? release.name) : release.name
   return (
     <article className="re" id={release.tag}>
       <div className="v">
         <span className="ver">{release.tag}</span>
-        {release.publishedAt && <time className="d" dateTime={release.publishedAt}>{day.format(new Date(release.publishedAt))}</time>}
-        {release.prerelease && <StatusPill tone="attention" label="Pre-release" />}
+        {release.publishedAt ? (
+          <time className="d" dateTime={release.publishedAt}>
+            {day.format(new Date(release.publishedAt))}
+          </time>
+        ) : null}
+        {release.prerelease ? <StatusPill label="Pre-release" tone="attention" /> : null}
       </div>
       <div className="c">
         <h3>{title}</h3>
-        {release.body ? (
-          <Markdown source={release.body} />
-        ) : note ? (
-          <ul className="areas">
-            {note.changes.map(([area, change]) => (
-              <li key={area}>
-                <b>{area}</b>
-                <span>{change}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="none">This release has no written notes.</p>
-        )}
+        <ReleaseNotes note={note} release={release} />
         <a className="more mono-label" href={release.url}>
           {release.tag} on GitHub
         </a>
@@ -74,7 +89,9 @@ function Changelog() {
           <ReleaseEntry key={release.tag} release={release} />
         ))}
         <p className="re-end">
-          {releases.length === 1 ? 'That is the whole history so far.' : 'That is the whole history.'}
+          {releases.length === 1
+            ? 'That is the whole history so far.'
+            : 'That is the whole history.'}
         </p>
       </section>
 

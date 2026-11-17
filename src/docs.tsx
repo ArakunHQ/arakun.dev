@@ -6,7 +6,13 @@ import { site } from '#/site'
  * One entry per page; the order here is the order of the index, the side
  * list and the previous/next links. To add a page, add an entry.
  */
-export type Doc = { slug: string; group: string; title: string; summary: string; body: ReactNode }
+export interface Doc {
+  body: ReactNode
+  group: string
+  slug: string
+  summary: string
+  title: string
+}
 
 const Code = ({ children }: { children: string }) => (
   <pre>
@@ -32,7 +38,8 @@ export const docs: Doc[] = [
         <Code>{`irm ${site.installUrl}.ps1 | iex`}</Code>
         <h2>What the script does</h2>
         <p>
-          It downloads the latest release, checks it against <code>SHA256SUMS</code> and installs it for your user.
+          It downloads the latest release, checks it against <code>SHA256SUMS</code> and installs it
+          for your user.
         </p>
         <table>
           <thead>
@@ -64,8 +71,8 @@ export const docs: Doc[] = [
             <tr>
               <td>Windows</td>
               <td>
-                <code>%LOCALAPPDATA%\Programs\Arakun</code>, added to your user <code>PATH</code>, with a Start menu
-                shortcut
+                <code>%LOCALAPPDATA%\Programs\Arakun</code>, added to your user <code>PATH</code>,
+                with a Start menu shortcut
               </td>
               <td>
                 Delete that folder and the shortcut, and remove it from <code>PATH</code>
@@ -76,22 +83,23 @@ export const docs: Doc[] = [
         <h2>A given version</h2>
         <Code>{`curl -fsSL ${site.installUrl} | sh -s -- --version v${site.version}`}</Code>
         <p>
-          Or set <code>ARAKUN_VERSION=v{site.version}</code>. There is no build for Intel Macs or Linux on ARM yet. Build
-          from source there.
+          Or set <code>ARAKUN_VERSION=v{site.version}</code>. There is no build for Intel Macs or
+          Linux on ARM yet. Build from source there.
         </p>
         <h2>What Linux needs</h2>
         <p>
-          glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+), a Vulkan driver and the usual desktop libraries:
-          libxkbcommon, Wayland or X11, fontconfig and freetype.
+          glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+), a Vulkan driver and the usual
+          desktop libraries: libxkbcommon, Wayland or X11, fontconfig and freetype.
         </p>
         <h2>Agents come separately</h2>
         <p>
-          Arakun does not bundle the agents. Install the ones you want to use. Each agent's page in these docs says
-          what it needs.
+          Arakun does not bundle the agents. Install the ones you want to use. Each agent's page in
+          these docs says what it needs.
         </p>
         <p>
-          These tools are optional: <code>git</code> for Changes, worktrees and branches, <code>gh</code> for CI and
-          the GitHub tab, <code>bwrap</code> for headless agents, <code>tailscale</code> for the phone over Tailscale.
+          These tools are optional: <code>git</code> for Changes, worktrees and branches,{' '}
+          <code>gh</code> for CI and the GitHub tab, <code>bwrap</code> for headless agents,{' '}
+          <code>tailscale</code> for the phone over Tailscale.
         </p>
       </>
     ),
@@ -109,14 +117,15 @@ export const docs: Doc[] = [
         <p>This adds the project, or switches to it. It starts Arakun if it is not running.</p>
         <h2>Projects and environments</h2>
         <p>
-          The rail on the left lists your projects. Each project has environments: the main checkout plus git
-          worktrees. Every environment has its own tabs, sessions, terminals and draft prompt.
+          The rail on the left lists your projects. Each project has environments: the main checkout
+          plus git worktrees. Every environment has its own tabs, sessions, terminals and draft
+          prompt.
         </p>
         <p>Give each task its own worktree, so the agents don't step on each other.</p>
         <h2>Write the task</h2>
         <p>
-          Press <K>Ctrl+T</K> for a new session. Pick the agent and the model in the composer, then write what you
-          want done.
+          Press <K>Ctrl+T</K> for a new session. Pick the agent and the model in the composer, then
+          write what you want done.
         </p>
         <ul>
           <li>
@@ -129,13 +138,14 @@ export const docs: Doc[] = [
         </ul>
         <h2>Branch names from the task</h2>
         <p>
-          A new environment starts on a random branch name, such as <code>env/brave-otter</code>. After the first
-          prompt, a small model names the branch after the task, such as <code>fix/terminal-tab-name</code>, and Arakun
-          renames it. The folder keeps its name.
+          A new environment starts on a random branch name, such as <code>env/brave-otter</code>.
+          After the first prompt, a small model names the branch after the task, such as{' '}
+          <code>fix/terminal-tab-name</code>, and Arakun renames it. The folder keeps its name.
         </p>
         <p>
-          By default the agent you sent the prompt to names it, when that agent is Claude Code or Droid. Other agents
-          leave the name alone. Settings › General can pick one agent for every environment, or turn naming off.
+          By default the agent you sent the prompt to names it, when that agent is Claude Code or
+          Droid. Other agents leave the name alone. Settings › General can pick one agent for every
+          environment, or turn naming off.
         </p>
       </>
     ),
@@ -149,27 +159,31 @@ export const docs: Doc[] = [
       <>
         <h2>See what each turn changed</h2>
         <p>
-          A session's transcript shows markdown, diffs, tool calls and images. Per-turn diffs show what each turn
-          changed, including changes made by shell commands. Sessions can be resumed.
+          A session's transcript shows markdown, diffs, tool calls and images. Per-turn diffs show
+          what each turn changed, including changes made by shell commands. Sessions can be resumed.
         </p>
-        <p>The Workspace panel has three tabs: Sessions, an Explorer and the uncommitted Changes.</p>
+        <p>
+          The Workspace panel has three tabs: Sessions, an Explorer and the uncommitted Changes.
+        </p>
         <h2>Let the project check run</h2>
         <p>
-          Set a check command for the project, such as <code>cargo test</code> or <code>npm test</code>. It runs after
-          each turn that edits files. See <a href="/docs/run-the-project-check">Run the project check</a>.
+          Set a check command for the project, such as <code>cargo test</code> or{' '}
+          <code>npm test</code>. It runs after each turn that edits files. See{' '}
+          <a href="/docs/run-the-project-check">Run the project check</a>.
         </p>
         <h2>Finish on GitHub</h2>
         <p>
-          The GitHub tab is a queue of what waits on you: pull requests whose review is asked of you, mentions and
-          assignments, your own open pull requests, and what is ready to merge.
+          The GitHub tab is a queue of what waits on you: pull requests whose review is asked of
+          you, mentions and assignments, your own open pull requests, and what is ready to merge.
         </p>
         <p>
-          Pick an item to see its state, checks, what blocks the merge, its timeline, files and commits. You can
-          comment, approve, request changes or merge from there. A comment posts at once. Approve, request changes and
-          merge ask a second time.
+          Pick an item to see its state, checks, what blocks the merge, its timeline, files and
+          commits. You can comment, approve, request changes or merge from there. A comment posts at
+          once. Approve, request changes and merge ask a second time.
         </p>
         <p>
-          It reads GitHub through the <code>gh</code> CLI, so install <code>gh</code> and sign in first.
+          It reads GitHub through the <code>gh</code> CLI, so install <code>gh</code> and sign in
+          first.
         </p>
       </>
     ),
@@ -184,7 +198,8 @@ export const docs: Doc[] = [
     body: (
       <>
         <p>
-          Arakun runs Claude Code through the ACP adapter <code>@agentclientprotocol/claude-agent-acp</code>.
+          Arakun runs Claude Code through the ACP adapter{' '}
+          <code>@agentclientprotocol/claude-agent-acp</code>.
         </p>
         <h2>What you need</h2>
         <ul>
@@ -192,13 +207,15 @@ export const docs: Doc[] = [
             Node.js with <code>npm</code>. Arakun installs the adapter itself.
           </li>
           <li>
-            A <code>claude</code> that is signed in, or set up with an API key or another endpoint
-            (<code>ANTHROPIC_BASE_URL</code>) in <code>~/.claude/settings.json</code> or the environment.
+            A <code>claude</code> that is signed in, or set up with an API key or another endpoint (
+            <code>ANTHROPIC_BASE_URL</code>) in <code>~/.claude/settings.json</code> or the
+            environment.
           </li>
         </ul>
         <h2>Good to know</h2>
         <p>
-          The Usage tab reads token use and cost from Claude Code's own logs, and shows your plan's limits.
+          The Usage tab reads token use and cost from Claude Code's own logs, and shows your plan's
+          limits.
         </p>
       </>
     ),
@@ -252,8 +269,8 @@ export const docs: Doc[] = [
     body: (
       <>
         <p>
-          For Cloudflare Workers AI there is no outside CLI. Arakun runs the tool loop itself against the Workers AI
-          API.
+          For Cloudflare Workers AI there is no outside CLI. Arakun runs the tool loop itself
+          against the Workers AI API.
         </p>
         <h2>What you need</h2>
         <p>A Cloudflare API token with Workers AI access. Give it to Arakun in one of two ways:</p>
@@ -282,12 +299,13 @@ export const docs: Doc[] = [
     body: (
       <>
         <p>
-          While Arakun is running, <code>arakun &lt;command&gt;</code> acts on the environment of the current folder.
-          It talks to the app over a local control socket.
+          While Arakun is running, <code>arakun &lt;command&gt;</code> acts on the environment of
+          the current folder. It talks to the app over a local control socket.
         </p>
         <p>
-          Terminals and agents started by Arakun get <code>arakun</code> on their <code>PATH</code>. The agents also
-          get a note about it in their system prompt. Set <code>ARAKUN_AGENT_HINT=off</code> to remove that note.
+          Terminals and agents started by Arakun get <code>arakun</code> on their <code>PATH</code>.
+          The agents also get a note about it in their system prompt. Set{' '}
+          <code>ARAKUN_AGENT_HINT=off</code> to remove that note.
         </p>
         <h2>Everyday commands</h2>
         <Code>{`arakun .                    # add this project, or switch to it
@@ -299,7 +317,8 @@ arakun rename fix/tab-name  # rename this environment's branch
 arakun --version            # print the version`}</Code>
         <h2>Open the palette from anywhere</h2>
         <p>
-          Bind <code>arakun palette</code> to a global key in your desktop. On Hyprland, for example:
+          Bind <code>arakun palette</code> to a global key in your desktop. On Hyprland, for
+          example:
         </p>
         <Code>bind = SUPER, K, exec, arakun palette</Code>
       </>
@@ -320,14 +339,14 @@ arakun --version            # print the version`}</Code>
         <p>This opens the file in the side pane at line 42.</p>
         <h2>Let an agent drive a page</h2>
         <p>
-          Agents can drive pages on localhost through <code>arakun page</code>: screenshot, console, click, type and
-          eval.
+          Agents can drive pages on localhost through <code>arakun page</code>: screenshot, console,
+          click, type and eval.
         </p>
-        <Code>arakun page screenshot   # PNG of the environment's browser tab</Code>
+        <Code>arakun page screenshot # PNG of the environment's browser tab</Code>
         <h2>The browser is optional</h2>
         <p>
-          Browser tabs are based on CEF. Release builds do not include the browser yet. Build from source with the{' '}
-          <code>browser</code> feature to get it.
+          Browser tabs are based on CEF. Release builds do not include the browser yet. Build from
+          source with the <code>browser</code> feature to get it.
         </p>
       </>
     ),
@@ -340,7 +359,8 @@ arakun --version            # print the version`}</Code>
     body: (
       <>
         <p>
-          Each environment has a dock of terminals. They are numbered, so agents and scripts can read them.
+          Each environment has a dock of terminals. They are numbered, so agents and scripts can
+          read them.
         </p>
         <h2>Start a command and wait for it</h2>
         <Code>arakun run --port 5173 npm run dev</Code>
@@ -350,9 +370,10 @@ arakun --version            # print the version`}</Code>
         <p>This waits until terminal 2 prints "compiled".</p>
         <h2>Options</h2>
         <p>
-          <code>arakun run</code> and <code>arakun logs</code> take <code>--ready &lt;text&gt;</code>,{' '}
-          <code>--port &lt;n&gt;</code> and <code>--timeout &lt;s&gt;</code> before the command. They fail with the
-          tail of the output if the command exits or times out first.
+          <code>arakun run</code> and <code>arakun logs</code> take{' '}
+          <code>--ready &lt;text&gt;</code>, <code>--port &lt;n&gt;</code> and{' '}
+          <code>--timeout &lt;s&gt;</code> before the command. They fail with the tail of the output
+          if the command exits or times out first.
         </p>
       </>
     ),
@@ -365,24 +386,25 @@ arakun --version            # print the version`}</Code>
     body: (
       <>
         <p>
-          The project check is a command you set per project, such as <code>cargo test</code> or <code>npm test</code>.
+          The project check is a command you set per project, such as <code>cargo test</code> or{' '}
+          <code>npm test</code>.
         </p>
         <h2>When it runs</h2>
         <p>
-          It runs after each turn that edits files. When it fails, the tail of the output goes back to the agent, up
-          to three times in a row.
+          It runs after each turn that edits files. When it fails, the tail of the output goes back
+          to the agent, up to three times in a row.
         </p>
         <p>To run it yourself in the current environment:</p>
         <Code>arakun check</Code>
         <h2>It does not stall your computer</h2>
         <p>
-          Checks run one at a time across all sessions, at low priority, with half the cores for builds. Several
-          agents finishing together don't slow the machine down.
+          Checks run one at a time across all sessions, at low priority, with half the cores for
+          builds. Several agents finishing together don't slow the machine down.
         </p>
         <h2>Loops</h2>
         <p>
-          Arakun notices when an agent loops: the same failing command or the same edit, over and over. It offers to
-          stop and rethink.
+          Arakun notices when an agent loops: the same failing command or the same edit, over and
+          over. It offers to stop and rethink.
         </p>
       </>
     ),
@@ -395,8 +417,8 @@ arakun --version            # print the version`}</Code>
     body: (
       <>
         <p>
-          An agent can review a pull request for you and leave a draft. The draft sends nothing. You post it, edit it
-          or discard it in the GitHub tab.
+          An agent can review a pull request for you and leave a draft. The draft sends nothing. You
+          post it, edit it or discard it in the GitHub tab.
         </p>
         <Code>{`arakun github draft o/r#12 --verdict approve --head <sha> \\
   --body-file - --agent Claude < review.md`}</Code>
@@ -410,8 +432,8 @@ arakun --version            # print the version`}</Code>
         </ul>
         <h2>Safety</h2>
         <p>
-          Posting a draft asks a second time. An approval goes out only for the commit the agent read. After new
-          commits, the draft can only be posted as a comment.
+          Posting a draft asks a second time. An approval goes out only for the commit the agent
+          read. After new commits, the draft can only be posted as a comment.
         </p>
       </>
     ),
@@ -426,13 +448,14 @@ arakun --version            # print the version`}</Code>
     body: (
       <>
         <p>
-          The Dynamic Island is a small overlay at the top of the screen. It shows what the agents of every project
-          are doing: a dot per busy session, and a card when one finishes, fails or needs an answer.
+          The Dynamic Island is a small overlay at the top of the screen. It shows what the agents
+          of every project are doing: a dot per busy session, and a card when one finishes, fails or
+          needs an answer.
         </p>
         <h2>Where it works</h2>
         <p>
-          Linux on Wayland only, for now. It needs a compositor with the wlr-layer-shell protocol. Windows has no
-          Dynamic Island yet.
+          Linux on Wayland only, for now. It needs a compositor with the wlr-layer-shell protocol.
+          Windows has no Dynamic Island yet.
         </p>
         <p>
           It runs as its own process, <code>arakun island-host</code>.
@@ -448,8 +471,8 @@ arakun --version            # print the version`}</Code>
     body: (
       <>
         <p>
-          Every notice Arakun shows, on the island or as a desktop notification, also lands in the sidebar's Inbox. It
-          sits under the sessions waiting on you, grouped by day.
+          Every notice Arakun shows, on the island or as a desktop notification, also lands in the
+          sidebar's Inbox. It sits under the sessions waiting on you, grouped by day.
         </p>
         <ul>
           <li>Click a notice to open what it is about.</li>
@@ -469,7 +492,8 @@ arakun --version            # print the version`}</Code>
     body: (
       <>
         <p>
-          Arakun serves a web page that lets a paired phone follow sessions, send prompts and answer the agent.
+          Arakun serves a web page that lets a paired phone follow sessions, send prompts and answer
+          the agent.
         </p>
         <h2>How the phone reaches your computer</h2>
         <ul>
@@ -479,9 +503,9 @@ arakun --version            # print the version`}</Code>
         </ul>
         <h2>The relay</h2>
         <p>
-          The relay defaults to the hosted one at <code>arakun.dev</code>. You can run your own: it is a Cloudflare
-          Worker in the <code>relay/</code> folder of the repository. Point <code>relay_base</code> in{' '}
-          <code>phone.json</code> at it.
+          The relay defaults to the hosted one at <code>arakun.dev</code>. You can run your own: it
+          is a Cloudflare Worker in the <code>relay/</code> folder of the repository. Point{' '}
+          <code>relay_base</code> in <code>phone.json</code> at it.
         </p>
       </>
     ),
@@ -527,13 +551,13 @@ arakun --version            # print the version`}</Code>
         </ul>
         <h2>The palette</h2>
         <p>
-          <K>Ctrl+K</K> or <K>Ctrl+P</K> opens the palette. One search covers sessions of every project, GitHub, runs,
-          files and symbols, views, commands, settings and memory.
+          <K>Ctrl+K</K> or <K>Ctrl+P</K> opens the palette. One search covers sessions of every
+          project, GitHub, runs, files and symbols, views, commands, settings and memory.
         </p>
         <ul>
           <li>
-            Start with <code>&gt;</code> for commands, <code>/</code> for files, <code>:</code> for settings,{' '}
-            <code>@</code> for people or <code>#</code> for pull requests.
+            Start with <code>&gt;</code> for commands, <code>/</code> for files, <code>:</code> for
+            settings, <code>@</code> for people or <code>#</code> for pull requests.
           </li>
           <li>
             <K>→</K> opens a row's actions or goes into it. <K>←</K> goes back.
@@ -565,12 +589,12 @@ arakun --version            # print the version`}</Code>
     body: (
       <>
         <p>
-          Agents save what they learn with <code>arakun mem</code>. Every new session starts with an index of it in
-          the system prompt.
+          Agents save what they learn with <code>arakun mem</code>. Every new session starts with an
+          index of it in the system prompt.
         </p>
         <p>Memory is plain JSON files: one per repository, plus a global one.</p>
         <h2>Search it</h2>
-        <Code>{`arakun mem search <words>`}</Code>
+        <Code>{'arakun mem search <words>'}</Code>
       </>
     ),
   },
@@ -581,17 +605,18 @@ arakun --version            # print the version`}</Code>
     summary: 'An agent that keeps going with the app closed.',
     body: (
       <>
-        <Code>{`arakun agent run <prompt>`}</Code>
+        <Code>{'arakun agent run <prompt>'}</Code>
         <p>This starts an agent in its own process. It keeps going with the app closed.</p>
         <h2>The sandbox</h2>
         <p>
-          Its tools run inside a bubblewrap sandbox. The workspace is writable and the rest is read-only. There are no
-          credentials, and no network unless you pass <code>--allow net</code>.
+          Its tools run inside a bubblewrap sandbox. The workspace is writable and the rest is
+          read-only. There are no credentials, and no network unless you pass{' '}
+          <code>--allow net</code>.
         </p>
         <h2>The policy</h2>
         <p>
-          <code>--policy readonly|workspace|full</code> decides which tool calls need your approval. Answer with{' '}
-          <code>arakun agent approve</code> or <code>arakun agent deny</code>.
+          <code>--policy readonly|workspace|full</code> decides which tool calls need your approval.
+          Answer with <code>arakun agent approve</code> or <code>arakun agent deny</code>.
         </p>
         <h2>Limits</h2>
         <p>
@@ -608,12 +633,13 @@ arakun --version            # print the version`}</Code>
     body: (
       <>
         <p>
-          <code>arakun server serve</code> is Arakun without a window: for a build box, the workstation at the office
-          or a VPS. It runs sessions of any agent signed in on that machine and keeps them going while nothing is
-          connected.
+          <code>arakun server serve</code> is Arakun without a window: for a build box, the
+          workstation at the office or a VPS. It runs sessions of any agent signed in on that
+          machine and keeps them going while nothing is connected.
         </p>
         <p>
-          <code>arakun-server</code> is the same server as a program of its own. It needs no display library.
+          <code>arakun-server</code> is the same server as a program of its own. It needs no display
+          library.
         </p>
         <h2>Start it and pair a device</h2>
         <Code>{`arakun-server serve   # runs until Ctrl+C
@@ -633,18 +659,21 @@ arakun-server approve <id>                   # or deny`}</Code>
         <h2>How devices reach it</h2>
         <ul>
           <li>
-            <code>--reach relay</code> is the default. The server dials out, so it works behind a firewall, and
-            everything between the device and the server is end-to-end encrypted.
+            <code>--reach relay</code> is the default. The server dials out, so it works behind a
+            firewall, and everything between the device and the server is end-to-end encrypted.
           </li>
           <li>
             <code>--reach tailscale</code> serves it at the machine's tailnet name over HTTPS.
           </li>
           <li>
-            <code>--reach lan</code> listens over plain HTTP. Nothing is encrypted. Use it only on a network you
-            trust.
+            <code>--reach lan</code> listens over plain HTTP. Nothing is encrypted. Use it only on a
+            network you trust.
           </li>
         </ul>
-        <p>Sign in to each agent on that machine first. The server uses its logins and its permission settings.</p>
+        <p>
+          Sign in to each agent on that machine first. The server uses its logins and its permission
+          settings.
+        </p>
       </>
     ),
   },
@@ -656,32 +685,37 @@ arakun-server approve <id>                   # or deny`}</Code>
     body: (
       <>
         <p>
-          Arakun sends nothing until you say so. On first launch it asks "Send crash reports and usage counts?". Closing
-          the question answers nothing, and Arakun asks again the next time it starts.
+          Arakun sends nothing until you say so. On first launch it asks "Send crash reports and
+          usage counts?". Closing the question answers nothing, and Arakun asks again the next time
+          it starts.
         </p>
         <h2>What is sent</h2>
         <ul>
           <li>
-            <strong>Crash reports:</strong> a crash's message and stack trace. Your home folder becomes <code>~</code>,
-            and paths, links, emails and anything shaped like a key or token are removed. When an agent stops with an
-            error, only the agent's name and a fixed category such as "rate limited" go out, never the error's text.
+            <strong>Crash reports:</strong> a crash's message and stack trace. Your home folder
+            becomes <code>~</code>, and paths, links, emails and anything shaped like a key or token
+            are removed. When an agent stops with an error, only the agent's name and a fixed
+            category such as "rate limited" go out, never the error's text.
           </li>
           <li>
-            <strong>Usage counts:</strong> app launched, session started, agent turn finished, project added,
-            environment created, a built-in view opened and a browser tab opened.
+            <strong>Usage counts:</strong> app launched, session started, agent turn finished,
+            project added, environment created, a built-in view opened and a browser tab opened.
           </li>
         </ul>
         <p>
-          Each report carries Arakun's version, your OS and the CPU architecture. Arakun never sends prompts, replies,
-          file contents, URLs or project names. <a href="/privacy">Privacy</a> says who receives the reports and how
-          long we keep them.
+          Each report carries Arakun's version, your OS and the CPU architecture. Arakun never sends
+          prompts, replies, file contents, URLs or project names. <a href="/privacy">Privacy</a>{' '}
+          says who receives the reports and how long we keep them.
         </p>
         <h2>Change your answer</h2>
-        <p>Open Settings › General and turn Crash reports or Usage counts on or off. Each switch works on its own.</p>
+        <p>
+          Open Settings › General and turn Crash reports or Usage counts on or off. Each switch
+          works on its own.
+        </p>
         <h2>Turn both off</h2>
         <p>
-          Set <code>DO_NOT_TRACK=1</code> or <code>ARAKUN_TELEMETRY=0</code> in the environment Arakun starts in. Both
-          stay off, and Arakun does not ask.
+          Set <code>DO_NOT_TRACK=1</code> or <code>ARAKUN_TELEMETRY=0</code> in the environment
+          Arakun starts in. Both stay off, and Arakun does not ask.
         </p>
         <h2>The files</h2>
         <p>Two files in Arakun's data folder hold the setting:</p>
@@ -690,7 +724,8 @@ arakun-server approve <id>                   # or deny`}</Code>
             <code>telemetry.json</code>: your answer.
           </li>
           <li>
-            <code>telemetry-id</code>: a random id that the reports carry. It is not tied to any account.
+            <code>telemetry-id</code>: a random id that the reports carry. It is not tied to any
+            account.
           </li>
         </ul>
         <p>The data folder is in one of these places:</p>
@@ -703,8 +738,8 @@ arakun-server approve <id>                   # or deny`}</Code>
           </li>
         </ul>
         <p>
-          Delete <code>telemetry-id</code> and Arakun makes a new id. To have the reports for an id deleted, send the id
-          to <a href={`mailto:${site.privacyEmail}`}>{site.privacyEmail}</a>.
+          Delete <code>telemetry-id</code> and Arakun makes a new id. To have the reports for an id
+          deleted, send the id to <a href={`mailto:${site.privacyEmail}`}>{site.privacyEmail}</a>.
         </p>
       </>
     ),
