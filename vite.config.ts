@@ -44,7 +44,13 @@ export default defineConfig(({ command }) => ({
   plugins: [
     // Compiles content/docs/*.mdx; see source.config.ts.
     mdx(docsConfig),
-    cloudflare({ viteEnvironment: { name: 'ssr' } }),
+    cloudflare({
+      viteEnvironment: { name: 'ssr' },
+      // Workers AI only runs on Cloudflare, and reaching it needs a Cloudflare login.
+      // Off by default, so anyone can run the site; the changelog then shows the
+      // GitHub notes. `CHANGELOG_AI=1 pnpm dev` turns it on.
+      remoteBindings: process.env.CHANGELOG_AI === '1',
+    }),
     tanstackStart(),
     viteReact(),
     ogCards(),

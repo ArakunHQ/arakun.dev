@@ -1,8 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Markdown } from '#/components/Markdown'
 import { InstallBand, PageHeader, StatusPill } from '#/components/ui'
-import type { ReleaseNote } from '#/release-notes'
-import { notes } from '#/release-notes'
 import type { Release } from '#/releases'
 import { getReleases } from '#/releases'
 import { pageMeta } from '#/seo'
@@ -38,14 +36,15 @@ function repeatsTag(name: string, tag: string) {
   return version(name.replace(NAME_PREFIX, '')) === version(tag)
 }
 
-function ReleaseNotes({ release, note }: { release: Release; note?: ReleaseNote }) {
-  // A note wins even over a body cached before the note was written, so a new
-  // entry in release-notes.ts shows from the first deploy.
+function ReleaseNotes({ release }: { release: Release }) {
+  const { note } = release
   if (note) {
     return (
       <ul className="areas">
-        {note.changes.map(([area, change]) => (
-          <li key={area}>
+        {note.changes.map(([area, change], i) => (
+          // Workers AI may name an area twice.
+          // biome-ignore lint/suspicious/noArrayIndexKey: the list never changes order.
+          <li key={`${i}-${area}`}>
             <b>{area}</b>
             <span>{change}</span>
           </li>
@@ -60,7 +59,7 @@ function ReleaseNotes({ release, note }: { release: Release; note?: ReleaseNote 
 }
 
 function ReleaseEntry({ release }: { release: Release }) {
-  const note = notes[release.tag]
+  const { note } = release
   // "Arakun v0.1.0" says nothing the version beside it doesn't: prefer the written title.
   const plainName = repeatsTag(release.name, release.tag)
   const title = plainName ? (note?.title ?? release.name) : release.name
@@ -77,7 +76,10 @@ function ReleaseEntry({ release }: { release: Release }) {
       </div>
       <div className="c">
         <h3>{title}</h3>
-        <ReleaseNotes note={note} release={release} />
+        <ReleaseNotes release={release} />
+        {release.rewritten ? (
+          <p className="by mono-label">Summarized by Workers AI from the GitHub notes</p>
+        ) : null}
         <a className="more mono-label" href={release.url}>
           {release.tag} on GitHub
         </a>
