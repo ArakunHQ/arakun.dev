@@ -70,7 +70,7 @@ arakun run --port 5173 npm run dev
 | Component | Use |
 | --- | --- |
 | `<Callout type="info\|tip\|warn\|error\|success" title="…">` | A note set apart from the text. `type` and `title` are optional. |
-| `<Steps>` with a `<Step>` per step | Numbered steps. Start each step with a `###` heading. |
+| `<Steps>` with a `<Step>` per step | Numbered steps. Put them under a `##` heading and start each step with a `###` heading. |
 | `<Tabs items={['a', 'b']}>` with `<Tab value="a">` | Content that differs per platform or option. |
 | `<Cards>` with `<Card title="…" href="/docs/…" description="…" />` | Links to other pages. |
 | `<Accordions>` with `<Accordion title="…">` | Details a reader can open. |

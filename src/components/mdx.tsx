@@ -174,12 +174,19 @@ function CodeBlock({ title, children, ...props }: ComponentProps<'pre'>) {
         className="code-copy"
         data-state={copied ? 'copied' : 'idle'}
         aria-label={copied ? 'Copied' : 'Copy the code'}
-        onClick={(e) => {
-          navigator.clipboard?.writeText(pre.current?.querySelector('code')?.innerText ?? '').catch(() => {})
+        onClick={async (e) => {
+          const button = e.currentTarget
+          try {
+            // Throws when the clipboard is missing or the browser says no, so "Copied" is never a lie.
+            await navigator.clipboard.writeText(pre.current?.querySelector('code')?.innerText ?? '')
+          } catch {
+            celebrate(button, { text: 'Could not copy. Select the code and copy it by hand.', label: 'Not copied', tone: 'error' }, 0)
+            return
+          }
           setCopied(true)
           clearTimeout(timer.current)
           timer.current = setTimeout(() => setCopied(false), 2000)
-          celebrate(e.currentTarget, { text: 'Copied. Paste it in a terminal.', label: 'Copied', tone: 'success' }, 12)
+          celebrate(button, { text: 'Copied. Paste it in a terminal.', label: 'Copied', tone: 'success' }, 12)
         }}
       >
         <svg className="c" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">

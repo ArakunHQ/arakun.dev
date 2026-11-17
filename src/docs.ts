@@ -47,7 +47,11 @@ export function loadBody(slug: string): Promise<Body> {
   if (!body) {
     const page = source.getPage(slug.split('/'))
     if (!page) throw new Error(`No doc named ${slug}`)
-    body = page.data.load()
+    // A failed load is forgotten, so the next visit tries again.
+    body = page.data.load().catch((error: unknown) => {
+      bodies.delete(slug)
+      throw error
+    })
     bodies.set(slug, body)
   }
   return body
