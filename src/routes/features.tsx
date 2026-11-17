@@ -92,7 +92,7 @@ function Features() {
         <Principle
           num="Open"
           title={`Free under ${site.license}`}
-          body="The source is on GitHub. Linux is supported, Windows is in beta, macOS is experimental."
+          body="The source is on GitHub. Linux is supported. Windows and macOS are in beta."
         />
       </section>
 
