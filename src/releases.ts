@@ -1,6 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
-import { env } from 'cloudflare:workers'
+import { env, waitUntil } from 'cloudflare:workers'
 import { notes } from '#/release-notes'
+import { MODEL, REWRITE_VERSION, changesFrom, entryFrom, prompt } from '#/release-rewrite'
+import type { Entry } from '#/release-rewrite'
 import { site } from '#/site'
 
 /**
@@ -12,6 +14,12 @@ import { site } from '#/site'
  *
  * If GitHub cannot be reached, the last answer is served for as long as it is
  * known, and after that the releases listed in `release-notes.ts`.
+ *
+ * GitHub's notes are written for developers. Workers AI rewrites them into a
+ * changelog entry for people who use the app (see `release-rewrite.ts`), once
+ * per release, and KV keeps the result. Until it is ready, which takes seconds,
+ * the page shows the GitHub notes. A hand-written entry in `release-notes.ts`
+ * always wins.
  */
 export type Release = {
   tag: string
@@ -20,9 +28,13 @@ export type Release = {
   publishedAt: string | null
   url: string
   prerelease: boolean
+  /** The changelog entry: written by hand in `release-notes.ts`, or by Workers AI. */
+  note: Entry | null
+  /** True when Workers AI wrote `note`, so the page can say so. */
+  rewritten: boolean
   /**
    * The release notes written on GitHub, as markdown. Empty when there are none worth
-   * showing, or when `release-notes.ts` has notes of its own for this tag.
+   * showing, or when the release has a `note`.
    */
   body: string
   source: 'github' | 'fallback'
@@ -59,6 +71,8 @@ function fromGitHub(list: GitHubRelease[]): Release[] {
       publishedAt: release.published_at,
       url: release.html_url,
       prerelease: release.prerelease,
+      note: notes[release.tag_name] ?? null,
+      rewritten: false,
       body: notes[release.tag_name] || onlyCompareLink.test(release.body ?? '') ? '' : (release.body ?? '').trim(),
       source: 'github' as const,
     }))
@@ -72,6 +86,8 @@ function fallback(): Release[] {
     publishedAt: note.publishedAt ?? null,
     url: `${site.githubUrl}/releases/tag/${tag}`,
     prerelease: false,
+    note,
+    rewritten: false,
     body: '',
     source: 'fallback' as const,
   }))
@@ -86,7 +102,7 @@ function fallback(): Release[] {
 const edgeCache = () => (caches as unknown as { default: Cache }).default
 
 const shared = {
-  key: new Request('https://releases.arakun.internal/v2'),
+  key: new Request('https://releases.arakun.internal/v3'),
   async read(): Promise<{ at: number; releases: Release[] } | undefined> {
     try {
       const hit = await edgeCache().match(this.key)
@@ -124,7 +140,72 @@ async function askGitHub(): Promise<Release[]> {
   return fromGitHub(await response.json())
 }
 
-export const getReleases = createServerFn({ method: 'GET' }).handler(async (): Promise<Release[]> => {
+// An entry never changes for its key, so once read it can stay in memory.
+const entries = new Map<string, Entry>()
+// Rewrites this instance has started, so a busy page starts each one once.
+const started = new Set<string>()
+
+/** Where an entry is kept. A new version or new GitHub notes give a new key. */
+async function entryKey(release: Release): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(release.body))
+  const hash = [...new Uint8Array(digest).slice(0, 8)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
+  return `entry:v${REWRITE_VERSION}:${release.tag}:${hash}`
+}
+
+/** Asks Workers AI for an entry and keeps it. Runs after the page has been sent. */
+async function rewrite(release: Release, key: string, kv: KVNamespace, ai: Ai) {
+  const changes = changesFrom(release.body)
+  // Only dependency bumps and CI changes: there is nothing to tell a user.
+  if (!changes) return
+  // Other instances may see the same release at the same moment. KV is not a
+  // lock, but this keeps it to a few rewrites at most, and the last one wins.
+  const lock = `lock:${key}`
+  if (await kv.get(lock)) return
+  await kv.put(lock, '1', { expirationTtl: 300 })
+  const result = await ai.run(MODEL, prompt(release.tag, changes))
+  const entry = entryFrom(result)
+  if (!entry) throw new Error(`Workers AI gave no usable entry for ${release.tag}`)
+  await kv.put(key, JSON.stringify(entry))
+  entries.set(key, entry)
+}
+
+/** Puts the Workers AI entries on the releases that have no hand-written one. */
+async function withEntries(releases: Release[]): Promise<Release[]> {
+  const { AI: ai, CHANGELOG: kv } = env
+  return Promise.all(
+    releases.map(async (release) => {
+      if (release.note || !release.body) return release
+      try {
+        const key = await entryKey(release)
+        // A short cacheTtl: a missing entry shows up within a minute of being written.
+        const entry = entries.get(key) ?? (await kv.get<Entry>(key, { type: 'json', cacheTtl: 60 }))
+        if (entry) {
+          entries.set(key, entry)
+          return { ...release, note: entry, rewritten: true, body: '' }
+        }
+        if (!started.has(key)) {
+          started.add(key)
+          waitUntil(
+            rewrite(release, key, kv, ai).catch((error) => {
+              console.warn('Changelog: could not rewrite the notes of', release.tag, error)
+              // Try again on a later visit, once the lock has expired.
+              started.delete(key)
+            }),
+          )
+        }
+      } catch (error) {
+        console.warn('Changelog: could not read the entry for', release.tag, error)
+      }
+      return release
+    }),
+  )
+}
+
+export const getReleases = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<Release[]> => withEntries(await fromGitHubOrCache()),
+)
+
+async function fromGitHubOrCache(): Promise<Release[]> {
   const now = Date.now()
   if (remembered && now - remembered.at < FRESH_FOR) return remembered.releases
 
@@ -150,4 +231,4 @@ export const getReleases = createServerFn({ method: 'GET' }).handler(async (): P
     }
     return fallback()
   }
-})
+}

@@ -1,14 +1,13 @@
 /**
  * Hand-written notes for a release, keyed by its tag.
  *
- * The changelog reads the releases from GitHub (see `releases.ts`). An entry
- * here wins over the release's notes on GitHub. Without one, the page shows the
- * GitHub notes. These entries are also the whole changelog if GitHub has never
- * been reachable.
+ * The changelog reads the releases from GitHub (see `releases.ts`), and Workers
+ * AI rewrites their notes for people who use the app (`release-rewrite.ts`). An
+ * entry here wins over both. These entries are also the whole changelog if GitHub
+ * has never been reachable.
  *
- * So the usual way to add a release is to write its notes on GitHub. Add an
- * entry here when the GitHub notes are empty, or are GitHub's generated list of
- * pull requests, which says little to someone who uses the app.
+ * So a new release needs nothing here. Add an entry when its GitHub notes are
+ * empty, or when the rewrite gets something wrong.
  */
 export type ReleaseNote = {
   title: string

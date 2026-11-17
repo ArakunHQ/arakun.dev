@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Markdown } from '#/components/Markdown'
 import { InstallBand, PageHeader, StatusPill } from '#/components/ui'
-import { notes } from '#/release-notes'
 import { getReleases } from '#/releases'
 import type { Release } from '#/releases'
 import { pageMeta } from '#/seo'
@@ -11,8 +10,8 @@ const page = pages.changelog
 
 /**
  * The changelog. Its releases come from GitHub: see `releases.ts` for how they
- * are read and cached, and `release-notes.ts` for the hand-written notes shown
- * in place of a release's GitHub notes.
+ * are read, cached and rewritten for users by Workers AI, and `release-notes.ts`
+ * for the hand-written entries that win over both.
  */
 export const Route = createFileRoute('/changelog')({
   loader: () => getReleases(),
@@ -28,7 +27,7 @@ export const Route = createFileRoute('/changelog')({
 const day = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' })
 
 function ReleaseEntry({ release }: { release: Release }) {
-  const note = notes[release.tag]
+  const { note } = release
   // "Arakun v0.1.0" says nothing the version beside it doesn't: prefer the written title.
   const plainName = new RegExp(`^(${site.name}\\s+)?v?${release.tag.replace(/^v/, '')}$`, 'i').test(release.name)
   const title = plainName ? (note?.title ?? release.name) : release.name
@@ -41,20 +40,22 @@ function ReleaseEntry({ release }: { release: Release }) {
       </div>
       <div className="c">
         <h3>{title}</h3>
-        {release.body ? (
-          <Markdown source={release.body} />
-        ) : note ? (
+        {note ? (
           <ul className="areas">
-            {note.changes.map(([area, change]) => (
-              <li key={area}>
+            {note.changes.map(([area, change], i) => (
+              // Workers AI may name an area twice.
+              <li key={`${i}-${area}`}>
                 <b>{area}</b>
                 <span>{change}</span>
               </li>
             ))}
           </ul>
+        ) : release.body ? (
+          <Markdown source={release.body} />
         ) : (
           <p className="none">This release has no written notes.</p>
         )}
+        {release.rewritten && <p className="by mono-label">Summarized by Workers AI from the GitHub notes</p>}
         <a className="more mono-label" href={release.url}>
           {release.tag} on GitHub
         </a>

@@ -24,7 +24,7 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 - `src/docs.tsx`: every docs page, written from the app's README at github.com/ArakunHQ/arakun. Add an entry to add a page.
 - `src/styles.css`: the Brandbook tokens and every component's styles. Dark is the default; light is `data-theme="light"` on `<html>`.
 - `src/routes/`: one file per page (`index`, `features`, `download`, `changelog`, `docs.index`, `docs.$slug`).
-- `src/releases.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the changelog's GitHub sync (see below).
+- `src/releases.ts`, `src/release-rewrite.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the changelog's GitHub sync and its Workers AI rewrite (see below).
 - `src/components/ui.tsx`: buttons, the install line, cards and other shared pieces.
 - `src/components/chrome.tsx`: the sticky header, the theme switch and the footer.
 - `src/router.tsx`, `vite.config.ts`: [deploy-watch](https://github.com/rivi-software/tools/tree/main/packages/deploy-watch#readme) moves a tab left open across a deploy onto the new build at its next page change. A build in CI is named after its commit; `pnpm run deploy` by hand names it after `HEAD`.
@@ -40,11 +40,20 @@ release there and it shows on the site within ten minutes. No deploy is needed.
 - `src/releases.ts` asks GitHub, at most once every ten minutes, and remembers
   the answer. If GitHub cannot be reached it serves the last answer it has, and
   after that the releases in `src/release-notes.ts`.
-- The page shows the notes written on the GitHub release. Drafts are never shown;
-  pre-releases get a "Pre-release" label.
-- `src/release-notes.ts` holds hand-written notes per tag. They are shown in
-  place of the GitHub notes: for v0.1.0, whose notes are empty, and for v0.2.1,
-  whose notes are GitHub's generated list of pull requests.
+- GitHub's notes are a list of pull requests, written for developers. Workers AI
+  rewrites them into a short entry per area for people who use the app
+  (`src/release-rewrite.ts`). It drops what users would not notice, such as CI,
+  tests and dependency bumps. Each release is rewritten once and kept in the
+  `CHANGELOG` KV namespace; new notes on GitHub are rewritten again. Until the
+  entry is ready, a few seconds after the first visit, the page shows the GitHub notes.
+- `src/release-notes.ts` holds hand-written entries per tag. They win over both:
+  write one when the rewrite gets something wrong. v0.1.0 and v0.2.1 have one.
+- To change the prompt or the model, bump `REWRITE_VERSION` in
+  `src/release-rewrite.ts`, so every release is rewritten the new way.
+- Drafts are never shown; pre-releases get a "Pre-release" label.
+- `pnpm dev` leaves Workers AI off, since it needs a Cloudflare login, and shows
+  the GitHub notes. `CHANGELOG_AI=1 pnpm dev` turns it on; the model runs on
+  Cloudflare and is billed to your account.
 - Optional: `wrangler secret put GITHUB_TOKEN` raises GitHub's limit from 60 to
   5000 requests an hour. A token with no scopes is enough for a public repository.
 - The shared cache only works on a custom domain. On a `workers.dev` address each
@@ -83,7 +92,9 @@ Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
   moved on, it skips, and the newer commit's run deploys.
 - The job runs in the `production` environment of the GitHub repository. It needs:
   - `CLOUDFLARE_API_TOKEN`, an environment secret: a Cloudflare API token with
-    "Edit Cloudflare Workers" on the account and zone that hold arakun.dev.
+    "Edit Cloudflare Workers" on the account and zone that hold arakun.dev. That
+    template includes Workers KV Storage, which the first deploy needs to create the
+    changelog's `CHANGELOG` namespace.
   - `CLOUDFLARE_ACCOUNT_ID`, an environment variable: the ID of that account.
 - Limit the environment to `main` (Settings > Environments > production >
   Deployment branches), so no other branch can read the token.
