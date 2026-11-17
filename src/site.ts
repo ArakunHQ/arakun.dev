@@ -1,6 +1,6 @@
 /** Facts and links the whole site shares. Checked against github.com/ArakunHQ/arakun. */
 const repo = 'https://github.com/ArakunHQ/arakun'
-const version = '0.1.0'
+const version = '0.2.1'
 const release = `${repo}/releases/download/v${version}`
 
 export const site = {
@@ -9,7 +9,7 @@ export const site = {
   /** Absolute origin, for links that leave the site: og:image, canonical URLs. */
   url: 'https://arakun.dev',
   version,
-  released: 'November 14, 2026',
+  released: 'November 17, 2026',
   license: 'AGPL-3.0',
   installUrl: 'https://arakun.dev/install',
   githubUrl: repo,
@@ -23,10 +23,10 @@ export const site = {
    * has an organization of its own. Then change this, and sign a new PostHog DPA in its name.
    */
   operator: { name: 'CoderLabs, Inc.', address: '131 Continental Dr, Suite 305, Newark, DE 19713, USA' },
-  /** Release v0.1.0 has no macOS archive, so macOS has no direct download. */
   downloads: {
     Linux: `${release}/arakun-v${version}-linux-x86_64.tar.gz`,
     Windows: `${release}/arakun-v${version}-windows-x86_64.zip`,
+    macOS: `${release}/arakun-v${version}-macos-arm64.tar.gz`,
   },
 }
 
