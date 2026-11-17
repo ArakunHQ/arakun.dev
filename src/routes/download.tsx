@@ -1,19 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import type { Tone } from '#/components/ui'
 import { DownloadButton, InstallLine, PageHeader, Principle, StatusPill } from '#/components/ui'
-import { pageMeta } from '#/seo'
+import { innerPageHead, softwareApplication } from '#/seo'
 import type { Platform } from '#/site'
 import { pages, site } from '#/site'
 
 const page = pages.download
 
 export const Route = createFileRoute('/download')({
-  head: () => ({
-    meta: [
-      { title: `Download · ${site.name}` },
-      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
-    ],
-  }),
+  head: () => innerPageHead(page, [softwareApplication]),
   component: Download,
 })
 

@@ -2,18 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { reopenConsent, useAnalytics } from '#/analytics'
 import { PageHeader } from '#/components/ui'
-import { pageMeta } from '#/seo'
+import { innerPageHead } from '#/seo'
 import { pages, site } from '#/site'
 
 const page = pages.privacy
 
 export const Route = createFileRoute('/privacy')({
-  head: () => ({
-    meta: [
-      { title: `Privacy · ${site.name}` },
-      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
-    ],
-  }),
+  head: () => innerPageHead(page),
   component: Privacy,
 })
 

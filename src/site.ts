@@ -6,6 +6,9 @@ const release = `${repo}/releases/download/v${version}`
 export const site = {
   name: 'Arakun',
   line: 'One native window for your coding agents.',
+  /** The home page's description in search results, and the app's in its structured data. */
+  description:
+    'Arakun is a native app where Claude Code, Droid, OpenCode, Codex and Workers AI work side by side, each on its own git worktree.',
   /** Absolute origin, for links that leave the site: og:image, canonical URLs. */
   url: 'https://arakun.dev',
   /**
@@ -41,13 +44,15 @@ export type Platform = keyof typeof site.downloads
 
 /**
  * The header of each inner page. The page shows it in its PageHeader and its
- * link preview card (src/og-cards.ts) uses the same title and lead.
+ * link preview card (src/og-cards.ts) uses the same title and lead. `tab` is the
+ * <title>: what search results and the browser tab show, so it names the page's topic.
  */
 export const pages = {
   features: {
     path: '/features',
     num: '01',
     label: 'Features',
+    tab: 'Features: many coding agents in one window · Arakun',
     title: 'Many agents. One calm window.',
     lead: 'Arakun is quiet, quick, and awake while you are away. This is what it does.',
   },
@@ -55,6 +60,7 @@ export const pages = {
     path: '/download',
     num: '02',
     label: 'Download',
+    tab: 'Download Arakun for Linux, Windows and macOS',
     // Not "Install Arakun": that is the title of /docs/install.
     title: 'Download Arakun',
     lead: `One line in a terminal, or download the build for your platform. Free and open source under ${site.license}.`,
@@ -63,6 +69,7 @@ export const pages = {
     path: '/docs',
     num: '03',
     label: 'Docs',
+    tab: 'Arakun docs: install, agents and the arakun command',
     title: 'Learn Arakun',
     lead: 'Short pages, plain words. Start with the install, then give an agent its first task.',
   },
@@ -70,6 +77,7 @@ export const pages = {
     path: '/changelog',
     num: '04',
     label: 'Changelog',
+    tab: 'Arakun changelog: every release, newest first',
     title: 'What changed',
     lead: 'Every release, newest first.',
   },
@@ -77,6 +85,7 @@ export const pages = {
     path: '/privacy',
     num: '05',
     label: 'Privacy',
+    tab: 'Privacy: what arakun.dev and the app collect · Arakun',
     title: 'Privacy',
     lead: 'What arakun.dev and the Arakun app collect, why, and how to say no.',
   },

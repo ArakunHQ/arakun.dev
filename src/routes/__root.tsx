@@ -13,9 +13,6 @@ import appCss from '#/styles.css?url'
 // Dark is the default; a saved choice wins, then the system preference.
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.dataset.theme=t}catch(e){}})()`
 
-const description =
-  'Arakun is a native app where Claude Code, Droid, OpenCode, Codex and Workers AI work side by side, each on its own git worktree.'
-
 export const Route = createRootRoute({
   // The release every page offers: the hero, the download buttons and the footer.
   loader: () => getLatest(),
@@ -26,7 +23,7 @@ export const Route = createRootRoute({
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: `${site.name} · ${site.line}` },
-      { name: 'description', content: description },
+      { name: 'description', content: site.description },
       { property: 'og:site_name', content: site.name },
       { property: 'og:type', content: 'website' },
       { property: 'og:image:width', content: '1200' },

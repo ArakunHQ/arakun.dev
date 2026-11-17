@@ -3,8 +3,8 @@ import { AnchorProvider, TOCItem } from 'fumadocs-core/toc'
 import { mdxComponents } from '#/components/mdx'
 import { step, Words } from '#/components/ui'
 import { docs, groups, loadBody, useBody } from '#/docs'
-import { pageMeta } from '#/seo'
-import { site } from '#/site'
+import { pageHead, techArticle } from '#/seo'
+import { pages, site } from '#/site'
 
 export const Route = createFileRoute('/docs/$slug')({
   loader: async ({ params }) => {
@@ -17,18 +17,23 @@ export const Route = createFileRoute('/docs/$slug')({
     await loadBody(docs[index].slug)
     return { index, slug: docs[index].slug, title: docs[index].title, summary: docs[index].summary }
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.title ?? 'Docs'} · ${site.name} docs` },
-      ...(loaderData
-        ? pageMeta({
-            path: `/docs/${loaderData.slug}`,
-            title: loaderData.title,
-            description: loaderData.summary,
-          })
-        : []),
-    ],
-  }),
+  head: ({ loaderData }) => {
+    if (!loaderData) {
+      return { meta: [{ title: `Docs · ${site.name}` }] }
+    }
+    const path = `/docs/${loaderData.slug}`
+    return pageHead({
+      path,
+      tabTitle: `${loaderData.title} · ${site.name} docs`,
+      title: loaderData.title,
+      description: loaderData.summary,
+      trail: [
+        { name: pages.docs.label, path: pages.docs.path },
+        { name: loaderData.title, path },
+      ],
+      jsonLd: [techArticle({ path, title: loaderData.title, description: loaderData.summary })],
+    })
+  },
   component: DocPage,
 })
 

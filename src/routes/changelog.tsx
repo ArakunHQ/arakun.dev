@@ -3,7 +3,7 @@ import { Markdown } from '#/components/Markdown'
 import { InstallBand, PageHeader, StatusPill } from '#/components/ui'
 import type { Release } from '#/releases'
 import { getReleases } from '#/releases'
-import { pageMeta } from '#/seo'
+import { innerPageHead } from '#/seo'
 import { pages, site } from '#/site'
 
 const page = pages.changelog
@@ -15,12 +15,7 @@ const page = pages.changelog
  */
 export const Route = createFileRoute('/changelog')({
   loader: () => getReleases(),
-  head: () => ({
-    meta: [
-      { title: `Changelog · ${site.name}` },
-      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
-    ],
-  }),
+  head: () => innerPageHead(page),
   component: Changelog,
 })
 
