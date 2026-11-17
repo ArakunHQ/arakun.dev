@@ -8,10 +8,7 @@
 	"compatibility_date": "2026-11-13",
 	"compatibility_flags": ["nodejs_compat"],
 	"main": "@tanstack/react-start/server-entry",
-	// The site lives at arakun.dev only. A custom domain makes Cloudflare create the DNS
-	// record and certificate, and the shared cache in src/releases.ts needs one. The
-	// workers.dev address is off, so the site has a single address.
-	"routes": [{ "pattern": "arakun.dev", "custom_domain": true }],
+	// Only the domains below serve the site; no workers.dev address.
 	"workers_dev": false,
 	"observability": {
 		"enabled": true

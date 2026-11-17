@@ -75,11 +75,9 @@ The changelog needs nothing. The version and the download links do: change
 Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
 "Deploy to arakun.dev" job in `.github/workflows/ci.yml`). Pull requests never deploy.
 
-- `wrangler.jsonc` attaches arakun.dev to the Worker as a custom domain. Cloudflare
-  makes the DNS record and the certificate. The `workers.dev` address is off.
-- Before the first deploy, free the name: delete the DNS record for `arakun.dev`, or
-  detach the domain from the Pages project or Worker that serves it now. A custom
-  domain can't replace an existing record. The `www` redirect can stay.
+- `wrangler.jsonc` attaches arakun.dev and www.arakun.dev to the Worker as custom
+  domains. A deploy without one of them detaches it, so keep both. The `workers.dev`
+  address is off.
 - Deploys queue and run one at a time. When a deploy's turn comes and `main` has
   moved on, it skips, and the newer commit's run deploys.
 - The job runs in the `production` environment of the GitHub repository. It needs:
