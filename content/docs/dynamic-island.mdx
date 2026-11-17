@@ -1,14 +1,40 @@
 ---
 title: Dynamic Island
-description: A small overlay at the top of the screen.
+description: The Dynamic Island shows at the top of the screen what the agents of every project are doing, and a card when one finishes, fails or needs you.
 ---
 
-The Dynamic Island is a small overlay at the top of the screen. It shows what the agents of every project are doing: a dot per busy session, and a card when one finishes, fails or needs an answer.
+It is a small black shape that stays on top of whichever window is in front, so you can work elsewhere and still see when an agent needs you.
+
+## What it shows
+
+- **A dot per busy session.** When nothing has run for two minutes, the raccoon on it falls asleep.
+- **A card** when a session finishes, fails or needs an answer. **View** opens the session; **Later** puts the card away. A card goes away by itself after a few seconds, longer when there is more to read.
+- **The list of sessions** when you hover over it. Click a row to open that session.
+- **Approve and Deny** when a [headless agent](/docs/headless-agents) asks to run a tool call. These cards wait for your answer.
+
+Every notice also lands in the [Inbox](/docs/inbox), so you can read it later.
 
 ## Where it works
 
-<Callout type="warn">
-  Linux on Wayland only, for now. It needs a compositor with the wlr-layer-shell protocol. Windows has no Dynamic Island yet.
+- **Linux on Wayland.** It needs a compositor with the wlr-layer-shell protocol, such as Hyprland or Sway. It doesn't work on X11.
+- **macOS.** On a MacBook it grows out of the notch, or out of the screen's own Dynamic Island on models that have one, and sits on the built-in screen. On a Mac without either, it hangs from the top of the main screen.
+- **Windows** has no Dynamic Island yet.
+
+<Callout type="info" title="The shape around the notch is wrong">
+
+Set `ARAKUN_ISLAND_EDGE` to `flat`, `notch:<width>x<height>` or `pill:<width>x<height>+<gap to the top>`, in points. The shape around a notch and around the MacBook Pro's Dynamic Island hasn't been tested on those screens yet.
+
 </Callout>
 
-It runs as its own process, `arakun island-host`.
+## Turn it off
+
+Turn off **Dynamic Island** in Settings. The island runs as its own process, `arakun island-host`, and turning it off ends that process.
+
+## From a terminal
+
+The island works with the app closed, so a script can use it too:
+
+```sh
+arakun island alert "Backup done" "412 files"   # show a card
+arakun island                                   # print the state it shows
+```
