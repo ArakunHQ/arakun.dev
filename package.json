@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build",
+    "build": "vite build && workers-bundle-check",
     "preview": "pnpm run build && vite preview",
     "typecheck": "tsc --noEmit",
     "deploy": "pnpm run build && wrangler deploy",
@@ -29,6 +29,7 @@
     "@fontsource/geist": "^5.3.0",
     "@fontsource/geist-mono": "^5.3.0",
     "@resvg/resvg-js": "^2.6.2",
+    "@rivi-software/workers-bundle-check": "^1.0.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

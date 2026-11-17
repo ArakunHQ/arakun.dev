@@ -13,7 +13,7 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 | Command | What it does |
 | --- | --- |
 | `pnpm dev` | Runs the site at http://localhost:3000 in the Workers runtime. |
-| `pnpm build` | Builds the Worker and its static assets into `dist/`. |
+| `pnpm build` | Builds the Worker and its static assets into `dist/`, then checks the build: no source map the site would serve, no value shaped like a secret (`workers-bundle-check.config.ts`). |
 | `pnpm preview` | Builds, then serves the production build locally. |
 | `pnpm typecheck` | Runs TypeScript without emitting. |
 | `pnpm deploy` | Builds and deploys with Wrangler. Needs `wrangler login` first. |
