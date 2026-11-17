@@ -54,10 +54,17 @@ function start() {
     // No session recording, whatever the project settings say. Autocapture stays on for
     // clicks; it never reads what is typed into a field.
     disable_session_recording: true,
+    // The site uses no feature flags, so it skips the request that fetches them.
+    advanced_disable_flags: true,
+    // Consent can be withdrawn in another tab while posthog-js is still loading here.
+    // Every event checks the answer as it leaves, so none slips out in between.
+    before_send: (event) => (state.consent === 'granted' ? event : null),
   })
-  // A visitor who declined and then accepts on the same page: posthog-js remembers the opt-out.
   withPostHog((posthog) => {
-    if (posthog.has_opted_out_capturing()) posthog.opt_in_capturing()
+    // Withdrawn while the SDK loaded: stop now, before the opt-in below can send anything.
+    if (state.consent !== 'granted') posthog.opt_out_capturing()
+    // A visitor who declined and then accepts on the same page: posthog-js remembers the opt-out.
+    else if (posthog.has_opted_out_capturing()) posthog.opt_in_capturing()
   })
 }
 
