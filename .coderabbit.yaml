@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# This is a small static website, so reviews stay quiet and CodeRabbit may
+# approve most pull requests itself. A person still merges.
+reviews:
+  # Only the most important comments, no nitpicks.
+  profile: quiet
+  auto_approvals:
+    enabled: true
+    # Approve up to high risk. Critical risk waits for a person.
+    # No max_security_risk: CodeRabbit runs that assessment only on a few
+    # pull requests and withholds approval on all others, so the limit would
+    # block nearly every approval. merge_risk_instructions covers it instead.
+    max_merge_risk: high
+    overrides:
+      # CI and the approval rules themselves always need a person, whatever
+      # the risk rating says.
+      - paths: [".github/**", ".coderabbit.yaml"]
+        enabled: false
+  merge_risk_instructions: >-
+    This repository is the marketing and docs website for Arakun. It is
+    TanStack Start on Cloudflare Workers, with no database and no user
+    accounts. Changes to text, docs, styles, images and dependency updates
+    that pass CI are low risk. Changes to wrangler.jsonc, src/site.ts
+    (versions and download links), src/releases.ts (release data from
+    GitHub) or the Worker entry are moderate risk. Changes that could break
+    every page or every download link, or that change how the Worker handles
+    requests or secrets, are high risk. A change that could expose
+    GITHUB_TOKEN, or that could serve a download link outside
+    github.com/ArakunHQ, is critical risk, so a person must approve it.
+  security_risk_instructions: >-
+    The site is public and serves static pages and assets. The only secret
+    is GITHUB_TOKEN, a Wrangler secret used to read public release data from
+    GitHub. Exposing that token, or serving a download link outside
+    github.com/ArakunHQ, is critical risk.
