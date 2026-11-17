@@ -1,8 +1,8 @@
 name: CI
 
 # Typechecks and builds the site, and checks that the Worker bundles the way
-# `wrangler deploy` would, without uploading anything. Deploys are not done
-# here: `pnpm deploy` runs by hand (see README.md).
+# `wrangler deploy` would, without uploading anything. A push to main that
+# passes those checks then deploys to arakun.dev (see "Deploys" in README.md).
 
 on:
   push:
@@ -56,3 +56,47 @@ jobs:
             echo "::error::Generated files are out of date. Run 'pnpm cf-typegen' and 'pnpm build', then commit the result."
             exit 1
           fi
+
+  deploy:
+    name: Deploy to arakun.dev
+    needs: build
+    # Only commits on main go live. Pull requests never get the token.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    # The token is an environment secret, so only jobs that name this
+    # environment can read it, and the environment can be limited to main.
+    environment:
+      name: production
+      url: https://arakun.dev
+    # One deploy at a time, never cancelled halfway. A newer push waiting here
+    # replaces an older one that is still waiting, so main's latest commit is
+    # what ends up live.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      # No dependency cache: the job that holds the deploy token installs from
+      # the registry, never from a cache another run wrote.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - run: pnpm install --frozen-lockfile
+
+      # deploy-watch names the build after GITHUB_SHA, so open tabs move to it.
+      - run: pnpm build
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec wrangler deploy --message "$GITHUB_SHA"
