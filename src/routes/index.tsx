@@ -9,6 +9,7 @@ import {
   Principle,
   SessionRow,
   step,
+  useLatest,
   useVisitorPlatform,
   Words,
 } from '#/components/ui'
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
   const platform = useVisitorPlatform()
+  const latest = useLatest()
   return (
     <>
       <section className="hero">
@@ -37,7 +39,7 @@ function Home() {
             <InstallLine />
           </div>
           <span className="meta rise" style={step(2, 480)}>
-            v{site.version} · {site.license} · Windows and macOS in beta
+            v{latest.version} · {site.license} · Windows and macOS in beta
           </span>
         </div>
         <div className="peek">

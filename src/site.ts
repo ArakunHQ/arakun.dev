@@ -1,6 +1,6 @@
 /** Facts and links the whole site shares. Checked against github.com/ArakunHQ/arakun. */
 const repo = 'https://github.com/ArakunHQ/arakun'
-const version = '0.2.1'
+const version = '0.3.0'
 const release = `${repo}/releases/download/v${version}`
 
 export const site = {
@@ -8,6 +8,10 @@ export const site = {
   line: 'One native window for your coding agents.',
   /** Absolute origin, for links that leave the site: og:image, canonical URLs. */
   url: 'https://arakun.dev',
+  /**
+   * The fallback release, for when GitHub cannot be reached. Pages show the newest
+   * release from GitHub instead (useLatest in src/components/ui.tsx). The docs use this one.
+   */
   version,
   released: 'November 17, 2026',
   license: 'AGPL-3.0',
@@ -29,7 +33,7 @@ export const site = {
   downloads: {
     Linux: `${release}/arakun-v${version}-linux-x86_64.tar.gz`,
     Windows: `${release}/arakun-v${version}-windows-x86_64.zip`,
-    macOS: `${release}/arakun-v${version}-macos-arm64.tar.gz`,
+    macOS: `${release}/arakun-v${version}-macos-arm64.dmg`,
   },
 }
 

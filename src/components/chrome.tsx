@@ -2,7 +2,7 @@ import { Link, useLocation } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { reopenConsent, useAnalytics } from '#/analytics'
 import { site } from '#/site'
-import { ButtonLink } from './ui'
+import { ButtonLink, useLatest } from './ui'
 
 /** The hero raccoon sends this with `true` while it is on screen, and `false` once it is not. */
 export const HERO_EVENT = 'arakun:hero-in-view'
@@ -122,6 +122,7 @@ function ThemeToggle() {
 }
 
 export function SiteFooter() {
+  const latest = useLatest()
   return (
     <footer className="sf">
       <div className="wrap">
@@ -159,7 +160,7 @@ export function SiteFooter() {
             <Link to="/privacy">Privacy</Link>
             <CookieSettings />
             <span>
-              {site.license} · v{site.version}
+              {site.license} · v{latest.version}
             </span>
           </span>
         </div>
