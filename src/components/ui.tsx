@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { getRouteApi, Link } from '@tanstack/react-router'
 import type { ComponentProps, CSSProperties, PointerEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import type { Platform } from '#/site'
@@ -47,6 +47,14 @@ export function ButtonLink({
 
 const MAC = /Macintosh/u
 
+const root = getRouteApi('__root__')
+
+/**
+ * The release the site offers: the newest on GitHub, or the one in `site.ts` if GitHub
+ * cannot be reached. Use this, not `site.version`, for anything the visitor downloads.
+ */
+export const useLatest = () => root.useLoaderData()
+
 /**
  * The download that suits the visitor: macOS on a Mac, Linux everywhere else.
  * The server can't see the visitor's OS, so the page renders Linux first and
@@ -72,16 +80,17 @@ export function DownloadButton({
   tone?: ButtonTone
 }) {
   const celebrate = useCelebrate()
+  const latest = useLatest()
   return (
     <a
       className="btn"
       data-tone={tone}
-      href={site.downloads[platform]}
+      href={latest.downloads[platform]}
       onClick={(e) =>
         celebrate(
           e.currentTarget,
           {
-            text: `Arakun ${site.version} for ${platform} is downloading.`,
+            text: `Arakun ${latest.version} for ${platform} is downloading.`,
             label: 'Downloading',
             tone: 'attention',
           },
