@@ -1,9 +1,10 @@
 // CLA check (.github/workflows/cla.yml).
 //
-// Everyone who wrote a commit in a pull request, and the person who opened it,
-// must have signed CLA.md. The signatures are a JSON file on the
-// cla-signatures branch, in the format the contributor-assistant action used
-// before, so the old signatures still count. People are matched by their
+// Everyone who wrote a commit in a pull request, co-authors included, and the
+// person who opened it, must have signed CLA.md. Coding agents named as
+// co-authors are left out. The signatures are a JSON file on the cla-signatures
+// branch, in the format the contributor-assistant action used before, so the
+// old signatures still count. People are matched by their
 // GitHub user id, which stays the same when they rename their account.
 //
 // The result is a commit status on the head commit, not the job's own check,
@@ -31,12 +32,17 @@ const MARKER = "<!-- arakun-cla -->";
 // The copyright holder doesn't need a license from themselves.
 // By user id (KarloAldrete), which survives a rename.
 const ALLOWED = new Set([66887635]);
+// Coding agents that commits name as a co-author. They are tools, not people,
+// and can't sign; the person who ran them signs for the commit. By user id:
+// claude (Claude Code), codex (Codex), cursoragent (Cursor), Copilot.
+const AGENTS = new Set([81847, 267193182, 199161495, 198982749]);
 
 const normalize = (text) => text.toLowerCase().replace(/\s+/g, " ").trim();
 
 /**
- * A comment signs if it has the sentence, in any case and spacing, outside a
- * quote: someone who quotes the bot to ask a question has not agreed.
+ * A comment signs if, outside quotes, it is the sentence and nothing else, in
+ * any case and spacing. A comment that only mentions the sentence, such as a
+ * question about it, has not agreed.
  */
 export function signs(body) {
   // A quote runs on over lines without ">" until a blank line, as in GitHub's
@@ -49,8 +55,12 @@ export function signs(body) {
       else if (line.trim() === "") quoted = false;
       return !quoted;
     })
+    // The bot shows the sentence in a code block, so a copy may bring the
+    // fences or backticks along.
+    .filter((line) => !/^\s*(```|~~~)\w*\s*$/.test(line))
     .join("\n");
-  return normalize(own).includes(normalize(SENTENCE));
+  const text = normalize(own).replace(/^`+|`+$/g, "").replace(/[.!\s]+$/, "").trim();
+  return text === normalize(SENTENCE);
 }
 
 /** A comment asks for a new check if it has the word "recheck". */
@@ -59,13 +69,15 @@ export function rechecks(body) {
 }
 
 export function exempt(user) {
-  return user.type === "Bot" || user.login.endsWith("[bot]") || ALLOWED.has(user.id);
+  return user.type === "Bot" || user.login.endsWith("[bot]") || ALLOWED.has(user.id) || AGENTS.has(user.id);
 }
 
 /**
- * Who has to sign for a pull request: its author and every commit author,
- * leaving out bots and the allow-list. `unknown` holds the commits whose
- * author email is not linked to a GitHub account, so no one can sign for them.
+ * Who has to sign for a pull request: its author and every author and
+ * co-author (Co-authored-by) of its commits, leaving out bots, coding agents
+ * and the allow-list. `unknown` holds the commits with an author or co-author
+ * whose email is not linked to a GitHub account, so no one can sign for them.
+ * A commit's `coAuthors` are users, or null for one that isn't linked.
  */
 export function signers(pr, commits) {
   const users = new Map();
@@ -75,8 +87,9 @@ export function signers(pr, commits) {
   };
   add(pr.user);
   for (const c of commits) {
-    if (c.author?.id) add(c.author);
-    else unknown.push({ sha: c.sha });
+    const people = [c.author?.id ? c.author : null, ...(c.coAuthors ?? [])];
+    for (const user of people) add(user);
+    if (people.includes(null)) unknown.push({ sha: c.sha });
   }
   return { users, unknown };
 }
@@ -98,7 +111,7 @@ export function commentBody({ missing, unknown, truncated = false, claUrl }) {
   ];
   if (missing.length > 0) {
     lines.push(
-      "To sign, read the CLA, then post this comment on this pull request:",
+      "To sign, read the CLA, then post this comment, and nothing else, on this pull request:",
       "",
       "```",
       SENTENCE,
@@ -112,19 +125,19 @@ export function commentBody({ missing, unknown, truncated = false, claUrl }) {
   }
   if (unknown.length > 0) {
     lines.push(
-      "These commits have an author email that is not linked to a GitHub account, so no one can sign for them:",
+      "These commits have an author or co-author email that is not linked to a GitHub account, so no one can sign for them:",
       "",
       // Only the hash: the author name is whatever the commit says, and the
       // bot must not repeat it.
       ...unknown.map((u) => `- ${u.sha}`),
       "",
-      "Add the email to your GitHub account, or rewrite the commits with an email that is on it.",
+      "Add the email to the GitHub account it belongs to, or rewrite the commits with an email that is on one.",
       "",
     );
   }
   if (truncated) {
     lines.push(
-      "GitHub didn't list every commit in this pull request, so the authors of the rest can't be checked. Squash it into fewer commits, or ask a maintainer to check them by hand.",
+      "GitHub didn't list every commit in this pull request, or every author of one, so the rest can't be checked. Squash it into fewer commits, or ask a maintainer to check them by hand.",
       "",
     );
   }
@@ -147,7 +160,7 @@ class HttpError extends Error {
 
 async function gh(method, path, body) {
   for (let attempt = 1; ; attempt++) {
-    const res = await fetch(`${API}${path}`, {
+    const res = await fetch(path.startsWith("https://") ? path : `${API}${path}`, {
       method,
       headers: {
         authorization: `Bearer ${TOKEN}`,
@@ -166,6 +179,48 @@ async function gh(method, path, body) {
     }
     throw new HttpError(res.status, `${method} ${path}: ${res.status} ${await res.text()}`);
   }
+}
+
+const GRAPHQL = process.env.GITHUB_GRAPHQL_URL || `${API}/graphql`;
+
+async function graphql(query, variables) {
+  const res = await gh("POST", GRAPHQL, { query, variables });
+  if (res.errors?.length) throw new Error(`GraphQL: ${res.errors.map((e) => e.message).join("; ")}`);
+  return res.data;
+}
+
+// More co-authors than this on one commit counts as not every author listed.
+const MAX_AUTHORS = 50;
+
+/**
+ * Adds `coAuthors` to each commit: everyone GitHub lists as its author,
+ * including Co-authored-by trailers, which only GraphQL resolves to users.
+ * Returns false if some commit had more authors than could be listed.
+ */
+async function addCoAuthors(commits) {
+  const [owner, name] = REPO.split("/");
+  let complete = true;
+  for (let i = 0; i < commits.length; i += 50) {
+    const batch = commits.slice(i, i + 50);
+    // The shas come from GitHub's compare and are checked, so they are safe
+    // to put in the query.
+    const fields = batch
+      .map((c, j) => {
+        if (!/^[0-9a-f]{40}$/.test(c.sha)) throw new Error(`Not a commit sha: ${c.sha}`);
+        return `c${j}: object(oid: "${c.sha}") { ... on Commit { authors(first: ${MAX_AUTHORS}) { totalCount nodes { user { databaseId login } } } } }`;
+      })
+      .join("\n");
+    const data = await graphql(
+      `query($owner: String!, $name: String!) { repository(owner: $owner, name: $name) { ${fields} } }`,
+      { owner, name },
+    );
+    batch.forEach((c, j) => {
+      const authors = data.repository[`c${j}`]?.authors;
+      if (!authors || authors.totalCount > authors.nodes.length) complete = false;
+      c.coAuthors = (authors?.nodes ?? []).map((a) => (a.user ? { id: a.user.databaseId, login: a.user.login } : null));
+    });
+  }
+  return complete;
 }
 
 async function paged(path) {
@@ -233,9 +288,11 @@ async function review(pr, sha) {
     commits.push(...compare.commits);
     if (compare.commits.length < 100 || commits.length >= total) break;
   }
-  // If GitHub didn't return every commit (or no count), the authors of the
-  // rest are unknown, so the check fails rather than pass on what it saw.
-  return { pr, ...signers(pr, commits), truncated: !(commits.length >= total) };
+  const allAuthors = await addCoAuthors(commits);
+  // If GitHub didn't return every commit (or no count), or every author of
+  // one, the rest are unknown, so the check fails rather than pass on what it
+  // saw.
+  return { pr, ...signers(pr, commits), truncated: !(commits.length >= total) || !allAuthors };
 }
 
 /** `pr` with `baseSha`, the commit its base branch points at now. */
@@ -260,7 +317,7 @@ export function verdict(results) {
     return { state: "failure", description: "Some commit authors have no GitHub account; see the comment." };
   }
   if (results.some((r) => r.truncated)) {
-    return { state: "failure", description: "Not every commit could be listed; check the authors by hand." };
+    return { state: "failure", description: "Not every commit or author could be listed; check them by hand." };
   }
   return { state: "success", description: "Everyone has signed the CLA." };
 }
