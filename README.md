@@ -20,12 +20,12 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 
 ## Where things are
 
-- `src/site.ts`: the facts and links every page shares (version, release date, license, install URL, GitHub and download URLs).
+- `src/site.ts`: the facts and links every page shares (license, install URL, GitHub URLs, and the fallback version and download URLs).
 - `content/docs/`: every docs page as MDX, written from the app's README at github.com/ArakunHQ/arakun. See "Writing docs" below.
 - `src/docs.ts`, `src/components/mdx.tsx`, `source.config.ts`: how the docs load, the components pages can use, and the MDX build.
 - `src/styles.css`: the Brandbook tokens and every component's styles. Dark is the default; light is `data-theme="light"` on `<html>`.
 - `src/routes/`: one file per page (`index`, `features`, `download`, `changelog`, `docs.index`, `docs.$slug`).
-- `src/releases.ts`, `src/release-rewrite.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the changelog's GitHub sync and its Workers AI rewrite (see below).
+- `src/releases.ts`, `src/release-rewrite.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the GitHub sync of the changelog, the version and the downloads, and the changelog's Workers AI rewrite (see below).
 - `src/components/ui.tsx`: buttons, the install line, cards and other shared pieces.
 - `src/components/chrome.tsx`: the sticky header, the theme switch and the footer.
 - `src/router.tsx`, `vite.config.ts`: [deploy-watch](https://github.com/rivi-software/tools/tree/main/packages/deploy-watch#readme) moves a tab left open across a deploy onto the new build at its next page change. A build in CI is named after its commit; `pnpm run deploy` by hand names it after `HEAD`.
@@ -125,9 +125,17 @@ PostHog counts visits and reports errors, through
 
 ## On a new release
 
-The changelog needs nothing. The version and the download links do: change
-`version` and `released` in `src/site.ts`, and check that the archive names in
-`site.downloads` still match the files on the GitHub release.
+Publish the release on GitHub. Within ten minutes the version on the home page and
+in the footer, and every download button, follow it. No deploy is needed.
+
+- They use the newest release that is not a pre-release and has a file for each
+  platform: `*-linux-x86_64.tar.gz`, `*-windows-x86_64.zip` and
+  `*-macos-arm64.dmg` (or `.tar.gz`). A release still uploading its files waits
+  until they are all there. If the names change, change `ARCHIVES` in
+  `src/releases.ts`.
+- If GitHub cannot be reached, they use `version` and `site.downloads` in
+  `src/site.ts`. The docs use that version too, so change `version` and
+  `released` there now and then.
 
 ## Deploys
 

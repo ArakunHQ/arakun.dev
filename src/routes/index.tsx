@@ -9,6 +9,7 @@ import {
   Principle,
   SessionRow,
   step,
+  useLatest,
   useVisitorPlatform,
   Words,
 } from '#/components/ui'
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
   const platform = useVisitorPlatform()
+  const latest = useLatest()
   return (
     <>
       <section className="hero">
@@ -29,15 +31,15 @@ function Home() {
             <Words text={site.line} />
           </h1>
           <p className="sub rise" style={step(0, 480)}>
-            Claude Code, Droid, OpenCode and Workers AI work side by side. Each task gets its own
-            git worktree, so agents don't step on each other.
+            Claude Code, Droid, OpenCode, Codex and Workers AI work side by side. Each task gets its
+            own git worktree, so agents don't step on each other.
           </p>
           <div className="cta rise" style={step(1, 480)}>
             <DownloadButton platform={platform} />
             <InstallLine />
           </div>
           <span className="meta rise" style={step(2, 480)}>
-            v{site.version} · {site.license} · Windows and macOS in beta
+            v{latest.version} · {site.license} · Windows and macOS in beta
           </span>
         </div>
         <div className="peek">

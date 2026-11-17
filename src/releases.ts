@@ -3,6 +3,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { notes } from '#/release-notes'
 import type { Entry } from '#/release-rewrite'
 import { changesFrom, entryFrom, MODEL, prompt, REWRITE_VERSION } from '#/release-rewrite'
+import type { Platform } from '#/site'
 import { site } from '#/site'
 
 /**
@@ -22,6 +23,8 @@ import { site } from '#/site'
  * always wins.
  */
 export interface Release {
+  /** The files attached to the release on GitHub. Empty for a release only known from `release-notes.ts`. */
+  assets: { name: string; url: string }[]
   /**
    * The release notes written on GitHub, as markdown. Empty when there are none worth
    * showing, or when the release has a `note`.
@@ -55,6 +58,7 @@ let remembered: { at: number; releases: Release[] } | undefined
 const onlyCompareLink = /^\s*\*\*Full Changelog\*\*:\s*\S+\s*$/iu
 
 interface GitHubRelease {
+  assets?: { browser_download_url: string; name: string }[]
   body: string | null
   draft: boolean
   html_url: string
@@ -70,6 +74,10 @@ function fromGitHub(list: GitHubRelease[]): Release[] {
     .map((release) => ({
       tag: release.tag_name,
       name: release.name?.trim() || release.tag_name,
+      assets: (release.assets ?? []).map((asset) => ({
+        name: asset.name,
+        url: asset.browser_download_url,
+      })),
       publishedAt: release.published_at,
       url: release.html_url,
       prerelease: release.prerelease,
@@ -88,6 +96,7 @@ function fallback(): Release[] {
   return Object.entries(notes).map(([tag, note]) => ({
     tag,
     name: note.title,
+    assets: [],
     publishedAt: note.publishedAt ?? null,
     url: `${site.githubUrl}/releases/tag/${tag}`,
     prerelease: false,
@@ -107,7 +116,9 @@ function fallback(): Release[] {
 const edgeCache = () => (caches as unknown as { default: Cache }).default
 
 const shared = {
-  key: new Request('https://releases.arakun.internal/v3'),
+  // v4: releases carry their assets and their changelog entry. A new key, so an
+  // older cached answer without them is never read.
+  key: new Request('https://releases.arakun.internal/v4'),
   async read(): Promise<{ at: number; releases: Release[] } | undefined> {
     try {
       const hit = await edgeCache().match(this.key)
@@ -231,11 +242,7 @@ function withEntries(releases: Release[]): Promise<Release[]> {
   )
 }
 
-export const getReleases = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<Release[]> => withEntries(await fromGitHubOrCache())
-)
-
-async function fromGitHubOrCache(): Promise<Release[]> {
+async function readReleases(): Promise<Release[]> {
   const now = Date.now()
   if (remembered && now - remembered.at < FRESH_FOR) {
     return remembered.releases
@@ -253,7 +260,7 @@ async function fromGitHubOrCache(): Promise<Release[]> {
     await shared.write(remembered)
     return releases
   } catch (error) {
-    console.warn('Changelog: could not read releases from GitHub.', error)
+    console.warn('Could not read the releases from GitHub.', error)
     // Old news beats no news: the last good answer, then the built-in list.
     const last = remembered ?? cached
     if (last) {
@@ -264,3 +271,58 @@ async function fromGitHubOrCache(): Promise<Release[]> {
     return fallback()
   }
 }
+
+export const getReleases = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<Release[]> => withEntries(await readReleases())
+)
+
+/** The release the site offers for download: its version and a file per platform. */
+export interface Latest {
+  downloads: Record<Platform, string>
+  version: string
+}
+
+const LEADING_V = /^v/iu
+
+/** Which file of a release each platform downloads. The first pattern that matches wins. */
+const ARCHIVES: Record<Platform, RegExp[]> = {
+  Linux: [/-linux-x86_64\.tar\.gz$/u],
+  Windows: [/-windows-x86_64\.zip$/u],
+  macOS: [/-macos-arm64\.dmg$/u, /-macos-arm64\.tar\.gz$/u],
+}
+
+function downloadsOf(release: Release): Record<Platform, string> | undefined {
+  const downloads: Partial<Record<Platform, string>> = {}
+  for (const [platform, patterns] of Object.entries(ARCHIVES) as [Platform, RegExp[]][]) {
+    const url = patterns
+      .map((pattern) => release.assets.find((asset) => pattern.test(asset.name))?.url)
+      .find(Boolean)
+    if (!url) {
+      return undefined
+    }
+    downloads[platform] = url
+  }
+  return downloads as Record<Platform, string>
+}
+
+/**
+ * The newest stable release that has a file for every platform. A release whose files
+ * are still uploading is skipped until they are all there, so a button never points
+ * at a file that does not exist yet. Without GitHub, the version in `site.ts`.
+ */
+function latestOf(list: Release[]): Latest {
+  for (const release of list) {
+    if (release.prerelease) {
+      continue
+    }
+    const downloads = downloadsOf(release)
+    if (downloads) {
+      return { version: release.tag.replace(LEADING_V, ''), downloads }
+    }
+  }
+  return { version: site.version, downloads: site.downloads }
+}
+
+export const getLatest = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<Latest> => latestOf(await readReleases())
+)

@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { CelebrateProvider } from '#/components/Celebrate'
 import { ConsentBanner } from '#/components/ConsentBanner'
 import { SiteFooter, SiteNav, useReveal } from '#/components/chrome'
+import { getLatest } from '#/releases'
 import { pageMeta } from '#/seo'
 import { site } from '#/site'
 import appCss from '#/styles.css?url'
@@ -13,9 +14,13 @@ import appCss from '#/styles.css?url'
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.dataset.theme=t}catch(e){}})()`
 
 const description =
-  'Arakun is a native app where Claude Code, Droid, OpenCode and Workers AI work side by side, each on its own git worktree.'
+  'Arakun is a native app where Claude Code, Droid, OpenCode, Codex and Workers AI work side by side, each on its own git worktree.'
 
 export const Route = createRootRoute({
+  // The release every page offers: the hero, the download buttons and the footer.
+  loader: () => getLatest(),
+  // The server asks GitHub at most every ten minutes, so asking it more often gains nothing.
+  staleTime: 10 * 60 * 1000,
   head: () => ({
     meta: [
       { charSet: 'utf-8' },

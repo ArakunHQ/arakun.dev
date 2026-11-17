@@ -98,7 +98,7 @@ function Download() {
           title="A Rust app, not a web view"
         />
         <Principle
-          body="Arakun does not bundle Claude Code, Droid or OpenCode. Install the ones you want to use."
+          body="Arakun does not bundle Claude Code, Droid, OpenCode or Codex. Install the ones you want to use."
           num="Agents"
           title="Bring your own agents"
         />
