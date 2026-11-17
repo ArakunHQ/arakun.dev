@@ -11,7 +11,7 @@
 
 <!-- For each change a visitor can notice, say what they will now see or do differently, not only the code that does it. Mark the rest as mechanical so a reviewer knows nothing visible hides in it. -->
 
-<!-- Visible changes: add a before and after screenshot, in both the dark and the light theme. A short GIF or animated WebP can replace the after screenshot for an interaction one picture can't show. -->
+<!-- Visible changes: add a before and after screenshot, in both the dark and the light theme. A short GIF or animated WebP can replace the after screenshot for an interaction one picture can't show. Drag them in, or upload them with `tools/pr-assets.sh <file>...` and paste the Markdown it prints. They are public: no real accounts, tokens, emails or home-directory paths. -->
 
 <!-- Breaking change (a URL that no longer works): put `!` in the title, a `BREAKING CHANGE:` line in the commit message, and say here what replaces it. -->
 
@@ -32,7 +32,7 @@
 - [ ] `wrangler.jsonc` changed: `pnpm cf-typegen` was run and `worker-configuration.d.ts` is committed
 - [ ] Dependencies changed: `pnpm-lock.yaml` is committed, and the description says why each new package is needed
 - [ ] `.github/` changed: `zizmor .github` passes
-- [ ] Visible change: screenshots in both themes are under Changes, and it was checked on a narrow screen
+- [ ] Visible change: screenshots in both themes are under Changes (`tools/pr-assets.sh` uploads them), and it was checked on a narrow screen
 - [ ] One fix or feature per pull request
 - [ ] The title follows [Conventional Commits](https://github.com/ArakunHQ/arakun.dev/blob/main/CONTRIBUTING.md#pull-requests) (CI checks it; it becomes the commit message on `main`)
 - [ ] I have signed the [CLA](https://github.com/ArakunHQ/arakun.dev/blob/main/CLA.md) (the bot asks on your first pull request; reply with the sentence it gives)
