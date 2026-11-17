@@ -172,6 +172,9 @@ importers:
       '@fontsource-variable/geist-mono':
         specifier: ^5.2.7
         version: 5.3.0
+      '@rivi-software/deploy-watch':
+        specifier: ^1.0.1
+        version: 1.0.1(react@19.3.1)(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0))
       '@tanstack/react-router':
         specifier: 1.170.46
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -833,6 +836,17 @@ packages:
   '@resvg/resvg-js@2.6.2':
     resolution: {integrity: sha512-xBaJish5OeGmniDj9cW5PRa/PtmuVU3ziqrbr5xJj901ZDN4TosrVaNZpEiLZAxdfnhAe7uQ7QFWfjPe9d9K2Q==}
     engines: {node: '>= 10'}
+
+  '@rivi-software/deploy-watch@1.0.1':
+    resolution: {integrity: sha512-8KWUxbO97DcaRIsgjfitwnsmn0PBDuNSmjFEDmeoxtFXGdTDN7w8gLbmmGoVRuFzPfrKt+QLFn4o9x0Mp63U6g==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      vite: ^6.0.0 || ^7.0.0 || ^8.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      vite:
+        optional: true
 
   '@rolldown/binding-android-arm-eabi@1.2.18':
     resolution: {integrity: sha512-ubTG+4KlidvioxjOFdsdEa2F6JVGZb8m2ByJUqQ7fYzUeT1cEn194POcsQ10PKH4p//q0YQn4SB3YpSuzcA1Yg==}
@@ -2270,6 +2284,11 @@ snapshots:
       '@resvg/resvg-js-win32-arm64-msvc': 2.6.2
       '@resvg/resvg-js-win32-ia32-msvc': 2.6.2
       '@resvg/resvg-js-win32-x64-msvc': 2.6.2
+
+  '@rivi-software/deploy-watch@1.0.1(react@19.3.1)(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0))':
+    optionalDependencies:
+      react: 19.3.1
+      vite: 8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)
 
   '@rolldown/binding-android-arm-eabi@1.2.18':
     optional: true

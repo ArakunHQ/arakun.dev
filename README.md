@@ -27,6 +27,7 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 - `src/releases.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the changelog's GitHub sync (see below).
 - `src/components/ui.tsx`: buttons, the install line, cards and other shared pieces.
 - `src/components/chrome.tsx`: the sticky header, the theme switch and the footer.
+- `src/router.tsx`, `vite.config.ts`: [deploy-watch](https://github.com/rivi-software/tools/tree/main/packages/deploy-watch#readme) moves a tab left open across a deploy onto the new build at its next page change. A build in CI is named after its commit; `pnpm deploy` by hand names it after `HEAD`.
 - `src/components/HeroRaccoon.tsx`: the animated mascot in the home hero.
 - `src/components/Celebrate.tsx`: the toast and ASCII burst after a download or copy.
 - `public/img/`: real captures of the app, one per theme.
