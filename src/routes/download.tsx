@@ -1,6 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import type { Tone } from '#/components/ui'
-import { DownloadButton, InstallLine, PageHeader, Principle, StatusPill } from '#/components/ui'
+import {
+  DownloadButton,
+  InstallLine,
+  PageHeader,
+  Principle,
+  StatusPill,
+  useLatest,
+} from '#/components/ui'
 import { innerPageHead, softwareApplication } from '#/seo'
 import type { Platform } from '#/site'
 import { pages, site } from '#/site'
@@ -38,6 +45,7 @@ const platforms: { name: string; download?: Platform; status: string; tone: Tone
   ]
 
 function Download() {
+  const latest = useLatest()
   return (
     <>
       <PageHeader {...page} />
@@ -79,6 +87,38 @@ function Download() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="wrap" style={{ paddingTop: 'var(--spacing-6)' }}>
+        <article className="pc">
+          <div className="h">
+            <h2>Server</h2>
+            <StatusPill label="Linux x86_64" tone="draft" />
+          </div>
+          <p>
+            Arakun without a window, for a VPS or a build box with no display. Pair your devices and
+            follow its sessions from anywhere.
+          </p>
+          {/* As in the install lines above: as wide as the command, not the card. */}
+          <div style={{ alignSelf: 'flex-start', maxWidth: '100%' }}>
+            <InstallLine shell="server" />
+          </div>
+          <div className="a" style={{ display: 'flex', gap: 'var(--spacing-3)', flexWrap: 'wrap' }}>
+            <Link
+              className="btn"
+              data-tone="secondary"
+              params={{ slug: 'server' }}
+              to="/docs/$slug"
+            >
+              Set up the server
+            </Link>
+            {latest.server ? (
+              <a className="btn" data-tone="ghost" href={latest.server}>
+                Download arakun-server
+              </a>
+            ) : null}
+          </div>
+        </article>
       </section>
 
       <section className="wrap section grid-3" data-reveal="">

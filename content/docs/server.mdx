@@ -16,6 +16,19 @@ description: Run Arakun without a window on a build box, an office workstation o
 <Steps>
 <Step>
 
+### Install it
+
+On Linux (x86_64), install `arakun-server` alone:
+
+```sh
+curl -fsSL {site.installServerUrl} | sh
+```
+
+It puts the binary in `~/.local/bin`. It checks the release's checksums, and their signature when minisign or OpenSSL 3 is installed. On a Mac or Windows, [install the app](/docs/install) and use `arakun server` in place of `arakun-server`.
+
+</Step>
+<Step>
+
 ### Start it
 
 ```sh
@@ -54,6 +67,29 @@ arakun-server approve <id>                   # or deny
 
 </Step>
 </Steps>
+
+## Keep it running
+
+```sh
+arakun-server service install   # systemd on Linux: starts now, after a crash and at boot
+arakun-server service status
+```
+
+On Linux it keeps running after you log out, so you can set it up over SSH. On a Mac, `arakun server service install` sets it up with launchd and starts it at login.
+
+On Windows there is no `service` command yet. To keep the server running, start `arakun server serve` from Task Scheduler, with the trigger "At log on".
+
+### Update it
+
+Run the install line again, then restart the service on the new binary:
+
+```sh
+systemctl --user restart arakun-server
+```
+
+- Installed as root: the service is a system unit, so leave out `--user`.
+- A server in another folder (`ARAKUN_SERVER_DIR`): its unit is `arakun-server-<folder>`.
+- The service runs the binary it was installed from. If that is not `~/.local/bin/arakun-server`, copy the new one there first.
 
 ## How devices reach it
 

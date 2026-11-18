@@ -279,17 +279,24 @@ export const getReleases = createServerFn({ method: 'GET' }).handler(
 /** The release the site offers for download: its version and a file per platform. */
 export interface Latest {
   downloads: Record<Platform, string>
+  /** arakun-server for Linux, when the release has it. Releases up to v0.4.0 don't. */
+  server?: string
   version: string
 }
 
 const LEADING_V = /^v/iu
 
-/** Which file of a release each platform downloads. The first pattern that matches wins. */
+/**
+ * Which file of a release each platform downloads. The first pattern that matches wins.
+ * Each starts at `arakun-v`, so `arakun-server-v…-linux-x86_64.tar.gz` is never the app.
+ */
 const ARCHIVES: Record<Platform, RegExp[]> = {
-  Linux: [/-linux-x86_64\.tar\.gz$/u],
-  Windows: [/-windows-x86_64\.zip$/u],
-  macOS: [/-macos-arm64\.dmg$/u, /-macos-arm64\.tar\.gz$/u],
+  Linux: [/^arakun-v.*-linux-x86_64\.tar\.gz$/u],
+  Windows: [/^arakun-v.*-windows-x86_64\.zip$/u],
+  macOS: [/^arakun-v.*-macos-arm64\.dmg$/u, /^arakun-v.*-macos-arm64\.tar\.gz$/u],
 }
+
+const SERVER_ARCHIVE = /^arakun-server-v.*-linux-x86_64\.tar\.gz$/u
 
 function downloadsOf(release: Release): Record<Platform, string> | undefined {
   const downloads: Partial<Record<Platform, string>> = {}
@@ -317,7 +324,8 @@ function latestOf(list: Release[]): Latest {
     }
     const downloads = downloadsOf(release)
     if (downloads) {
-      return { version: release.tag.replace(LEADING_V, ''), downloads }
+      const server = release.assets.find((asset) => SERVER_ARCHIVE.test(asset.name))?.url
+      return { version: release.tag.replace(LEADING_V, ''), downloads, server }
     }
   }
   return { version: site.version, downloads: site.downloads }

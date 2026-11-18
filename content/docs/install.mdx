@@ -37,6 +37,14 @@ Or set `ARAKUN_VERSION=v{site.version}`.
   There is no build for Intel Macs or Linux on ARM yet. [Build from source]({site.sourceUrl}) there.
 </Callout>
 
+## Only the server
+
+On a Linux x86_64 machine with no display, such as a VPS, install `arakun-server` alone. It needs glibc 2.35 or newer and none of the desktop libraries. See [Server](/docs/server). On other architectures, [build it from source]({site.sourceUrl}).
+
+```sh
+curl -fsSL {site.installServerUrl} | sh
+```
+
 ## What Linux needs
 
 glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+), a Vulkan driver and the usual desktop libraries: libxkbcommon, Wayland or X11, fontconfig and freetype.

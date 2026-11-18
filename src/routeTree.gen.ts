@@ -14,6 +14,7 @@ import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as InstallRouteImport } from './routes/install'
+import { Route as InstallServerRouteImport } from './routes/install-server'
 import { Route as InstallDotps1RouteImport } from './routes/install[.]ps1'
 import { Route as InstallDotshRouteImport } from './routes/install[.]sh'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -45,6 +46,11 @@ const FeaturesRoute = FeaturesRouteImport.update({
 const InstallRoute = InstallRouteImport.update({
   id: '/install',
   path: '/install',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallServerRoute = InstallServerRouteImport.update({
+  id: '/install-server',
+  path: '/install-server',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InstallDotps1Route = InstallDotps1RouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/install': typeof InstallRoute
+  '/install-server': typeof InstallServerRoute
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/install': typeof InstallRoute
+  '/install-server': typeof InstallServerRoute
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/install': typeof InstallRoute
+  '/install-server': typeof InstallServerRoute
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/install'
+    | '/install-server'
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/install'
+    | '/install-server'
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/install'
+    | '/install-server'
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   DownloadRoute: typeof DownloadRoute
   FeaturesRoute: typeof FeaturesRoute
   InstallRoute: typeof InstallRoute
+  InstallServerRoute: typeof InstallServerRoute
   InstallDotps1Route: typeof InstallDotps1Route
   InstallDotshRoute: typeof InstallDotshRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/install'
       fullPath: '/install'
       preLoaderRoute: typeof InstallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install-server': {
+      id: '/install-server'
+      path: '/install-server'
+      fullPath: '/install-server'
+      preLoaderRoute: typeof InstallServerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/install.ps1': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   DownloadRoute: DownloadRoute,
   FeaturesRoute: FeaturesRoute,
   InstallRoute: InstallRoute,
+  InstallServerRoute: InstallServerRoute,
   InstallDotps1Route: InstallDotps1Route,
   InstallDotshRoute: InstallDotshRoute,
   PrivacyRoute: PrivacyRoute,
