@@ -13,7 +13,7 @@ curl -fsSL {site.installUrl} | sh
 irm {site.installUrl}.ps1 | iex
 ```
 
-On macOS and Linux, run it in a terminal. It works on macOS with Apple silicon and on Linux x86_64. On Windows, run it in PowerShell.
+On macOS and Linux, run it in a terminal. It works on macOS with Apple silicon and on Linux x86_64 and arm64. It picks the build for your machine. On Windows, run it in PowerShell.
 
 ## What the script does
 
@@ -33,13 +33,15 @@ curl -fsSL {site.installUrl} | sh -s -- --version v{site.version}
 
 Or set `ARAKUN_VERSION=v{site.version}`.
 
+Linux arm64 builds start at v0.5.0. On an arm64 machine, an older version does not install.
+
 <Callout type="warn">
-  There is no build for Intel Macs or Linux on ARM yet. [Build from source]({site.sourceUrl}) there.
+  There is no build for Intel Macs yet. [Build from source]({site.sourceUrl}) there.
 </Callout>
 
 ## Only the server
 
-On a Linux x86_64 machine with no display, such as a VPS, install `arakun-server` alone. It needs glibc 2.35 or newer and none of the desktop libraries. See [Server](/docs/server). On other architectures, [build it from source]({site.sourceUrl}).
+On a Linux machine with no display (x86_64 or arm64), such as a VPS, install `arakun-server` alone. It needs glibc 2.35 or newer and none of the desktop libraries. See [Server](/docs/server). On other architectures, [build it from source]({site.sourceUrl}).
 
 ```sh
 curl -fsSL {site.installServerUrl} | sh

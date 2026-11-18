@@ -1,6 +1,6 @@
 /** Facts and links the whole site shares. Checked against github.com/ArakunHQ/arakun. */
 const repo = 'https://github.com/ArakunHQ/arakun'
-const version = '0.3.0'
+const version = '0.5.0'
 const release = `${repo}/releases/download/v${version}`
 
 export const site = {
@@ -16,7 +16,7 @@ export const site = {
    * release from GitHub instead (useLatest in src/components/ui.tsx). The docs use this one.
    */
   version,
-  released: 'November 17, 2026',
+  released: 'November 18, 2026',
   license: 'AGPL-3.0',
   installUrl: 'https://arakun.dev/install',
   /** arakun-server alone, for Linux machines with no display (src/routes/install-server.ts). */
@@ -37,6 +37,7 @@ export const site = {
   },
   downloads: {
     Linux: `${release}/arakun-v${version}-linux-x86_64.tar.gz`,
+    'Linux arm64': `${release}/arakun-v${version}-linux-arm64.tar.gz`,
     Windows: `${release}/arakun-v${version}-windows-x86_64.zip`,
     macOS: `${release}/arakun-v${version}-macos-arm64.dmg`,
   },
