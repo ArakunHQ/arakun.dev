@@ -46,6 +46,8 @@ export function ButtonLink({
 }
 
 const MAC = /Macintosh/u
+// Firefox says "Linux aarch64". Chrome always says x86_64, so arm64 there gets the x86_64 button.
+const LINUX_ARM = /Linux (?:aarch64|arm64)/u
 
 const root = getRouteApi('__root__')
 
@@ -56,7 +58,8 @@ const root = getRouteApi('__root__')
 export const useLatest = () => root.useLoaderData()
 
 /**
- * The download that suits the visitor: macOS on a Mac, Linux everywhere else.
+ * The download that suits the visitor: macOS on a Mac, Linux arm64 when the browser
+ * says so, Linux everywhere else.
  * The server can't see the visitor's OS, so the page renders Linux first and
  * switches after hydration, which also keeps the server and client markup equal.
  */
@@ -66,6 +69,8 @@ export function useVisitorPlatform(): Platform {
     // iPads also say "Macintosh"; touch support tells them apart.
     if (MAC.test(navigator.userAgent) && navigator.maxTouchPoints < 2) {
       setPlatform('macOS')
+    } else if (LINUX_ARM.test(navigator.userAgent)) {
+      setPlatform('Linux arm64')
     }
   }, [])
   return platform

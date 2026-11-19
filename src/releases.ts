@@ -279,10 +279,15 @@ export const getReleases = createServerFn({ method: 'GET' }).handler(
 /** The release the site offers for download: its version and a file per platform. */
 export interface Latest {
   downloads: Record<Platform, string>
-  /** arakun-server for Linux, when the release has it. Releases up to v0.4.0 don't. */
-  server?: string
+  /**
+   * arakun-server for Linux, per architecture, when the release has it.
+   * Releases up to v0.4.0 have none, and up to v0.4.1 no arm64 one.
+   */
+  server: Partial<Record<ServerArch, string>>
   version: string
 }
+
+export type ServerArch = 'x86_64' | 'arm64'
 
 const LEADING_V = /^v/iu
 
@@ -292,11 +297,26 @@ const LEADING_V = /^v/iu
  */
 const ARCHIVES: Record<Platform, RegExp[]> = {
   Linux: [/^arakun-v.*-linux-x86_64\.tar\.gz$/u],
+  'Linux arm64': [/^arakun-v.*-linux-arm64\.tar\.gz$/u],
   Windows: [/^arakun-v.*-windows-x86_64\.zip$/u],
   macOS: [/^arakun-v.*-macos-arm64\.dmg$/u, /^arakun-v.*-macos-arm64\.tar\.gz$/u],
 }
 
-const SERVER_ARCHIVE = /^arakun-server-v.*-linux-x86_64\.tar\.gz$/u
+const SERVER_ARCHIVES: Record<ServerArch, RegExp> = {
+  x86_64: /^arakun-server-v.*-linux-x86_64\.tar\.gz$/u,
+  arm64: /^arakun-server-v.*-linux-arm64\.tar\.gz$/u,
+}
+
+function serversOf(release: Release): Partial<Record<ServerArch, string>> {
+  const servers: Partial<Record<ServerArch, string>> = {}
+  for (const [arch, pattern] of Object.entries(SERVER_ARCHIVES) as [ServerArch, RegExp][]) {
+    const url = release.assets.find((asset) => pattern.test(asset.name))?.url
+    if (url) {
+      servers[arch] = url
+    }
+  }
+  return servers
+}
 
 function downloadsOf(release: Release): Record<Platform, string> | undefined {
   const downloads: Partial<Record<Platform, string>> = {}
@@ -324,11 +344,14 @@ function latestOf(list: Release[]): Latest {
     }
     const downloads = downloadsOf(release)
     if (downloads) {
-      const server = release.assets.find((asset) => SERVER_ARCHIVE.test(asset.name))?.url
-      return { version: release.tag.replace(LEADING_V, ''), downloads, server }
+      return {
+        version: release.tag.replace(LEADING_V, ''),
+        downloads,
+        server: serversOf(release),
+      }
     }
   }
-  return { version: site.version, downloads: site.downloads }
+  return { version: site.version, downloads: site.downloads, server: {} }
 }
 
 export const getLatest = createServerFn({ method: 'GET' }).handler(

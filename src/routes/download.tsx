@@ -19,30 +19,35 @@ export const Route = createFileRoute('/download')({
   component: Download,
 })
 
-const platforms: { name: string; download?: Platform; status: string; tone: Tone; note: string }[] =
-  [
-    {
-      name: 'Linux',
-      download: 'Linux',
-      status: 'Supported',
-      tone: 'success',
-      note: 'The main platform. x86_64, on Wayland and X11.',
-    },
-    {
-      name: 'Windows',
-      download: 'Windows',
-      status: 'Beta',
-      tone: 'attention',
-      note: 'Windows 10 and 11, x86_64. No Dynamic Island yet.',
-    },
-    {
-      name: 'macOS',
-      download: 'macOS',
-      status: 'Beta',
-      tone: 'attention',
-      note: 'Apple silicon. Signed and notarized by Apple. No browser in release builds yet.',
-    },
-  ]
+const platforms: {
+  name: string
+  downloads: Platform[]
+  status: string
+  tone: Tone
+  note: string
+}[] = [
+  {
+    name: 'Linux',
+    downloads: ['Linux', 'Linux arm64'],
+    status: 'Supported',
+    tone: 'success',
+    note: 'The main platform. x86_64 and arm64, on Wayland and X11.',
+  },
+  {
+    name: 'Windows',
+    downloads: ['Windows'],
+    status: 'Beta',
+    tone: 'attention',
+    note: 'Windows 10 and 11, x86_64. No Dynamic Island yet.',
+  },
+  {
+    name: 'macOS',
+    downloads: ['macOS'],
+    status: 'Beta',
+    tone: 'attention',
+    note: 'Apple silicon. Signed and notarized by Apple. No browser in release builds yet.',
+  },
+]
 
 function Download() {
   const latest = useLatest()
@@ -72,18 +77,18 @@ function Download() {
               <StatusPill label={platform.status} tone={platform.tone} />
             </div>
             <p>{platform.note}</p>
-            <div className="a">
-              {platform.download ? (
-                // One amber primary per view: only the supported platform gets it.
+            <div
+              className="a"
+              style={{ display: 'flex', gap: 'var(--spacing-3)', flexWrap: 'wrap' }}
+            >
+              {platform.downloads.map((download) => (
+                // One amber primary per view: only the main Linux build gets it.
                 <DownloadButton
-                  platform={platform.download}
-                  tone={platform.name === 'Linux' ? 'primary' : 'secondary'}
+                  key={download}
+                  platform={download}
+                  tone={download === 'Linux' ? 'primary' : 'secondary'}
                 />
-              ) : (
-                <a className="btn" data-tone="secondary" href={site.sourceUrl}>
-                  Build from source
-                </a>
-              )}
+              ))}
             </div>
           </article>
         ))}
@@ -93,7 +98,7 @@ function Download() {
         <article className="pc">
           <div className="h">
             <h2>Server</h2>
-            <StatusPill label="Linux x86_64" tone="draft" />
+            <StatusPill label="Linux x86_64 · arm64" tone="draft" />
           </div>
           <p>
             Arakun without a window, for a VPS or a build box with no display. Pair your devices and
@@ -112,9 +117,14 @@ function Download() {
             >
               Set up the server
             </Link>
-            {latest.server ? (
-              <a className="btn" data-tone="ghost" href={latest.server}>
+            {latest.server.x86_64 ? (
+              <a className="btn" data-tone="ghost" href={latest.server.x86_64}>
                 Download arakun-server
+              </a>
+            ) : null}
+            {latest.server.arm64 ? (
+              <a className="btn" data-tone="ghost" href={latest.server.arm64}>
+                Download arakun-server for arm64
               </a>
             ) : null}
           </div>

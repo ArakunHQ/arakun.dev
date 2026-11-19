@@ -129,7 +129,7 @@ Publish the release on GitHub. Within ten minutes the version on the home page a
 in the footer, and every download button, follow it. No deploy is needed.
 
 - They use the newest release that is not a pre-release and has a file for each
-  platform: `*-linux-x86_64.tar.gz`, `*-windows-x86_64.zip` and
+  platform: `*-linux-x86_64.tar.gz`, `*-linux-arm64.tar.gz`, `*-windows-x86_64.zip` and
   `*-macos-arm64.dmg` (or `.tar.gz`). A release still uploading its files waits
   until they are all there. If the names change, change `ARCHIVES` in
   `src/releases.ts`.
