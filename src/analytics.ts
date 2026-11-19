@@ -56,6 +56,9 @@ function start() {
     // No session recording, whatever the project settings say. Autocapture stays on for
     // clicks; it never reads what is typed into a field.
     disable_session_recording: true,
+    // POSTHOG_HOST is our proxy (wrangler.jsonc), so links into PostHog, such as the
+    // toolbar's, need the app's own host.
+    ui_host: 'https://us.posthog.com',
     // The site uses no feature flags, so it skips the request that fetches them.
     advanced_disable_flags: true,
     // Consent can be withdrawn in another tab while posthog-js is still loading here.

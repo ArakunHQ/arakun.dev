@@ -42,8 +42,11 @@
   // https://us.posthog.com/legal, on any plan. Where data counts as a transfer, the DPA
   // covers it with PostHog's Data Privacy Framework certification, and with the EU
   // Standard Contractual Clauses (module 2) as the fallback.
+  //
+  // POSTHOG_HOST is PostHog's managed reverse proxy, a CNAME to PostHog's US Cloud.
+  // Ad blockers drop requests to *.posthog.com, and miss a host on our own domain.
   "vars": {
     "POSTHOG_PROJECT_TOKEN": "phc_kXKrLfaWumKa3mfXcFVBCRpyKa6DZiUv7hCkQW2epLQZ",
-    "POSTHOG_HOST": "https://us.i.posthog.com"
+    "POSTHOG_HOST": "https://events.arakun.dev"
   }
 }
