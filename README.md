@@ -98,8 +98,9 @@ release there and it shows on the site within ten minutes. No deploy is needed.
   entry is ready, a few seconds after the first visit, the page shows the GitHub notes.
 - `src/release-notes.ts` holds hand-written entries per tag. They win over both:
   write one when the rewrite gets something wrong. v0.1.0, v0.2.1 and v0.3.0 have one.
-- To change the prompt or the model, bump `REWRITE_VERSION` in
-  `src/release-rewrite.ts`, so every release is rewritten the new way.
+- The model is `MODEL` in `src/release-rewrite.ts`. To have every release
+  rewritten, such as after a prompt change, bump `REWRITE_VERSION` there.
+  Without a bump, kept entries stay and only new releases use the change.
 - `pnpm dev` leaves Workers AI off, since it needs a Cloudflare login, and shows
   the GitHub notes. `CHANGELOG_AI=1 pnpm dev` turns it on; the model runs on
   Cloudflare and is billed to your account.

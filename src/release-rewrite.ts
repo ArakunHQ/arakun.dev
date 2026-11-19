@@ -11,17 +11,17 @@ import { notes } from '#/release-notes'
  */
 
 /**
- * Bump when the prompt or the model changes. Entries written before then are
- * written again, once, in the new way.
+ * Bump when the entries already kept should be written again, once, in a new way,
+ * such as after a prompt change. A model swap alone keeps them.
  */
 export const REWRITE_VERSION = 1
 
 /**
- * Z.ai's GLM-5.3 Flash: of the Workers AI models we tried on v0.2.1's notes, it came
- * closest to the hand-written entry, in about five seconds. It needs the Workers
- * Paid plan.
+ * Z.ai's GLM-5.3. Cloudflare retired GLM-5.3 Flash, the model we picked first, on
+ * November 20, 2026, and named this one as a replacement. It takes the same inputs.
+ * It needs the Workers Paid plan.
  */
-export const MODEL = '@cf/zai-org/glm-5.3-flash' satisfies keyof AiModels
+export const MODEL = '@cf/zai-org/glm-5.3' satisfies keyof AiModels
 
 /** A line of GitHub's generated notes: `* feat(x): do y by @someone in https://github.com/o/r/pull/1`. */
 const generated =
