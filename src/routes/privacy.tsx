@@ -98,8 +98,11 @@ function Privacy() {
                 place in the code where it happened (the stack trace). Before the message leaves
                 your computer, the app replaces your home folder with <code>~</code> and removes
                 paths, links, email addresses and anything that looks like a key or token. When an
-                agent stops with an error, the report holds only the agent's name and a fixed
-                category such as "rate limited" or "not signed in", never the error's text.
+                agent stops with an error, the report holds the agent's name and version number
+                (only the number), a fixed category such as "rate limited" or "not signed in", the
+                step that failed (such as starting the agent or a turn), the agent's error code or
+                exit code, and whether the session's folder still exists. It never holds the error's
+                text.
               </li>
               <li>
                 <strong>Usage counts:</strong> app launched, session started (with the agent's
@@ -173,7 +176,7 @@ function Privacy() {
             </ul>
           </Section>
 
-          <p className="updated">Last updated November 17, 2026.</p>
+          <p className="updated">Last updated November 19, 2026.</p>
         </article>
       </div>
     </>
