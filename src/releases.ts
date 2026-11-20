@@ -48,7 +48,7 @@ const STALE_FOR = 7 * 24 * 60 * 60
 
 const api =
   site.githubUrl.replace('https://github.com/', 'https://api.github.com/repos/') +
-  '/releases?per_page=30'
+  '/releases?per_page=100'
 
 // One copy per running Worker instance. Enough on its own to keep the site far
 // below GitHub's limit of 60 anonymous requests an hour for most traffic.
@@ -272,8 +272,14 @@ async function readReleases(): Promise<Release[]> {
   }
 }
 
+/** Nightly builds are tagged like `0.7.1-nightly.202611200109`. */
+const NIGHTLY = /-nightly\./u
+
+// Nightlies come out every day and say nothing a reader of the changelog needs.
+// They are dropped before `withEntries`, so Workers AI never rewrites their notes.
 export const getReleases = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<Release[]> => withEntries(await readReleases())
+  async (): Promise<Release[]> =>
+    withEntries((await readReleases()).filter((release) => !NIGHTLY.test(release.tag)))
 )
 
 /** The release the site offers for download: its version and a file per platform. */
