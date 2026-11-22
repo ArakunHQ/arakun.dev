@@ -163,27 +163,41 @@ function Pre({ children, ...props }: ComponentProps<'pre'>) {
   )
 }
 
-/** Headings link to themselves, so a reader can share a section. */
+/**
+ * Headings get a "#" link to themselves, so a reader can share a section. It sits
+ * beside the text, not around it, so a link in the heading is never inside another.
+ */
 function anchored(Tag: 'h2' | 'h3') {
   return function Heading({ id, children, ...props }: ComponentProps<'h2'>) {
     return (
-      <Tag id={id} {...props}>
+      <Tag className="anchored" id={id} {...props}>
         {id ? (
-          <a className="heading-anchor" href={`#${id}`}>
-            {children}
+          <a aria-label="Link to this section" className="heading-anchor" href={`#${id}`}>
+            #
           </a>
-        ) : (
-          children
-        )}
+        ) : null}
+        {children}
       </Tag>
     )
   }
 }
 
+const siteOrigin = new URL(site.url).origin
+/** Whether a link leaves the site. Compares origins, so arakun.dev.example.com counts as another site. */
+function isExternal(href: string) {
+  if (!SCHEME.test(href)) {
+    return false
+  }
+  try {
+    return new URL(href).origin !== siteOrigin
+  } catch {
+    return true
+  }
+}
+
 /** Links to other sites open in a new tab; links on this site stay in it. */
 function Anchor({ href = '', ...props }: ComponentProps<'a'>) {
-  const external = SCHEME.test(href) && !href.startsWith(site.url)
-  return external ? (
+  return isExternal(href) ? (
     <a href={href} rel="noopener" target="_blank" {...props} />
   ) : (
     <a href={href} {...props} />

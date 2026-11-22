@@ -1,5 +1,8 @@
+import { bodies } from 'virtual:blog/bodies'
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import type { MDXContent } from 'mdx/types'
+import type { LazyExoticComponent } from 'react'
+import { lazy, Suspense } from 'react'
 import { getPost, postAuthors, postCategories, postPath, relatedPosts } from '#/blog'
 import { AuthorCard, Byline, CategoryChips, PostGrid, Toc } from '#/components/blog'
 import { mdxComponents } from '#/components/blog-mdx'
@@ -7,20 +10,37 @@ import { InstallBand } from '#/components/ui'
 import { blogPosting, pageHead } from '#/seo'
 import { pages, site } from '#/site'
 
-// The article bodies, compiled from content/blog/*.mdx by vite/blog.ts. Only this
-// route imports them, so the overview never loads a post's text.
-const bodies = import.meta.glob<MDXContent>('/content/blog/*.mdx', {
-  eager: true,
-  import: 'default',
-})
-const bodyOf = (slug: string) => bodies[`/content/blog/${slug}.mdx`]
+// Published posts only, one chunk each (vite/blog.ts), so neither a draft nor
+// another post's text ships with this page.
+const loaded = new Map<string, MDXContent>()
+const lazyBodies = new Map<string, LazyExoticComponent<MDXContent>>()
+
+/**
+ * The loader fills `loaded`, so a page renders its body at once. A page the
+ * browser hydrates from the server's HTML may not have run the loader there;
+ * then the body loads lazily while React keeps the server's markup on screen.
+ */
+function bodyOf(slug: string): MDXContent | LazyExoticComponent<MDXContent> {
+  const ready = loaded.get(slug)
+  if (ready) {
+    return ready
+  }
+  let body = lazyBodies.get(slug)
+  if (!body) {
+    body = lazy(bodies[slug] as () => Promise<{ default: MDXContent }>)
+    lazyBodies.set(slug, body)
+  }
+  return body
+}
 
 export const Route = createFileRoute('/blog/$slug')({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const post = getPost(params.slug)
-    if (!(post && bodyOf(post.slug))) {
+    const load = post ? bodies[post.slug] : undefined
+    if (!(post && load)) {
       throw notFound()
     }
+    loaded.set(post.slug, (await load()).default)
     return post
   },
   head: ({ loaderData: post }) =>
@@ -60,7 +80,9 @@ function BlogPostPage() {
 
       <div className="wrap blog-layout">
         <article className="prose blog-post">
-          {Body ? <Body components={mdxComponents} /> : null}
+          <Suspense>
+            <Body components={mdxComponents} />
+          </Suspense>
         </article>
         <aside className="blog-aside">
           <Toc entries={post.toc} />

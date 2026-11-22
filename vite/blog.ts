@@ -28,12 +28,16 @@ import { site } from '../src/site'
 export const CONTENT_DIR = 'content/blog'
 const POSTS_ID = 'virtual:blog/posts'
 const MARKDOWN_ID = 'virtual:blog/markdown'
+const BODIES_ID = 'virtual:blog/bodies'
+const VIRTUAL_IDS = [POSTS_ID, MARKDOWN_ID, BODIES_ID]
 const resolved = (id: string) => `\0${id}`
 
 const WORDS_PER_MINUTE = 220
 const DATE = /^\d{4}-\d{2}-\d{2}$/u
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u
 const WORD = /\S+/gu
+// `{/* a comment */}`: the only expression a post may hold, since agents get no output for it.
+const COMMENT = /^\s*\/\*[\s\S]*\*\/\s*$/u
 
 interface Frontmatter {
   authors: string[]
@@ -140,37 +144,47 @@ const asMarkdown: Record<string, (attrs: Attrs, children: string) => string> = {
 }
 export const componentNames = Object.keys(asMarkdown)
 
+/** One node as plain Markdown, or null for one agents don't need (imports, frontmatter, comments). */
+function flattenNode(node: RootContent, file: string): RootContent | null {
+  if (node.type === 'mdxjsEsm' || node.type === 'yaml') {
+    return null
+  }
+  if (node.type === 'mdxFlowExpression' || node.type === 'mdxTextExpression') {
+    if (COMMENT.test(node.value)) {
+      return null
+    }
+    // The agent Markdown could not show what the expression renders, so a post never uses one.
+    throw new Error(
+      `${file}: {${node.value}} is an expression. Write the text out, or use a blog component.`
+    )
+  }
+  if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+    const render = node.name ? asMarkdown[node.name] : undefined
+    if (!render) {
+      throw new Error(
+        `${file}: <${node.name}> is not a blog component. Use one of: ${componentNames.join(', ')}`
+      )
+    }
+    const children = md(flatten(node.children as RootContent[], file))
+    return raw(render(attributes(node, file), children))
+  }
+  if ('children' in node) {
+    return { ...node, children: flatten(node.children as RootContent[], file) } as RootContent
+  }
+  return node
+}
+
 /** Replaces JSX, imports and expressions with plain Markdown, depth first. */
 function flatten(nodes: RootContent[], file: string): RootContent[] {
-  const out: RootContent[] = []
-  for (const node of nodes) {
-    if (node.type === 'mdxjsEsm' || node.type === 'mdxFlowExpression' || node.type === 'yaml') {
-      continue
-    }
-    if (node.type === 'mdxTextExpression') {
-      continue
-    }
-    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
-      const render = node.name ? asMarkdown[node.name] : undefined
-      if (!render) {
-        throw new Error(
-          `${file}: <${node.name}> is not a blog component. Use one of: ${componentNames.join(', ')}`
-        )
-      }
-      const children = md(flatten(node.children as RootContent[], file))
-      out.push(raw(render(attributes(node, file), children)))
-      continue
-    }
-    if ('children' in node) {
-      out.push({ ...node, children: flatten(node.children as RootContent[], file) } as RootContent)
-    } else {
-      out.push(node)
-    }
-  }
-  return out
+  return nodes.map((node) => flattenNode(node, file)).filter((node) => node !== null)
 }
 
 // ---- Reading the posts ----
+
+/** A real day written as YYYY-MM-DD: 2026-02-30 fails, because it does not read back the same. */
+function isDate(value: string) {
+  return DATE.test(value) && new Date(`${value}T00:00:00Z`).toISOString().startsWith(value)
+}
 
 function check(fm: Partial<Frontmatter>, file: string): Frontmatter {
   const fail = (message: string): never => {
@@ -182,7 +196,7 @@ function check(fm: Partial<Frontmatter>, file: string): Frontmatter {
     }
   }
   for (const key of ['published', 'updated'] as const) {
-    if (fm[key] !== undefined && !DATE.test(String(fm[key]))) {
+    if (fm[key] !== undefined && !isDate(String(fm[key]))) {
       fail(`"${key}" must be a date written as YYYY-MM-DD`)
     }
   }
@@ -190,7 +204,7 @@ function check(fm: Partial<Frontmatter>, file: string): Frontmatter {
     fail('frontmatter needs "authors", a list of ids from src/blog-data.ts')
   }
   for (const id of fm.authors ?? []) {
-    if (!(id in authors)) {
+    if (!Object.hasOwn(authors, id)) {
       fail(`unknown author "${id}". Add it to authors in src/blog-data.ts`)
     }
   }
@@ -198,7 +212,7 @@ function check(fm: Partial<Frontmatter>, file: string): Frontmatter {
     fail('frontmatter needs "categories", a list of ids from src/blog-data.ts')
   }
   for (const id of fm.categories ?? []) {
-    if (!(id in categories)) {
+    if (!Object.hasOwn(categories, id)) {
       fail(`unknown category "${id}". Add it to categories in src/blog-data.ts`)
     }
   }
@@ -252,27 +266,38 @@ async function readPosts(root: string, includeDrafts: boolean) {
     .sort((a, b) => b.meta.published.localeCompare(a.meta.published))
 }
 
-/** The two virtual modules. The og card renderer uses this part alone, without MDX. */
-export function blogContent(): Plugin {
+/**
+ * The virtual modules. The og card renderer uses this part alone, without MDX, and
+ * passes `drafts` itself, since its own Vite runner always looks like a dev server.
+ */
+export function blogContent({ drafts }: { drafts?: boolean } = {}): Plugin {
   let root = process.cwd()
-  let includeDrafts = true
+  let includeDrafts = drafts ?? true
   return {
     name: 'arakun:blog-content',
     configResolved(config) {
       ;({ root } = config)
       // Drafts show while writing, never in a build that could ship.
-      includeDrafts = config.command === 'serve'
+      includeDrafts = drafts ?? config.command === 'serve'
     },
     resolveId(id) {
-      return id === POSTS_ID || id === MARKDOWN_ID ? resolved(id) : undefined
+      return VIRTUAL_IDS.includes(id) ? resolved(id) : undefined
     },
     async load(id) {
-      if (id !== resolved(POSTS_ID) && id !== resolved(MARKDOWN_ID)) {
+      if (!VIRTUAL_IDS.some((name) => id === resolved(name))) {
         return
       }
       const posts = await readPosts(root, includeDrafts)
       for (const name of await readdir(join(root, CONTENT_DIR))) {
         this.addWatchFile(join(root, CONTENT_DIR, name))
+      }
+      if (id === resolved(BODIES_ID)) {
+        // One chunk per post, and none for a draft in a build, so its text never ships.
+        const entries = posts.map(
+          ({ meta }) =>
+            `${JSON.stringify(meta.slug)}: () => import(${JSON.stringify(`/${CONTENT_DIR}/${meta.slug}.mdx`)})`
+        )
+        return `export const bodies = {${entries.join(',\n')}}`
       }
       if (id === resolved(POSTS_ID)) {
         return `export const posts = ${JSON.stringify(posts.map((post) => post.meta))}`
@@ -287,7 +312,7 @@ export function blogContent(): Plugin {
           return
         }
         for (const environment of Object.values(server.environments)) {
-          for (const id of [POSTS_ID, MARKDOWN_ID]) {
+          for (const id of VIRTUAL_IDS) {
             const mod = environment.moduleGraph.getModuleById(resolved(id))
             if (mod) {
               environment.moduleGraph.invalidateModule(mod)

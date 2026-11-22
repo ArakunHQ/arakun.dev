@@ -172,6 +172,8 @@ export function ogCards(): Plugin {
     return assets
   }
   // Loaded through Vite so the #/ imports resolve; fresh on every call so dev shows edits.
+  // A build leaves drafts out of the cards, as it leaves them out of the site.
+  let command: 'build' | 'serve' = 'serve'
   const loadCards = async () => {
     const { module } = await runnerImport<typeof Cards>(join(root, 'src/og-cards.ts'), {
       configFile: false,
@@ -179,15 +181,16 @@ export function ogCards(): Plugin {
       logLevel: 'error',
       resolve: { tsconfigPaths: true },
       // The cards list blog posts, which come from content/blog through this plugin.
-      plugins: [blogContent()],
+      plugins: [blogContent({ drafts: command === 'serve' })],
     })
     return module.ogCards.map((card) => ({ card, file: module.ogImagePath(card.path) }))
   }
 
   return {
     name: 'arakun:og-cards',
-    configResolved({ root: configRoot }) {
+    configResolved({ root: configRoot, command: configCommand }) {
       root = configRoot
+      command = configCommand
     },
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {

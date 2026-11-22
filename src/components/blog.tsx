@@ -124,7 +124,13 @@ export function CategoryNav({ current }: { current?: string }) {
 
 function Cover({ post }: { post: PostMeta }) {
   return (
-    <Link className="post-cover" params={{ slug: post.slug }} tabIndex={-1} to="/blog/$slug">
+    <Link
+      aria-label={post.title}
+      className="post-cover"
+      params={{ slug: post.slug }}
+      tabIndex={-1}
+      to="/blog/$slug"
+    >
       <img
         alt=""
         decoding="async"
