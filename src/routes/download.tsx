@@ -31,21 +31,21 @@ const platforms: {
     downloads: ['Linux', 'Linux arm64'],
     status: 'Supported',
     tone: 'success',
-    note: 'The main platform. x86_64 and arm64, on Wayland and X11.',
+    note: 'The main platform, on Wayland and X11. x86_64 is supported; arm64 is in beta.',
   },
   {
     name: 'Windows',
     downloads: ['Windows'],
     status: 'Beta',
     tone: 'attention',
-    note: 'Windows 10 and 11, x86_64. No Dynamic Island yet.',
+    note: 'Windows 10 and 11, x86_64. Browser tabs are barely tested.',
   },
   {
     name: 'macOS',
     downloads: ['macOS'],
-    status: 'Beta',
+    status: 'Experimental',
     tone: 'attention',
-    note: 'Apple silicon. Signed and notarized by Apple. No browser in release builds yet.',
+    note: 'Apple silicon. Little tested, browser tabs least of all.',
   },
 ]
 

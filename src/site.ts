@@ -1,7 +1,7 @@
 /** Facts and links the whole site shares. Checked against github.com/ArakunHQ/arakun. */
 const org = 'https://github.com/ArakunHQ'
 const repo = `${org}/arakun`
-const version = '0.5.0'
+const version = '0.18.1'
 const release = `${repo}/releases/download/v${version}`
 
 /** Supported coding agents and their Mintlify doc slugs under docs.arakun.dev. */
@@ -33,7 +33,7 @@ export const site = {
    * release from GitHub instead (useLatest in src/components/ui.tsx).
    */
   version,
-  released: 'November 18, 2026',
+  released: 'November 22, 2026',
   license: 'AGPL-3.0',
   installUrl: 'https://arakun.dev/install',
   /** The docs, on Mintlify (docs/ in this repo). /docs/<page> here redirects to them. */
