@@ -1448,12 +1448,24 @@ svg {
   color: var(--color-text-faint);
 }
 .blog-head {
-  display: flex;
-  flex-direction: column;
   gap: var(--spacing-4);
-  max-width: 820px;
+  padding-bottom: var(--spacing-12);
+  border-bottom: 1px solid var(--color-line);
+}
+.blog-head h1 {
+  max-width: 780px;
+  font-size: var(--text-3xl);
+  line-height: 1.12;
+  letter-spacing: var(--tracking-tight);
+}
+.blog-head .lead {
+  max-width: 680px;
+  font-size: var(--text-title);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
 }
 .blog-back {
+  width: fit-content;
   color: var(--color-text-muted);
 }
 .blog-back:hover {
@@ -1461,23 +1473,40 @@ svg {
 }
 .blog-post {
   max-width: 780px;
+  padding-top: var(--spacing-4);
   padding-bottom: var(--section);
 }
 .blog-post section h2 {
   margin-top: var(--spacing-12);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-tight);
 }
 .blog-post p,
-.blog-post ul {
+.blog-post li {
+  font-size: var(--text-xl);
+  line-height: 1.65;
+  color: var(--color-text-muted);
+}
+.blog-post p {
   margin-top: var(--spacing-4);
 }
 .blog-post ul {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
+  gap: var(--spacing-3);
   padding-left: var(--spacing-6);
+  margin-top: var(--spacing-4);
+}
+.blog-post li::marker {
+  color: var(--color-text-faint);
 }
 .blog-code {
   padding: var(--spacing-4);
+  margin-top: var(--spacing-4);
   overflow-x: auto;
   font-family: var(--font-mono);
   font-size: var(--text-md);
@@ -1568,13 +1597,14 @@ svg {
 }
 .bench-table {
   width: 100%;
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
   text-align: left;
   border-collapse: collapse;
 }
 .bench-table th,
 .bench-table td {
   padding: var(--spacing-3) var(--spacing-4);
+  vertical-align: top;
   border-bottom: 1px solid var(--color-line);
 }
 .bench-table thead th {
@@ -1584,6 +1614,7 @@ svg {
   color: var(--color-text-faint);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
+  white-space: nowrap;
   background: var(--color-raised);
 }
 .bench-table tbody tr:last-child th,
@@ -1591,13 +1622,13 @@ svg {
   border-bottom: none;
 }
 .bench-table tbody th {
+  min-width: 190px;
   font-weight: 500;
   color: var(--color-text);
-  white-space: nowrap;
 }
 .bench-table tbody td {
   font-family: var(--font-mono);
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 .bench-table tbody td:nth-child(2) {

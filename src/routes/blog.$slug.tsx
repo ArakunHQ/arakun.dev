@@ -73,21 +73,19 @@ function BlogPostPage() {
   const post = Route.useLoaderData()
   return (
     <>
-      <header className="ph">
-        <div className="wrap blog-head">
-          <Link className="blog-back mono-label" to="/blog">
-            ← Blog
-          </Link>
-          <div className="blog-meta mono-label">
-            <time dateTime={post.published}>
-              {day.format(new Date(`${post.published}T00:00:00Z`))}
-            </time>
-            <span>{post.readingMinutes} min read</span>
-            <span>{post.author}</span>
-          </div>
-          <h1>{post.title}</h1>
-          <p className="lead">{post.description}</p>
+      <header className="ph wrap blog-head">
+        <Link className="blog-back mono-label" to="/blog">
+          ← Blog
+        </Link>
+        <div className="blog-meta mono-label">
+          <time dateTime={post.published}>
+            {day.format(new Date(`${post.published}T00:00:00Z`))}
+          </time>
+          <span>{post.readingMinutes} min read</span>
+          <span>{post.author}</span>
         </div>
+        <h1>{post.title}</h1>
+        <p className="lead">{post.description}</p>
       </header>
 
       <div className="wrap">
