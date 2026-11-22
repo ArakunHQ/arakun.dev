@@ -92,7 +92,7 @@ function Features() {
           title="A palette for everything"
         />
         <Principle
-          body="The source is on GitHub. Linux is supported. Windows and macOS are in beta."
+          body="The source is on GitHub. Linux is supported, Windows is in beta and macOS is experimental."
           num="Open"
           title={`Free under ${site.license}`}
         />
