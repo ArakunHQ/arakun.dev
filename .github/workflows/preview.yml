@@ -1,0 +1,319 @@
+name: Preview
+
+# Gives every pull request a preview of the site, at
+# https://arakun-website-pr-<number>.<account>.workers.dev, and removes it when
+# the pull request closes (see "Previews" in README.md).
+#
+# CI builds the pull request without any secret and keeps the build. This
+# workflow uploads that build to a Worker of its own, with no route, so a
+# preview can't take over arakun.dev. It uses the `production` environment
+# for the Cloudflare token; these events always run from main, which that
+# environment allows.
+#
+# A pull request from the team deploys once CI passes. One from anyone else
+# deploys once a maintainer approves its head commit, the rule of the Human
+# approval status: the preview serves that person's code from our Cloudflare
+# account. So this also runs when a review is submitted.
+#
+# These events run this file from the default branch with secrets, even for
+# pull requests from forks. That is safe only because no job checks out,
+# installs or runs code from the pull request, and the build is only ever read
+# as files to upload. Keep it that way. A change to this file takes effect once
+# it is on main.
+
+on:
+  # Safe as the comment above says; zizmor can't see that the build is not run.
+  workflow_run: # zizmor: ignore[dangerous-triggers]
+    workflows: [CI, Review submitted]
+    types: [completed]
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
+    types: [closed]
+
+permissions: {}
+
+env:
+  # The members of the ArakunHQ/maintainers team. The workflow's token can't
+  # read team membership, so keep this in step by hand, here, in
+  # human-approval.yml and in reviewers.yml.
+  TEAM: KarloAldrete rikvisser-dev daniektj
+
+jobs:
+  find:
+    name: Find the pull request
+    # CI on a pull request that passed, or any review. "Review submitted" is
+    # only a trigger, and its result means nothing.
+    if: >-
+      github.event_name == 'workflow_run' && (
+        (github.event.workflow_run.name == 'CI' &&
+          github.event.workflow_run.event == 'pull_request' &&
+          github.event.workflow_run.conclusion == 'success') ||
+        (github.event.workflow_run.name == 'Review submitted' &&
+          github.event.workflow_run.event == 'pull_request_review'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read # to find CI's run after a review
+      contents: read
+      pull-requests: write
+    outputs:
+      pr: ${{ steps.find.outputs.pr }}
+      ci-run: ${{ steps.find.outputs.ci-run }}
+    steps:
+      # The default branch, for the comment script. Never the pull request.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+
+      - name: Find the pull request
+        id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TRIGGER: ${{ github.event.workflow_run.name }}
+          TRIGGER_RUN: ${{ github.event.workflow_run.id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+
+          in_team() { grep -qxF "$1" <<<"${TEAM// /$'\n'}"; }
+
+          # The event lists no pull request when the branch is on a fork, and
+          # the run can't be trusted to name its own. So find the open pull
+          # request whose head is the commit. A run for an older commit finds
+          # none and stops here.
+          found=$(gh api "repos/$GH_REPO/pulls?state=open&per_page=100" --paginate --jq \
+            '.[] | select(.head.sha == env.HEAD_SHA and .head.repo.full_name == env.HEAD_REPO and .head.ref == env.HEAD_BRANCH) | "\(.number) \(.user.login)"' |
+            head -n 1)
+          if [ -z "$found" ]; then
+            echo "::notice::No open pull request has $HEAD_SHA as its head, so nothing is deployed."
+            exit 0
+          fi
+          read -r pr author <<<"$found"
+
+          if [ "$author" = "dependabot[bot]" ] || in_team "$author"; then
+            if [ "$TRIGGER" != CI ]; then
+              echo "#$pr is from $author: CI deployed it, and a review changes nothing."
+              exit 0
+            fi
+            echo "#$pr is from $author, so it deploys."
+          else
+            # Each reviewer's last verdict on the head commit, as in
+            # human-approval.yml. A dismissed review clears an approval.
+            approvers=$(gh api "repos/$GH_REPO/pulls/$pr/reviews" --paginate --jq \
+              '.[] | select(.commit_id == env.HEAD_SHA and (.state == "APPROVED" or .state == "CHANGES_REQUESTED" or .state == "DISMISSED")) | "\(.user.login) \(.state)"' |
+              awk '{ last[$1] = $2 } END { for (user in last) if (last[user] == "APPROVED") print user }')
+            approver=""
+            for user in $approvers; do
+              if in_team "$user"; then
+                approver=$user
+                break
+              fi
+            done
+            if [ -z "$approver" ]; then
+              echo "#$pr is from $author, outside the team, and no maintainer has approved $HEAD_SHA."
+              .github/scripts/preview-comment.sh "$pr" \
+                "**Preview:** waiting for a maintainer to approve \`${HEAD_SHA:0:7}\`. Approving the pull request deploys it."
+              exit 0
+            fi
+            echo "#$pr is from $author, and $approver approved $HEAD_SHA, so it deploys."
+          fi
+
+          # The CI run that built this commit. After a review, the newest one
+          # that passed; if none has, CI's own completion deploys later.
+          if [ "$TRIGGER" = CI ]; then
+            run=$TRIGGER_RUN
+          else
+            run=$(gh api "repos/$GH_REPO/actions/workflows/ci.yml/runs?head_sha=$HEAD_SHA&event=pull_request&status=success&per_page=1" \
+              --jq '.workflow_runs[0].id // empty')
+            if [ -z "$run" ]; then
+              echo "::notice::CI has not passed on $HEAD_SHA yet. It deploys the preview when it does."
+              exit 0
+            fi
+          fi
+          echo "pr=$pr" >> "$GITHUB_OUTPUT"
+          echo "ci-run=$run" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy the preview
+    needs: find
+    if: needs.find.outputs.pr != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read # to download the build from the CI run
+      contents: read
+      pull-requests: write
+    # The production token. The environment is limited to main, which is
+    # where this runs, so a workflow on a pull request's branch can't read it.
+    # No url: it would replace arakun.dev as the environment's link on GitHub.
+    environment:
+      name: production
+    # One deploy per pull request. A new push replaces a deploy that is running.
+    concurrency:
+      group: preview-${{ needs.find.outputs.pr }}
+      cancel-in-progress: true
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PR: ${{ needs.find.outputs.pr }}
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      # A newer push may have landed meanwhile. Deploy only what the pull
+      # request still is.
+      - name: Skip if the pull request has moved on
+        id: current
+        run: |
+          set -euo pipefail
+          now=$(gh api "repos/$GH_REPO/pulls/$PR" --jq '"\(.state) \(.head.sha)"')
+          if [ "$now" = "open $HEAD_SHA" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::#$PR is now '$now', so $HEAD_SHA is not deployed."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The default branch, for Wrangler and the comment script. Never the
+      # pull request.
+      - if: steps.current.outputs.deploy == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - if: steps.current.outputs.deploy == 'true'
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      # No dependency cache, as in CI's deploy job.
+      - if: steps.current.outputs.deploy == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - if: steps.current.outputs.deploy == 'true'
+        run: pnpm install --frozen-lockfile
+
+      # Outside the checkout, so nothing in the build can replace a file of ours.
+      - if: steps.current.outputs.deploy == 'true'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: preview
+          path: ${{ runner.temp }}/build
+          run-id: ${{ needs.find.outputs.ci-run }}
+          github-token: ${{ github.token }}
+
+      # The build's own wrangler.json comes from the pull request and could
+      # name arakun.dev as a route, so it is never used. This config takes
+      # only the compatibility settings from it, after checking their shape.
+      # It lives in a folder of its own: Wrangler reads `.env` files next to
+      # its config, and one from the build could point Wrangler, and the
+      # token, at another server.
+      - name: Write the preview's Wrangler config
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          BUILD: ${{ runner.temp }}/build
+          WORKER: ${{ runner.temp }}/worker
+        run: |
+          set -euo pipefail
+
+          # A link in the build could make Wrangler upload a file of the
+          # runner as a public asset.
+          odd=$(find "$BUILD" ! -type f ! -type d -print -quit)
+          if [ -n "$odd" ]; then
+            echo "::error::The build holds something that is not a file or a folder: $odd"
+            exit 1
+          fi
+          test -f "$BUILD/server/index.js"
+          test -d "$BUILD/client"
+
+          mkdir "$WORKER"
+          # No route and no custom domain: only the workers.dev address. The
+          # PostHog token is empty, which turns analytics off.
+          jq -e -n --arg name "arakun-website-pr-$PR" --arg build "$BUILD" \
+            --slurpfile built "$BUILD/server/wrangler.json" '
+            $built[0] as $b
+            | {
+                name: $name,
+                main: "\($build)/server/index.js",
+                compatibility_date: ($b.compatibility_date
+                  | select(type == "string" and test("^[0-9]{4}-[0-9]{2}-[0-9]{2}$"))),
+                compatibility_flags: [$b.compatibility_flags[]?
+                  | select(type == "string" and test("^[a-z0-9_]+$"))],
+                no_bundle: true,
+                rules: [{ type: "ESModule", globs: ["**/*.js", "**/*.mjs"] }],
+                assets: { directory: "\($build)/client" },
+                workers_dev: true,
+                preview_urls: false,
+                vars: { POSTHOG_PROJECT_TOKEN: "", POSTHOG_HOST: "" }
+              }' > "$WORKER/wrangler.json"
+          cat "$WORKER/wrangler.json"
+
+      - name: Deploy
+        id: deploy
+        if: steps.current.outputs.deploy == 'true'
+        working-directory: ${{ runner.temp }}/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          "$GITHUB_WORKSPACE/node_modules/.bin/wrangler" deploy --config wrangler.json \
+            --message "$HEAD_SHA" | tee deploy.log
+          url=$(grep -oE "https://arakun-website-pr-$PR\.[a-z0-9-]+\.workers\.dev" deploy.log | head -n 1)
+          if [ -z "$url" ]; then
+            echo "::error::Wrangler printed no workers.dev address. Does the account have a workers.dev subdomain?"
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Comment the address
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          .github/scripts/preview-comment.sh "$PR" \
+            "**Preview:** $URL shows \`${HEAD_SHA:0:7}\`. It is removed when this pull request closes."
+
+      - name: Comment the failure
+        if: failure() && steps.current.outputs.deploy == 'true'
+        run: |
+          .github/scripts/preview-comment.sh "$PR" \
+            "**Preview:** the deploy of \`${HEAD_SHA:0:7}\` [failed]($RUN_URL)."
+
+  remove:
+    name: Remove the preview
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    environment:
+      name: production
+    # The same group as the deploy, so a deploy that is running or waiting
+    # stops, and can't put the preview back.
+    concurrency:
+      group: preview-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      # Straight to the API: no checkout and no install in a job that runs
+      # for every closed pull request.
+      - name: Delete the Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          status=$(curl -sS -o response.json -w '%{http_code}' -X DELETE \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/arakun-website-pr-$PR?force=true")
+          case "$status" in
+            200) echo "Removed arakun-website-pr-$PR." ;;
+            404) echo "#$PR had no preview." ;;
+            *)
+              echo "::error::Cloudflare answered $status."
+              cat response.json
+              exit 1
+              ;;
+          esac
