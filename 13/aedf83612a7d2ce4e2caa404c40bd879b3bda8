@@ -1,0 +1,33 @@
+vite/og.ts
+  s_0cdcf463a753fe::t_d577879146dd60 175-176,184,191,193
+src/styles.css
+  s_0cdcf463a753fe::t_d77f73fd09bf7e 1741,1744,1751-1752,1755-1757,1855,1920-1921,2015
+vite/blog.ts
+  s_0cdcf463a753fe::t_d577879146dd60 31-32,39-40,164,166,184-188,199,207,215,269-273,275,281,284,287,294-301,315
+  s_0cdcf463a753fe::t_8e6f5ba9906706 147-154,156-163,165,168-169,171-179
+src/routes/blog.$slug.tsx
+  s_0cdcf463a753fe::t_d77f73fd09bf7e 1
+  s_0cdcf463a753fe::t_f1cbe0a19ebade 4-5,13-34,37,39-40,43,83-85
+src/components/blog.tsx
+  s_0cdcf463a753fe::t_d77f73fd09bf7e 127-133
+src/blog-virtual.d.ts
+  s_0cdcf463a753fe::t_d577879146dd60 7-11
+src/components/blog-mdx.tsx
+  s_0cdcf463a753fe::t_d77f73fd09bf7e 166-169,173,175-176,178-179,185-197,200
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "13aedf83612a7d2ce4e2caa404c40bd879b3bda8",
+  "prompts": {},
+  "sessions": {
+    "s_0cdcf463a753fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03891fbf-0233-4103-93ee-f0210c81d108",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Rik Visser <rik@rivi.software>"
+    }
+  }
+}
