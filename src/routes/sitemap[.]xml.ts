@@ -1,14 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { docs } from '#/docs'
 import { pageUrl } from '#/seo'
 import { pages } from '#/site'
 
 /** Every page search engines should index, at the URL its canonical link names. */
-const sitemapPaths = () => [
-  '/',
-  ...Object.values(pages).map((page) => page.path),
-  ...docs.map((doc) => `/docs/${doc.slug}`),
-]
+const sitemapPaths = () => ['/', ...Object.values(pages).map((page) => page.path)]
 
 function sitemap() {
   const urls = sitemapPaths()

@@ -38,7 +38,7 @@ export function SiteNav() {
         </Link>
         <nav aria-label="Main">
           <Link to="/features">Features</Link>
-          <Link to="/docs">Docs</Link>
+          <a href={site.docsUrl}>Docs</a>
           <Link to="/changelog">Changelog</Link>
           <a className="gh" href={site.githubUrl}>
             GitHub
@@ -139,13 +139,9 @@ export function SiteFooter() {
           </div>
           <div className="col">
             <span>Learn</span>
-            <Link to="/docs">Docs</Link>
-            <Link hash="the-arakun-command" to="/docs">
-              The arakun command
-            </Link>
-            <Link params={{ slug: 'keyboard-shortcuts' }} to="/docs/$slug">
-              Keyboard shortcuts
-            </Link>
+            <a href={site.docsUrl}>Docs</a>
+            <a href={`${site.docsUrl}/the-arakun-command`}>The arakun command</a>
+            <a href={`${site.docsUrl}/keyboard-shortcuts`}>Keyboard shortcuts</a>
           </div>
           <div className="col">
             <span>Source</span>

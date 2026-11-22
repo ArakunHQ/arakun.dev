@@ -161,5 +161,10 @@
       "title": "This page is not here",
       "description": "It may have moved. Search the docs, or start at Install."
     }
+  },
+  "seo": {
+    "metatags": {
+      "canonical": "https://docs.arakun.dev"
+    }
   }
 }

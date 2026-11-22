@@ -1,4 +1,3 @@
-import { docs } from '#/docs'
 import { pages, site } from '#/site'
 
 // The plugin loads this file through Vite, so it gets the path rule from here rather than importing src itself.
@@ -25,11 +24,5 @@ export const ogCards: OgCard[] = [
     label: section(page.label),
     title: page.title,
     line: page.lead,
-  })),
-  ...docs.map((doc) => ({
-    path: `/docs/${doc.slug}`,
-    label: section('Docs', doc.group),
-    title: doc.title,
-    line: doc.summary,
   })),
 ]

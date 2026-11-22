@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import type { Tone } from '#/components/ui'
 import {
   DownloadButton,
@@ -109,14 +109,9 @@ function Download() {
             <InstallLine shell="server" />
           </div>
           <div className="a" style={{ display: 'flex', gap: 'var(--spacing-3)', flexWrap: 'wrap' }}>
-            <Link
-              className="btn"
-              data-tone="secondary"
-              params={{ slug: 'server' }}
-              to="/docs/$slug"
-            >
+            <a className="btn" data-tone="secondary" href={`${site.docsUrl}/server`}>
               Set up the server
-            </Link>
+            </a>
             {latest.server.x86_64 ? (
               <a className="btn" data-tone="ghost" href={latest.server.x86_64}>
                 Download arakun-server

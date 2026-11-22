@@ -119,8 +119,8 @@ function Privacy() {
               Reports carry a random id, kept in a file named <code>telemetry-id</code> in the app's
               data folder. It is not tied to any account. PostHog builds no profile from it, and it
               does not keep your IP address or use it to find your location. If you delete the file,
-              the app makes a new id. The <a href="/docs/crash-reports">docs</a> say where the
-              folder is.
+              the app makes a new id. The <a href={`${site.docsUrl}/crash-reports`}>docs</a> say
+              where the folder is.
             </p>
           </Section>
 

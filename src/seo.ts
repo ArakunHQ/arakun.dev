@@ -1,7 +1,7 @@
 import type { pages } from '#/site'
 import { site } from '#/site'
 
-/** Where a page's preview card is served: / is /og/home.png, /docs/install is /og/docs/install.png. */
+/** Where a page's preview card is served: / is /og/home.png, /features is /og/features.png. */
 export const ogImagePath = (path: string) => `/og/${path === '/' ? 'home' : path.slice(1)}.png`
 
 /** The one URL a page is known by: https, no www, no trailing slash except on the home page. */
@@ -57,22 +57,6 @@ const app: JsonLd = {
 }
 
 export const softwareApplication: JsonLd = { '@context': 'https://schema.org', ...app }
-
-/** A docs page: it explains the app, so it names the app as its subject. */
-export const techArticle = ({
-  path,
-  title,
-  description,
-}: Record<'path' | 'title' | 'description', string>): JsonLd => ({
-  '@context': 'https://schema.org',
-  '@type': 'TechArticle',
-  headline: title,
-  description,
-  url: pageUrl(path),
-  image: pageUrl(ogImagePath(path)),
-  inLanguage: 'en',
-  about: app,
-})
 
 /** The site, so search engines show its name rather than its domain. */
 export const website: JsonLd = {
