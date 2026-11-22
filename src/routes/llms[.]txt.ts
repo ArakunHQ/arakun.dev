@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { postPath, posts } from '#/blog'
 import { pageDescription, pageUrl } from '#/seo'
 import { agents, installCommands, pages, site } from '#/site'
 
@@ -24,6 +25,10 @@ ${agents.map((agent) => `- [${agent.name}](${site.docsUrl}/${agent.slug}.md)`).j
 ${Object.values(pages)
   .map((page) => `- [${page.label}](${pageUrl(page.path)}): ${pageDescription(page)}`)
   .join('\n')}
+
+## Blog
+
+${posts.map((post) => `- [${post.title}](${pageUrl(postPath(post.slug))}): ${post.description}`).join('\n')}
 
 ## Docs
 

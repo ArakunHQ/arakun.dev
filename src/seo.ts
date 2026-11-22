@@ -1,3 +1,5 @@
+import type { BlogPost } from '#/blog'
+import { postPath } from '#/blog'
 import type { pages } from '#/site'
 import { site } from '#/site'
 
@@ -84,6 +86,37 @@ export const organization: JsonLd = {
   url: site.url,
   logo: `${site.url}/brand/icon-512.png`,
   sameAs: [site.githubOrgUrl],
+}
+
+/** Structured data for a blog article (BlogPosting). */
+export function blogPosting(post: BlogPost): JsonLd {
+  const path = postPath(post.slug)
+  const url = pageUrl(path)
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.published,
+    dateModified: post.updated,
+    url,
+    mainEntityOfPage: url,
+    image: `${site.url}${ogImagePath(path)}`,
+    author: {
+      '@type': 'Organization',
+      name: post.author,
+      url: site.url,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: site.name,
+      url: site.url,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${site.url}/brand/icon-512.png`,
+      },
+    },
+  }
 }
 
 /** Home, then each step to the page. The last step is the page itself. */

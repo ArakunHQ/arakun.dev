@@ -39,6 +39,7 @@ export function SiteNav() {
         <nav aria-label="Main">
           <Link to="/features">Features</Link>
           <a href={site.docsUrl}>Docs</a>
+          <Link to="/blog">Blog</Link>
           <Link to="/changelog">Changelog</Link>
           <a className="gh" href={site.githubUrl}>
             GitHub
@@ -135,6 +136,7 @@ export function SiteFooter() {
             <span>Product</span>
             <Link to="/features">Features</Link>
             <Link to="/download">Download</Link>
+            <Link to="/blog">Blog</Link>
             <Link to="/changelog">Changelog</Link>
           </div>
           <div className="col">
