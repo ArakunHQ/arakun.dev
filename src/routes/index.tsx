@@ -14,7 +14,7 @@ import {
   Words,
 } from '#/components/ui'
 import { organization, pageHead, softwareApplication, website } from '#/seo'
-import { pillars, sessions, site } from '#/site'
+import { agentList, pillars, sessions, site } from '#/site'
 
 export const Route = createFileRoute('/')({
   head: () =>
@@ -42,8 +42,8 @@ function Home() {
             <Words text={site.line} />
           </h1>
           <p className="sub rise" style={step(0, 480)}>
-            Claude Code, Droid, OpenCode, Codex and Workers AI work side by side. Each task gets its
-            own git worktree, so agents don't step on each other.
+            {agentList} work side by side. Each task gets its own git worktree, so agents don't step
+            on each other.
           </p>
           <div className="cta rise" style={step(1, 480)}>
             <DownloadButton platform={platform} />
