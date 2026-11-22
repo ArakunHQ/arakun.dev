@@ -35,6 +35,8 @@ Arakun sends it to Anthropic's API, so it needs an Anthropic API key (pay per us
 
 The agent can run shell commands, read, write and edit files, search the code, fetch and search the web, and load skills. It asks before each shell command and each edit: **Allow**, **Always allow commands** (or **edits**), or **Deny**, which stops the turn. It reads the project's `AGENTS.md`, or `CLAUDE.md` if there is none.
 
+Web fetch stops when a site refuses it with a 401, 403, 429, 451 or 503, or a bot check. Web search, which reads DuckDuckGo, stops when DuckDuckGo answers with a bot check. The agent gets the reason, and neither tries another way around. Web fetch asks the site directly first and uses [Browser Run](/fetch-web-pages) only for a page that needs JavaScript, when a Browser Run token is set up.
+
 Sessions are saved, so you can resume one after a restart. [Headless agents](/headless-agents) use Workers AI models too, and `arakun agent new --model workers-ai/<model> <prompt>` starts a session from a terminal.
 
 ## Skills
