@@ -1,13 +1,13 @@
 /**
  * Hand-written notes for a release, keyed by its tag.
  *
- * The changelog reads the releases from GitHub (see `releases.ts`), and Workers
- * AI rewrites their notes for people who use the app (`release-rewrite.ts`). An
- * entry here wins over both. These entries are also the whole changelog if GitHub
- * has never been reachable.
+ * The changelog reads the releases from GitHub (see `releases.ts`), and each
+ * release's entry from the top of its notes (`release-entry.ts`), which the version
+ * bump pull request of the app writes. An entry here wins over that. These entries
+ * are also the whole changelog if GitHub has never been reachable.
  *
- * So a new release needs nothing here. Add an entry when its GitHub notes are
- * empty, or when the rewrite gets something wrong.
+ * So a new release needs nothing here. Add an entry to correct a published one
+ * without editing its release on GitHub.
  */
 export interface ReleaseNote {
   changes: [area: string, change: string][]
