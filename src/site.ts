@@ -1,5 +1,6 @@
 /** Facts and links the whole site shares. Checked against github.com/ArakunHQ/arakun. */
-const repo = 'https://github.com/ArakunHQ/arakun'
+const org = 'https://github.com/ArakunHQ'
+const repo = `${org}/arakun`
 const version = '0.5.0'
 const release = `${repo}/releases/download/v${version}`
 
@@ -11,6 +12,8 @@ export const site = {
     'Arakun is a native app where Claude Code, Droid, OpenCode, Codex and Workers AI work side by side, each on its own git worktree.',
   /** Absolute origin, for links that leave the site: og:image, canonical URLs. */
   url: 'https://arakun.dev',
+  /** The day the home page last changed in substance, for the sitemap. */
+  updated: '2026-11-17',
   /**
    * The fallback release, for when GitHub cannot be reached. Pages show the newest
    * release from GitHub instead (useLatest in src/components/ui.tsx).
@@ -24,6 +27,7 @@ export const site = {
   /** arakun-server alone, for Linux machines with no display (src/routes/install-server.ts). */
   installServerUrl: 'https://arakun.dev/install-server',
   githubUrl: repo,
+  githubOrgUrl: org,
   issuesUrl: `${repo}/issues`,
   licenseUrl: `${repo}/blob/main/LICENSE`,
   releasesUrl: `${repo}/releases`,
@@ -51,10 +55,14 @@ export type Platform = keyof typeof site.downloads
  * The header of each inner page. The page shows it in its PageHeader and its
  * link preview card (src/og-cards.ts) uses the same title and lead. `tab` is the
  * <title>: what search results and the browser tab show, so it names the page's topic.
+ * `description` is for search results when the lead is too short for one (at least 70
+ * characters). `updated` is the day the page last changed in substance, for the sitemap:
+ * change it with the page.
  */
 export const pages = {
   features: {
     path: '/features',
+    updated: '2026-11-17',
     num: '01',
     label: 'Features',
     tab: 'Features: many coding agents in one window · Arakun',
@@ -63,6 +71,7 @@ export const pages = {
   },
   download: {
     path: '/download',
+    updated: '2026-11-22',
     num: '02',
     label: 'Download',
     tab: 'Download Arakun for Linux, Windows and macOS',
@@ -72,19 +81,25 @@ export const pages = {
   },
   changelog: {
     path: '/changelog',
+    updated: '2026-11-22',
     num: '03',
     label: 'Changelog',
     tab: 'Arakun changelog: every release, newest first',
     title: 'What changed',
     lead: 'Every release, newest first.',
+    description:
+      'Every Arakun release, newest first: new features, fixes and changes to the native app for Claude Code, Codex and other coding agents.',
   },
   privacy: {
     path: '/privacy',
+    updated: '2026-11-22',
     num: '05',
     label: 'Privacy',
     tab: 'Privacy: what arakun.dev and the app collect · Arakun',
     title: 'Privacy',
     lead: 'What arakun.dev and the Arakun app collect, why, and how to say no.',
+    description:
+      'What arakun.dev and the Arakun app collect, why they collect it, who processes it and how to turn it off.',
   },
 }
 

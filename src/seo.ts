@@ -66,6 +66,19 @@ export const website: JsonLd = {
   url: site.url,
 }
 
+/**
+ * Who makes Arakun, so answer engines can tie the app, the site and the GitHub
+ * organization to one name.
+ */
+export const organization: JsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: site.url,
+  logo: `${site.url}/brand/icon-512.png`,
+  sameAs: [site.githubOrgUrl],
+}
+
 /** Home, then each step to the page. The last step is the page itself. */
 function breadcrumbs(trail: { name: string; path: string }[]): JsonLd {
   return {
@@ -119,13 +132,17 @@ export function pageHead({
   }
 }
 
+/** What search results say about a page: its own description, or else its lead. */
+export const pageDescription = (page: (typeof pages)[keyof typeof pages]) =>
+  'description' in page ? page.description : page.lead
+
 /** The head of an inner page from src/site.ts: Home, then the page, in its breadcrumbs. */
 export function innerPageHead(page: (typeof pages)[keyof typeof pages], jsonLd: JsonLd[] = []) {
   return pageHead({
     path: page.path,
     tabTitle: page.tab,
     title: page.title,
-    description: page.lead,
+    description: pageDescription(page),
     trail: [{ name: page.label, path: page.path }],
     jsonLd,
   })
