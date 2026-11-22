@@ -343,42 +343,46 @@ svg {
 }
 .sn nav {
   display: flex;
-  gap: var(--spacing-8);
+  gap: var(--spacing-2);
+  align-items: center;
   margin-right: auto;
   font-size: var(--text-lg);
   color: var(--color-text-muted);
 }
+/* Each link is a pill. The active one fills in and makes room for its dot, so the
+   dot sits inside the pill instead of in the gap next to the previous link. */
 .sn nav a {
   position: relative;
-  transition: color 0.2s;
+  padding: var(--spacing-1) var(--spacing-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.2s,
+    padding 0.3s var(--ease);
 }
-.sn nav a::after {
-  position: absolute;
-  right: 100%;
-  bottom: -6px;
-  left: 0;
-  height: 1px;
-  content: '';
-  background: currentColor;
-  transition: right 0.25s var(--ease);
-}
-.sn nav a:hover,
-.sn nav a[data-status='active'] {
+.sn nav a:hover {
   color: var(--color-text);
+  background: var(--color-raised);
 }
-.sn nav a:hover::after {
-  right: 0;
+.sn nav a[data-status='active'] {
+  padding-left: calc(var(--spacing-3) + 6px + var(--spacing-2));
+  color: var(--color-text);
+  background: var(--color-raised);
+  border-color: var(--color-line-strong);
 }
 .sn nav a::before {
   position: absolute;
   top: 50%;
-  left: -12px;
-  width: 5px;
-  height: 5px;
-  margin-top: -2px;
+  left: var(--spacing-3);
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
   content: '';
   background: var(--color-accent);
   border-radius: var(--radius-full);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
   opacity: 0;
   transform: scale(0);
   transition:
@@ -421,7 +425,7 @@ svg {
     margin-right: 0;
   }
   .sn nav {
-    gap: var(--spacing-4);
+    gap: var(--spacing-1);
   }
   .sn nav .gh {
     display: none;
@@ -435,8 +439,17 @@ svg {
     gap: var(--spacing-3);
   }
   .sn nav {
-    gap: var(--spacing-3);
+    gap: 0;
     font-size: var(--text-md);
+  }
+  .sn nav a {
+    padding-inline: var(--spacing-2);
+  }
+  .sn nav a[data-status='active'] {
+    padding-left: calc(var(--spacing-2) + 6px + var(--spacing-2) - 2px);
+  }
+  .sn nav a::before {
+    left: var(--spacing-2);
   }
   .sn nav .cl {
     display: none;
