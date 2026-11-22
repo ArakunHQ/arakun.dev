@@ -13,12 +13,14 @@ export const site = {
   url: 'https://arakun.dev',
   /**
    * The fallback release, for when GitHub cannot be reached. Pages show the newest
-   * release from GitHub instead (useLatest in src/components/ui.tsx). The docs use this one.
+   * release from GitHub instead (useLatest in src/components/ui.tsx).
    */
   version,
   released: 'November 18, 2026',
   license: 'AGPL-3.0',
   installUrl: 'https://arakun.dev/install',
+  /** The docs, on Mintlify (docs/ in this repo). /docs/<page> here redirects to them. */
+  docsUrl: 'https://docs.arakun.dev',
   /** arakun-server alone, for Linux machines with no display (src/routes/install-server.ts). */
   installServerUrl: 'https://arakun.dev/install-server',
   githubUrl: repo,
@@ -64,21 +66,13 @@ export const pages = {
     num: '02',
     label: 'Download',
     tab: 'Download Arakun for Linux, Windows and macOS',
-    // Not "Install Arakun": that is the title of /docs/install.
+    // Not "Install Arakun": that is the title of the install page in the docs.
     title: 'Download Arakun',
     lead: `One line in a terminal, or download the build for your platform. Free and open source under ${site.license}.`,
   },
-  docs: {
-    path: '/docs',
-    num: '03',
-    label: 'Docs',
-    tab: 'Arakun docs: install, agents and the arakun command',
-    title: 'Learn Arakun',
-    lead: 'Short pages, plain words. Start with the install, then give an agent its first task.',
-  },
   changelog: {
     path: '/changelog',
-    num: '04',
+    num: '03',
     label: 'Changelog',
     tab: 'Arakun changelog: every release, newest first',
     title: 'What changed',

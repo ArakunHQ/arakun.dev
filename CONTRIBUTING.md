@@ -112,7 +112,7 @@ in `lefthook-local.yml`, which git ignores. Turn the hooks off with `lefthook un
   under other terms: no GPL, LGPL or AGPL packages.
 - **Docs pages.** If the app's behavior changed, check the README of
   [ArakunHQ/arakun](https://github.com/ArakunHQ/arakun) and keep the pages in
-  `content/docs/` in step with it. The README says how to write one.
+  `docs/` in step with it. The README says how to write one.
 - **Add a screenshot** to the pull request for any visible change, before and after,
   in both themes. Drag it into the description. With write access to
   [ArakunHQ/pr-assets](https://github.com/ArakunHQ/pr-assets), `tools/pr-assets.sh

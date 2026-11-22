@@ -339,9 +339,9 @@ export function InstallBand({ note }: { note?: string }) {
         <div className="a">
           <InstallLine />
           <div className="b">
-            <ButtonLink to="/docs" tone="ghost">
+            <a className="btn" data-tone="ghost" href={site.docsUrl}>
               Read the docs
-            </ButtonLink>
+            </a>
             <DownloadButton platform={platform} />
           </div>
         </div>
