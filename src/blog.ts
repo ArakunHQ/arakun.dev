@@ -39,53 +39,76 @@ export interface BlogPost {
 export const posts: BlogPost[] = [
   {
     slug: 'arakun-vs-t3code-vs-orca-benchmark',
-    title: 'Arakun v0.17 vs T3 Code vs Orca: startup, memory and idle CPU on Linux',
+    title:
+      'Arakun v0.17 vs T3 Code vs Orca: startup, 10 terminals, flood and browser tabs on Linux',
     description:
-      'Measured cold launch, proportional memory (PSS), process count and idle CPU across Arakun v0.17.0, T3 Code v0.1.11 and Orca v1.4.269 on Linux.',
+      'Measured cold launch, idle and 10-terminal PSS memory, 14.8 MB PTY flood throughput and CEF vs Electron browser tabs across Arakun v0.17.0, T3 Code v0.1.11 and Orca v1.4.269.',
     published: '2026-11-22',
     updated: '2026-11-22',
     author: 'Arakun team',
-    readingMinutes: 4,
+    readingMinutes: 6,
     sections: [
       {
         heading: 'The short answer',
         paragraphs: [
-          'Coding agent workspaces are supposed to stay open all day while several agents compile, run tests and stream output in parallel. When the shell around those agents already eats nearly a gigabyte of RAM before you open a project, every extra worktree hurts.',
-          'We measured the official Linux x86_64 releases of Arakun v0.17.0 (Rust + GPUI), T3 Code v0.1.11 (Electron) and Orca v1.4.269 (Electron) on the same machine, under the same isolated X11 display, across five cold launches after one discarded warm-up run.',
+          'Coding agent workspaces stay open all day while several agents compile, run tests and stream megabytes of output in parallel. When the shell around those agents already eats a gigabyte of RAM before you open a project, every extra worktree hurts.',
+          'We measured the official Linux x86_64 releases of Arakun v0.17.0 (Rust + GPUI), T3 Code v0.1.11 (Electron) and Orca v1.4.269 (Electron) on the same machine and isolated X11 display: clean idle baseline (5 runs), a real project with 10 open terminals, a 14.8 MB terminal output flood, and 1–3 built-in browser tabs (with CEF loaded in Arakun).',
         ],
         table: {
-          headers: [
-            'Metric (median of 5 runs)',
-            'Arakun v0.17.0',
-            'T3 Code v0.1.11',
-            'Orca v1.4.269',
-          ],
+          headers: ['Metric', 'Arakun v0.17.0', 'T3 Code v0.1.11', 'Orca v1.4.269'],
           rows: [
             ['Stack', 'Rust + GPUI', 'Electron + Web', 'Electron + Web'],
             [
-              'First window mapped',
+              'First window mapped (5 runs)',
               '85.0 ms (84.8–91.5)',
               '613.4 ms (553.9–630.2)',
               '1,383.5 ms (1,338.6–1,383.9)',
             ],
             [
-              'Idle memory (PSS)',
-              '141.9 MiB (141.5–142.8)',
-              '835.2 MiB (829.6–848.4)',
-              '915.2 MiB (914.6–1,108.9)',
+              'Clean idle memory (PSS)',
+              '141.9 MiB (1 proc)',
+              '835.2 MiB (14 procs)',
+              '915.2 MiB (13 procs)',
             ],
-            ['Idle memory (RSS)', '204.7 MiB', '1,497.5 MiB', '1,722.2 MiB'],
-            ['Processes at idle', '1', '14', '13'],
             ['Idle CPU (10 s window)', '0.20%', '3.98%', '0.40%'],
-            ['Download size (Linux x86_64)', '165.4 MiB', '242.5 MiB', '267.0 MiB'],
-            ['Extracted on disk', '377 MiB', '656 MiB', '833 MiB'],
+            [
+              'Project open + 10 terminals (PSS)',
+              '208.9 MiB (194.3 app-only)',
+              '983.2 MiB (970.7 app-only)',
+              '1,169.5 MiB (1,155.8 app-only)',
+            ],
+            [
+              '14.8 MB PTY flood (median of 3)',
+              '552 ms (548–556 ms)',
+              'not tested (no CLI)',
+              '1,947 ms (1,914–1,948 ms)',
+            ],
+            ['PSS after 3× flood', '267.3 MiB', '—', '1,261.9 MiB'],
+            [
+              '+ 1 built-in browser tab (PSS)',
+              '589.3 MiB (CEF loaded)',
+              'no built-in browser',
+              '1,311.6 MiB',
+            ],
+            [
+              '+ 3 built-in browser tabs (PSS)',
+              '638.7 MiB',
+              'no built-in browser',
+              '1,152.6 MiB (1,338.9 at 2)',
+            ],
+            [
+              'Download / extracted on disk',
+              '165.4 / 377 MiB',
+              '242.5 / 656 MiB',
+              '267.0 / 833 MiB',
+            ],
           ],
         },
       },
       {
         heading: 'Cold launch to first window',
         paragraphs: [
-          'We timed each launch from process spawn to the first mapped top-level X11 window of at least 200×200 pixels. AppImages were extracted beforehand with --appimage-extract so FUSE mount overhead was not billed against T3 Code or Orca.',
+          'We timed each launch from process spawn to the first mapped top-level X11 window of at least 200×200 pixels across 5 runs after 1 discarded warm-up run. AppImages were extracted beforehand with --appimage-extract so FUSE mount overhead was never billed against T3 Code or Orca.',
         ],
         chart: {
           title: 'Time to first mapped window (lower is better)',
@@ -99,67 +122,114 @@ export const posts: BlogPost[] = [
         },
       },
       {
-        heading: 'Memory at idle (PSS)',
+        heading: 'Memory with a project and 10 live terminals',
         paragraphs: [
-          'For multi-process apps, summing RSS double-counts shared libraries across Electron helpers. We read Proportional Set Size (PSS) from /proc/<pid>/smaps_rollup across every process owned by each app after a 10-second settle window and a 10-second idle window.',
+          'For multi-process apps, summing RSS double-counts shared libraries across Electron helpers. We read Proportional Set Size (PSS) from /proc/<pid>/smaps_rollup across every process in each app tree, both at clean idle and after opening a repository with 1, 5 and 10 interactive shells.',
+          'Going from an open project (183.6 MiB) to 10 live terminals adds only 10.7 MiB of app memory in Arakun (194.3 MiB excluding the shells themselves). T3 Code sits at 983.2 MiB (970.7 MiB app-only) and Orca reaches 1,169.5 MiB (1,155.8 MiB app-only).',
         ],
         chart: {
-          title: 'Total process-tree PSS memory at idle (lower is better)',
-          subtitle: 'Median of 5 runs · MiB across all app processes',
-          max: 960,
+          title: 'Total PSS memory with project open + 10 terminals (lower is better)',
+          subtitle: 'MiB across full process tree (including shells)',
+          max: 1220,
           rows: [
             {
               label: 'Arakun v0.17.0',
-              value: 141.9,
-              valueLabel: '142 MiB',
-              note: '1 process',
+              value: 208.9,
+              valueLabel: '209 MiB',
+              note: '194 MiB app-only',
               highlight: true,
             },
             {
               label: 'T3 Code v0.1.11',
-              value: 835.2,
-              valueLabel: '835 MiB (5.9×)',
-              note: '14 processes',
+              value: 983.2,
+              valueLabel: '983 MiB (4.7×)',
+              note: '971 MiB app-only',
             },
             {
               label: 'Orca v1.4.269',
-              value: 915.2,
-              valueLabel: '915 MiB (6.4×)',
-              note: '13 processes',
+              value: 1169.5,
+              valueLabel: '1,170 MiB (5.6×)',
+              note: '1,156 MiB app-only',
             },
           ],
         },
       },
       {
-        heading: 'Where the memory goes',
+        heading: 'Terminal flood throughput (14.8 MB of output)',
         paragraphs: [
-          'Looking at the per-process breakdown makes the architecture difference clear. It also surfaces details a headline total would hide:',
+          'Coding agents stream huge test logs, compiler errors and diffs. To measure real PTY backpressure, we ran seq 1 2000000 (~14.8 MB of text) three times in a live terminal inside the open repository and timed how long the command took to finish.',
+          'Because kernel PTY buffers are small, seq cannot exit until the terminal emulator drains its output. Arakun drained 14.8 MB in 552 ms median (~26.8 MB/s) and finished all three runs at 267.3 MiB PSS. Orca took 1,947 ms median (~7.6 MB/s — 3.5× slower) and ended at 1,261.9 MiB PSS. T3 Code has no CLI to submit commands to its terminal drawer, so we left it out of the flood comparison rather than measuring a different path.',
         ],
+        chart: {
+          title: 'Time to drain seq 1 2000000 (~14.8 MB) in a terminal (lower is better)',
+          subtitle: 'Median of 3 runs · milliseconds',
+          max: 2100,
+          rows: [
+            {
+              label: 'Arakun v0.17.0',
+              value: 552,
+              valueLabel: '552 ms (~26.8 MB/s)',
+              highlight: true,
+            },
+            {
+              label: 'Orca v1.4.269',
+              value: 1947,
+              valueLabel: '1,947 ms (~7.6 MB/s · 3.5× slower)',
+            },
+          ],
+        },
+      },
+      {
+        heading: 'What happens when Arakun loads its built-in browser (CEF)',
+        paragraphs: [
+          'The fair objection to any native-vs-Electron idle chart is: what happens once Arakun actually opens a web page? Arakun ships CEF (308 MiB on disk) and loads it lazily on the first browser tab, so you pay zero Chromium overhead until you use it.',
+          'To test the worst case, after the 10 terminals and three 14.8 MB floods, we opened 1, 2 and 3 deterministic local HTML pages (each with styled layout and 250 table rows) in both Arakun and Orca.',
+        ],
+        chart: {
+          title: 'Total PSS with 10 terminals + 3 floods + 3 browser tabs (lower is better)',
+          subtitle: 'Same 3 local HTML pages · MiB across full process tree (CEF loaded in Arakun)',
+          max: 1400,
+          rows: [
+            {
+              label: 'Arakun v0.17.0 (with CEF)',
+              value: 638.7,
+              valueLabel: '639 MiB',
+              note: '589 MiB at 1 tab · 622 at 2',
+              highlight: true,
+            },
+            {
+              label: 'Orca v1.4.269',
+              value: 1152.6,
+              valueLabel: '1,153 MiB (1.8×)',
+              note: '1,312 MiB at 1 tab · 1,339 at 2',
+            },
+          ],
+        },
         bullets: [
-          'Arakun v0.17.0 (141.9 MiB PSS, 1 process): one native Rust binary (69 MiB on disk). Arakun ships CEF (308 MiB on disk) for built-in browser tabs, but dlopens it lazily on the first browser tab. If you only run agents and terminals, you never pay for Chromium.',
-          'T3 Code v0.1.11 (835.2 MiB PSS, 14 processes): 7 t3code Electron processes (~710–728 MiB), 2 node backend processes (~21.7 MiB), monitor/bwrap helpers (~1.7 MiB), plus 2 codex processes (~96.5 MiB) that T3 Code auto-spawned on startup. Even excluding those codex processes, T3 Code itself sits at ~739 MiB PSS (5.2× Arakun).',
-          'Orca v1.4.269 (915.2 MiB PSS, 13 processes): 9 orca-ide Electron processes (~863.5 MiB on settled runs), 1 orca-agents daemon (~46.5 MiB), and shell/crashpad helpers (~4.7 MiB). Run 1 also hit 1,108.9 MiB PSS and 57.95% CPU during initial CLI discovery before runs 2–5 settled at 915 MiB and 0.30–0.50% CPU.',
+          'Even with CEF loaded, 3 live browser tabs, 10 terminals and 3 floods in scrollback, Arakun (638.7 MiB PSS) still uses less memory than T3 Code (835.2 MiB) or Orca (915.2 MiB) at empty idle.',
+          'In Orca, PSS rose to 1,311.6 MiB at 1 tab and 1,338.9 MiB at 2 tabs before Chromium GC reclaimed ~186 MiB by tab 3 (1,152.6 MiB).',
+          'In the idle breakdown, T3 Code auto-spawned 2 codex processes (~96.5 MiB) on startup alongside 7 t3code Electron processes (~710–728 MiB) and 2 node processes (~21.7 MiB). Excluding codex, T3 Code still sits at ~739 MiB idle (5.2× Arakun).',
+          'Orca spiked to 1,108.9 MiB PSS and 57.95% CPU on run 1 while scanning installed CLIs before settling to 915 MiB and 0.30–0.50% CPU on runs 2–5.',
         ],
       },
       {
         heading: 'Hardware, method and caveats',
         paragraphs: [
-          'Every benchmark has limits. State them up front so anyone can check the numbers or run their own.',
+          'Every benchmark has limits. These are the exact conditions so anyone can verify or repeat the test:',
         ],
         bullets: [
           'Machine: AMD Ryzen 9 5900X (12 cores / 24 threads), 46 GiB RAM, AMD Radeon RX 9060 XT, Linux 7.3.4-zen2-2-zen.',
-          'Display: isolated Xvfb :98 (1440×900×24) with WAYLAND_DISPLAY unset and --ozone-platform=x11 --no-sandbox for the extracted Electron AppImages, so all three apps ran on the same X11 server without touching the active desktop.',
-          'Scope: this measures clean idle baseline before opening a repository, terminals or browser tabs. Opening a browser tab in Arakun loads CEF and adds Chromium processes; opening active agent sessions in any of the three adds the memory of the underlying CLI (Claude Code, Codex, Devin, etc.).',
-          'Presentation: Xvfb does not expose DRI3 hardware presentation, so frame pacing and GPU-accelerated scroll performance are not measured here. We measure Arakun frame times separately with ZED_MEASUREMENTS=1 via tools/bench/bench.py in the repository.',
+          'Display: isolated Xvfb :98 (1440×900×24) with WAYLAND_DISPLAY unset and --ozone-platform=x11 --no-sandbox for the extracted Electron AppImages, so all three apps ran under identical X11 conditions.',
+          'Accounting: every process matching the app environment tag, extracted binary path or sandbox directory was summed from /proc/<pid>/smaps_rollup (PSS). Active coding agent CLIs (Claude Code, Codex, Devin) add their own process memory on top of any workspace app.',
+          'GPU presentation: Xvfb uses software presentation without DRI3, so hardware-accelerated frame pacing is not compared here. On software Lavapipe via tools/bench/bench.py perf (3 runs), Arakun median frame times stayed between 9.3 ms and 15.6 ms across idle, sidebar, zoom, palette, long-file scroll and terminal flood.',
         ],
       },
       {
-        heading: 'Reproduce it yourself',
+        heading: 'Releases tested',
         paragraphs: [
-          'Download the three official Linux x86_64 releases, extract the AppImages so FUSE is out of the loop, launch each under an isolated Xvfb display and fresh HOME, wait 10 seconds, then sum Pss: from /proc/<pid>/smaps_rollup across every process in the app tree.',
+          'All measurements used unmodified official Linux x86_64 releases downloaded on November 22, 2026:',
         ],
-        code: `# Official releases tested (2026-11-22)
-Arakun:  https://github.com/ArakunHQ/arakun/releases/tag/v0.17.0
+        code: `Arakun:  https://github.com/ArakunHQ/arakun/releases/tag/v0.17.0
 T3 Code: https://github.com/pingdotgg/t3code/releases/tag/v0.1.11
 Orca:    https://github.com/StablyAI/orca/releases/tag/v1.4.269`,
       },
@@ -212,5 +282,5 @@ export function postToMarkdown(post: BlogPost): string {
       parts.push('', '```', section.code, '```')
     }
   }
-  return `${parts.join('\n')}\n`
+  return `${parts.join('\\n')}\\n`
 }
