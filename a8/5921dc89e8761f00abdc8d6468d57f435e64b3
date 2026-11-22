@@ -1,0 +1,21 @@
+content/blog/how-arakun-works.mdx
+  s_1db786a4f63833::t_88420273259e12 1-63,65-88,90-96,98-110,112-120,122-133
+  s_1db786a4f63833::t_a214d07f0f6a90 89,97,111,121
+  s_1db786a4f63833::t_b5e38c95ddcf16 64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a85921dc89e8761f00abdc8d6468d57f435e64b3",
+  "prompts": {},
+  "sessions": {
+    "s_1db786a4f63833": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "40129169-e5d0-4e38-81e2-41279bc489f3",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Rik Visser <rik@rivi.software>"
+    }
+  }
+}
