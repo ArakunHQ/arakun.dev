@@ -152,7 +152,7 @@ The app sends nothing until you answer on first launch ("Send crash reports and 
 - **Crash reports:** error message and stack trace (with home folder replaced by \`~\` and paths, links, emails, and keys/tokens stripped). Agent errors include agent name and version, fixed error category, failed step, error/exit code, and whether the session folder still exists — never the error text.
 - **Usage counts:** app launched, session started (agent name), agent turn finished, project added, environment created, built-in view opened, and browser tab opened.
 
-Every report includes app version, OS, CPU architecture, and a random \`telemetry-id\` stored locally (not tied to any account; no prompts, replies, file contents, URLs, or project names).
+Every crash report and usage count includes app version, OS, CPU architecture, and a random \`telemetry-id\` stored locally (not tied to any account; crash reports and usage counts never include prompts, replies, file contents, URLs, or project names).
 
 ## Feedback and surveys in the app
 
