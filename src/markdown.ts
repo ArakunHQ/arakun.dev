@@ -1,4 +1,6 @@
-import { getPost, postPath, posts, postToMarkdown } from '#/blog'
+import { markdown as postBodies } from 'virtual:blog/markdown'
+import type { PostMeta } from '#/blog'
+import { formatDay, getPost, postAuthors, postCategories, postPath, posts } from '#/blog'
 import type { Release } from '#/releases'
 import { listReleases } from '#/releases'
 import { pageDescription, pageUrl } from '#/seo'
@@ -127,7 +129,9 @@ Full documentation: ${site.docsUrl} (${site.docsUrl}/llms.txt).
 ${posts
   .map(
     (post) =>
-      `- [${post.title}](${pageUrl(postPath(post.slug))}) (${post.published}): ${post.description}`
+      `- [${post.title}](${pageUrl(postPath(post.slug))}) (${post.published}; ${postCategories(post)
+        .map((category) => category.label)
+        .join(', ')}): ${post.description}`
   )
   .join('\n')}
 `,
@@ -194,6 +198,29 @@ Last updated November 22, 2026. Full page: ${pageUrl('/privacy')}
 `,
 }
 
+function postMarkdown(post: PostMeta): string {
+  const byline = postAuthors(post)
+    .map((author) => author.name)
+    .join(', ')
+  const filed = postCategories(post)
+    .map((category) => category.label)
+    .join(', ')
+  return `# ${post.title}
+
+> ${post.description}
+
+By ${byline} · ${formatDay(post.published)} · ${post.readingMinutes} min read · ${filed}
+
+${postBodies[post.slug] ?? ''}
+
+---
+
+${postAuthors(post)
+  .map((author) => `**${author.name}** (${author.role}): ${author.bio}`)
+  .join('\n\n')}
+`
+}
+
 function formatRelease(release: Release): string {
   const date = release.publishedAt ? release.publishedAt.slice(0, 10) : ''
   const heading = date ? `## ${release.tag} (${date})` : `## ${release.tag}`
@@ -217,7 +244,7 @@ export async function pageMarkdown(pathname: string): Promise<string | null> {
   }
   if (normalized.startsWith('/blog/')) {
     const post = getPost(normalized.slice('/blog/'.length))
-    return post ? postToMarkdown(post) : null
+    return post ? postMarkdown(post) : null
   }
   return staticBodies[normalized] ?? null
 }

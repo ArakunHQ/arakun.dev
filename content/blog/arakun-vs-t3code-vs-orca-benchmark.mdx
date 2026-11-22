@@ -1,0 +1,134 @@
+---
+title: "Arakun v0.18.1 vs T3 Code vs Orca: startup, 10 terminals, flood and browser tabs on Linux"
+cardTitle: "Arakun vs T3 Code vs Orca"
+description: "Native Wayland and hardware GPU benchmark of Arakun v0.18.1, T3 Code v0.1.11 and Orca v1.4.269: launch, 10 terminals, 14.8 MB PTY flood and 3 browser tabs."
+published: 2026-11-22
+updated: 2026-11-22
+authors: [karlo-aldrete]
+categories: [benchmarks, performance]
+featured: true
+---
+
+## The short answer
+
+Coding agent workspaces stay open all day while several agents compile, run tests and stream megabytes of output in parallel. When the shell around those agents already eats nearly a gigabyte of RAM before you start a single agent, every extra worktree hurts.
+
+We measured the official Linux x86_64 releases of Arakun v0.18.1 (Rust + GPUI), T3 Code v0.1.11 (Electron) and Orca v1.4.269 (Electron) on native Wayland with hardware GPU rendering (Hyprland on an AMD Radeon RX 9060 XT, visible 1920×1080 workspace). All three apps were pre-seeded with the same git repository open so none was measured on a welcome screen.
+
+<StatGrid>
+  <Stat value="309 ms" label="Launch into an open project" note="2.5× faster than T3 Code" />
+  <Stat value="136 MiB" label="Project + 10 live terminals" note="6.7× less than T3 Code" />
+  <Stat value="489 ms" label="Drain a 14.8 MB terminal flood" note="3.6× faster than Orca" />
+</StatGrid>
+
+<DataTable highlight={2}>
+
+| Metric (native Wayland + GPU) | Arakun v0.18.1 | T3 Code v0.1.11 | Orca v1.4.269 |
+| --- | --- | --- | --- |
+| Stack | Rust + GPUI | Electron + Web | Electron + Web |
+| Launch into open project (5 runs) | 309.0 ms (307.1–315.8) | 778.5 ms (754.9–788.4) | 1,451.2 ms (1,420.9–1,546.7) |
+| Project open, idle PSS (5 runs) | 112.9 MiB (4 procs) | 854.4 MiB (12 procs) | 934.8 MiB (13 procs) |
+| Project open, idle RSS (5 runs) | 247.1 MiB | 1,438.2 MiB | 1,765.0 MiB |
+| Idle CPU, start view (10 s) | 0.62% (0.51–0.72%) | 1.90% | 0.50% (run 1: 57.69%) |
+| Project + 10 live terminals (PSS) | 135.9 MiB (121.3 app-only) | 911.6 MiB (899.1 app-only) | 995.8 MiB (982.0 app-only) |
+| 14.8 MB PTY flood (median of 3) | 489 ms (489–497 ms) | not tested (no CLI) | 1,764 ms (1,666–1,887 ms) |
+| CPU while flooding / PSS after | 138.1% / 185.9 MiB | — | 235.9% / 1,258.2 MiB |
+| + 1 built-in browser tab (PSS) | 523.9 MiB (CEF loaded) | no built-in browser | 1,210.3 MiB |
+| + 3 built-in browser tabs (PSS) | 556.7 MiB | no built-in browser | 962.9 MiB (1,210.3 at 1) |
+| Idle CPU with 3 browser tabs (10 s) | 0.90% | — | 7.85% |
+| Download / extracted on disk | 165.6 / 377 MiB | 242.5 / 656 MiB | 267.0 / 833 MiB |
+
+</DataTable>
+
+## Launch into an open project
+
+Each app ran one warm-up launch where we dismissed onboarding and added the same fixture git repository, then exited cleanly. We then timed five launches from process spawn to Hyprland emitting its openwindow event on the visible workspace. AppImages were extracted beforehand with `--appimage-extract` so FUSE mount overhead was never billed against T3 Code or Orca.
+
+<BarChart
+  title="Time to first mapped Wayland window (lower is better)"
+  subtitle="Median of 5 runs into the same open repo · milliseconds"
+  max={1550}
+  rows={[
+    {label: "Arakun v0.18.1",value: 309,valueLabel: "309 ms",highlight: true},
+    {label: "T3 Code v0.1.11",value: 778.5,valueLabel: "779 ms (2.5×)"},
+    {label: "Orca v1.4.269",value: 1451.2,valueLabel: "1,451 ms (4.7×)"},
+  ]}
+/>
+
+## Memory with a project and 10 live terminals
+
+For multi-process apps, summing RSS double-counts shared libraries across Electron helpers. We read Proportional Set Size (PSS) from `/proc/<pid>/smaps_rollup` across every process in each app tree, both idle with the project open and after opening 1, 5 and 10 interactive shells.
+
+Going from an open project (112.9 MiB total, 109.6 MiB app-only excluding the default dock shell) to 10 live terminals adds 23.0 MiB total and only 11.7 MiB of app memory in Arakun (135.9 MiB total, 121.3 MiB app-only). T3 Code sits at 911.6 MiB (899.1 MiB app-only) and Orca reaches 995.8 MiB (982.0 MiB app-only).
+
+<BarChart
+  title="Total PSS memory with project open + 10 terminals (lower is better)"
+  subtitle="Native Wayland + RX 9060 XT · MiB across full process tree"
+  max={1050}
+  rows={[
+    {label: "Arakun v0.18.1",value: 135.9,valueLabel: "136 MiB",note: "121 MiB app-only",highlight: true},
+    {label: "T3 Code v0.1.11",value: 911.6,valueLabel: "912 MiB (6.7×)",note: "899 MiB app-only"},
+    {label: "Orca v1.4.269",value: 995.8,valueLabel: "996 MiB (7.3×)",note: "982 MiB app-only"},
+  ]}
+/>
+
+## Terminal flood throughput (14.8 MB of output)
+
+Coding agents stream huge test logs, compiler errors and diffs. To measure real PTY backpressure, we ran `seq 1 2000000` (~14.8 MB of text) three times in a visible terminal inside the open repository and timed how long the command took to exit.
+
+Because kernel PTY buffers are small, seq cannot finish until the terminal emulator drains its output. Arakun drained 14.8 MB in 489 ms median (~30.3 MB/s) at 138% CPU and finished all three floods at 185.9 MiB PSS (opening a new dock terminal per flood, so all three stayed in scrollback). Orca took 1,764 ms median (~8.4 MB/s — 3.6× slower) at 236% CPU and ended at 1,258.2 MiB PSS. T3 Code has no CLI to send commands into its terminal drawer, so we left it out of the flood comparison rather than testing a different path.
+
+<BarChart
+  title="Time to drain seq 1 2000000 (~14.8 MB) in a terminal (lower is better)"
+  subtitle="Median of 3 runs on native Wayland · milliseconds"
+  max={1950}
+  rows={[
+    {label: "Arakun v0.18.1",value: 489,valueLabel: "489 ms (~30.3 MB/s)",highlight: true},
+    {label: "Orca v1.4.269",value: 1764,valueLabel: "1,764 ms (~8.4 MB/s · 3.6× slower)"},
+  ]}
+/>
+
+## What happens when Arakun loads its built-in browser (CEF)
+
+The fair objection to any native-vs-Electron chart is: what happens once Arakun opens a web page? Arakun ships CEF (308 MiB on disk) and dlopens it lazily on the first browser tab, so you pay zero Chromium memory until you open one.
+
+After the 10 terminals and three 14.8 MB floods, we opened 1, 2 and 3 deterministic local HTML pages (each with styled layout and 250 table rows) in both Arakun and Orca and measured both PSS and 10-second idle CPU with all 3 tabs visible.
+
+<BarChart
+  title="Total PSS with 10 terminals + 3 floods + 3 browser tabs (lower is better)"
+  subtitle="Same 3 local HTML pages · MiB across full process tree (CEF loaded in Arakun)"
+  max={1260}
+  rows={[
+    {label: "Arakun v0.18.1 (with CEF)",value: 556.7,valueLabel: "557 MiB",note: "0.90% idle CPU",highlight: true},
+    {label: "Orca v1.4.269",value: 962.9,valueLabel: "963 MiB (1.7×)",note: "1,210 MiB at 1 tab · 7.85% idle CPU"},
+  ]}
+/>
+
+## What the benchmark caught (and other nuances)
+
+Running this benchmark in the open immediately paid off:
+
+- Idle CPU bug caught and fixed in v0.18.1: our first pass on Arakun v0.17.0 burned 12.98% idle CPU on the project start view (and 3.09% with 3 browser tabs) because the start-screen ASCII face and idle/sleeping mascots kept requesting frames forever. Fixing those animation timers in v0.18.1 cut idle CPU 21× to 0.62% on the start view (essentially tied with Orca at 0.50% and 3× below T3 Code at 1.90%) and 0.90% with 3 browser tabs (8.7× below Orca at 7.85%).
+- T3 Code background codex process: on startup, T3 Code auto-spawned 1 codex process (78.4 MiB) alongside 7 t3code Electron processes (761.9 MiB) and 1 node process (10.2 MiB). Excluding codex, T3 Code still uses ~776 MiB idle (6.9× Arakun).
+- Orca run 1 spike and GC dip: Orca hit 1,084.2 MiB PSS and 57.69% CPU on run 1 during CLI discovery before settling to 932–940 MiB and 0.40–0.50% CPU on runs 2–5. During the browser test, Orca peaked at 1,210.3 MiB on tab 1 before Chromium GC brought it to 932.9–962.9 MiB on tabs 2–3.
+- Active agent CLIs: these numbers measure the workspace apps themselves. Running Claude Code, Codex or Devin sessions adds each CLI process on top of whichever app hosts it.
+
+## What landed next on `main` (queued for v0.18.2)
+
+Profiling the idle window and multi-agent workloads after v0.18.1 turned up five more wins that are already merged on `main`:
+
+- **Idle wakeups and power (#716):** Replacing fixed 500 ms and 1 s background polls across the frame timer, Dynamic Island, headless scanner and git status poller cut interleaved release idle wakeups (14 s settle + 10 s sample on native Wayland) from **101.7–322.7/s to 22.6–32.3/s** (Dynamic Island main thread **8.0/s → 0.3/s**) and settled idle CPU to **0.10%**, plus added stationary pointer-poll backoff on macOS.
+- **macOS launch path (#719):** Launching from Finder, the Dock or `open -a` no longer blocks `main()` on a synchronous interactive login shell (`zsh -l -i -c`) before opening the window. Arakun now applies the cached login `PATH` in under a millisecond and refreshes it in the background.
+- **Multi-agent typing responsiveness (#718):** Background `ThreadView` tabs now coalesce streaming updates and stop their 250 ms elapsed-time ticks while off-screen, and active tabs coalesce rapid chunks to one update per frame.
+- **Long-turn virtualization (#720):** Live and unfolded turns with more than 16 phases now split into per-phase `gpui::list` rows instead of laying out every phase in one list item, keeping 2,000-item runs O(visible) to open and scroll.
+- **Lower per-session prompt overhead (#717):** Compacting the injected CLI hint and empty-store memory protocol trims fresh-session prompt overhead from ~4,200 chars to ~960 chars (~800 fewer tokens per new thread).
+
+For independent macOS numbers on third-party hardware, we also opened an [ADEMark request](https://github.com/zqkra/ademark/issues/72) so Arakun can be measured on the same Mac mini M4 harness as T3 Code, Orca and `super.engineering`.
+
+## Hardware, environment and releases tested
+
+All measurements ran on November 22, 2026 using unmodified official Linux x86_64 releases on AMD Ryzen 9 5900X (12 cores / 24 threads), 46 GiB RAM, AMD Radeon RX 9060 XT, Linux 7.3.4-zen2-2-zen, Hyprland Wayland (DP-2, 1920×1080 visible workspace, cursor parked at 500,500). Electron apps ran with `--no-sandbox --ozone-platform=wayland` from extracted AppImages. Conductor was not included because it is macOS-only.
+
+- Arakun: <Release version="v0.18.1" />
+- T3 Code: [v0.1.11](https://github.com/pingdotgg/t3code/releases/tag/v0.1.11)
+- Orca: [v1.4.269](https://github.com/StablyAI/orca/releases/tag/v1.4.269)

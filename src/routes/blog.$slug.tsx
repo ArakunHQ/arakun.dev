@@ -1,147 +1,108 @@
+import { bodies } from 'virtual:blog/bodies'
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
-import type { BenchChart } from '#/blog'
-import { getPost, postPath } from '#/blog'
+import type { MDXContent } from 'mdx/types'
+import type { LazyExoticComponent } from 'react'
+import { lazy, Suspense } from 'react'
+import { getPost, postAuthors, postCategories, postPath, relatedPosts } from '#/blog'
+import { AuthorCard, Byline, CategoryChips, PostGrid, Toc } from '#/components/blog'
+import { mdxComponents } from '#/components/blog-mdx'
 import { InstallBand } from '#/components/ui'
 import { blogPosting, pageHead } from '#/seo'
 import { pages, site } from '#/site'
 
-const day = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' })
+// Published posts only, one chunk each (vite/blog.ts), so neither a draft nor
+// another post's text ships with this page.
+const loaded = new Map<string, MDXContent>()
+const lazyBodies = new Map<string, LazyExoticComponent<MDXContent>>()
+
+/**
+ * The loader fills `loaded`, so a page renders its body at once. A page the
+ * browser hydrates from the server's HTML may not have run the loader there;
+ * then the body loads lazily while React keeps the server's markup on screen.
+ */
+function bodyOf(slug: string): MDXContent | LazyExoticComponent<MDXContent> {
+  const ready = loaded.get(slug)
+  if (ready) {
+    return ready
+  }
+  let body = lazyBodies.get(slug)
+  if (!body) {
+    body = lazy(bodies[slug] as () => Promise<{ default: MDXContent }>)
+    lazyBodies.set(slug, body)
+  }
+  return body
+}
 
 export const Route = createFileRoute('/blog/$slug')({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const post = getPost(params.slug)
-    if (!post) {
+    const load = post ? bodies[post.slug] : undefined
+    if (!(post && load)) {
       throw notFound()
     }
+    loaded.set(post.slug, (await load()).default)
     return post
   },
-  head: ({ loaderData }) => {
-    if (!loaderData) {
-      return {}
-    }
-    return pageHead({
-      path: postPath(loaderData.slug),
-      tabTitle: `${loaderData.title} · ${site.name}`,
-      title: loaderData.title,
-      description: loaderData.description,
-      ogType: 'article',
-      trail: [
-        { name: pages.blog.label, path: pages.blog.path },
-        { name: loaderData.title, path: postPath(loaderData.slug) },
-      ],
-      jsonLd: [blogPosting(loaderData)],
-    })
-  },
+  head: ({ loaderData: post }) =>
+    post
+      ? pageHead({
+          path: postPath(post.slug),
+          tabTitle: `${post.title} · ${site.name}`,
+          title: post.title,
+          description: post.description,
+          ogType: 'article',
+          trail: [
+            { name: pages.blog.label, path: pages.blog.path },
+            { name: post.title, path: postPath(post.slug) },
+          ],
+          jsonLd: [blogPosting(post)],
+        })
+      : {},
   component: BlogPostPage,
 })
 
-function Chart({ chart }: { chart: BenchChart }) {
-  return (
-    <figure className="bench-chart">
-      <figcaption>
-        <span className="bench-chart-title">{chart.title}</span>
-        <span className="bench-chart-sub mono-label">{chart.subtitle}</span>
-      </figcaption>
-      <div className="bench-bars">
-        {chart.rows.map((row) => {
-          const pct = Math.max(4, Math.min(100, (row.value / chart.max) * 100))
-          return (
-            <div
-              className="bench-row"
-              data-highlight={row.highlight ? 'true' : undefined}
-              key={row.label}
-            >
-              <div className="bench-row-head">
-                <span className="bench-label">
-                  {row.label}
-                  {row.note ? <span className="bench-note"> · {row.note}</span> : null}
-                </span>
-                <span className="bench-val">{row.valueLabel}</span>
-              </div>
-              <div className="bench-track">
-                <div className="bench-fill" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </figure>
-  )
-}
-
 function BlogPostPage() {
   const post = Route.useLoaderData()
+  const Body = bodyOf(post.slug)
+  const related = relatedPosts(post)
   return (
     <>
+      <div aria-hidden="true" className="read-progress" />
       <header className="ph wrap blog-head">
         <Link className="blog-back mono-label" to="/blog">
           ← Blog
         </Link>
-        <div className="blog-meta mono-label">
-          <time dateTime={post.published}>
-            {day.format(new Date(`${post.published}T00:00:00Z`))}
-          </time>
-          <span>{post.readingMinutes} min read</span>
-          <span>{post.author}</span>
-        </div>
+        <CategoryChips categories={postCategories(post)} />
         <h1>{post.title}</h1>
         <p className="lead">{post.description}</p>
+        <Byline post={post} showUpdated />
       </header>
 
-      <div className="wrap">
+      <div className="wrap blog-layout">
         <article className="prose blog-post">
-          {post.sections.map((section) => (
-            <section key={section.heading}>
-              <h2>{section.heading}</h2>
-              {section.paragraphs?.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-              {section.chart ? <Chart chart={section.chart} /> : null}
-              {section.table ? (
-                <div className="bench-table-wrap">
-                  <table className="bench-table">
-                    <thead>
-                      <tr>
-                        {section.table.headers.map((header) => (
-                          <th key={header}>{header}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {section.table.rows.map((row) => (
-                        <tr key={row[0]}>
-                          {row.map((cell, i) =>
-                            i === 0 ? (
-                              <th key={cell} scope="row">
-                                {cell}
-                              </th>
-                            ) : (
-                              // biome-ignore lint/suspicious/noArrayIndexKey: table columns are positional and fixed.
-                              <td key={`${row[0]}-${i}`}>{cell}</td>
-                            )
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : null}
-              {section.bullets ? (
-                <ul>
-                  {section.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              ) : null}
-              {section.code ? (
-                <pre className="blog-code">
-                  <code>{section.code}</code>
-                </pre>
-              ) : null}
-            </section>
-          ))}
+          <Suspense>
+            <Body components={mdxComponents} />
+          </Suspense>
         </article>
+        <aside className="blog-aside">
+          <Toc entries={post.toc} />
+        </aside>
       </div>
+
+      <footer className="wrap blog-foot">
+        <h2 className="mono-label blog-section-title">Written by</h2>
+        <div className="author-list">
+          {postAuthors(post).map((author) => (
+            <AuthorCard author={author} key={author.id} />
+          ))}
+        </div>
+        {related.length ? (
+          <section aria-label="Related posts" className="blog-related">
+            <h2 className="mono-label blog-section-title">Keep reading</h2>
+            <PostGrid posts={related} />
+          </section>
+        ) : null}
+      </footer>
 
       <InstallBand />
     </>

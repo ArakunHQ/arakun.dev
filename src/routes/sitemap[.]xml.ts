@@ -1,11 +1,23 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { postPath, posts } from '#/blog'
+import {
+  activeAuthors,
+  activeCategories,
+  authorPath,
+  categoryPath,
+  postPath,
+  posts,
+  postsByAuthor,
+  postsInCategory,
+} from '#/blog'
 import { getReleases } from '#/releases'
 import { pageUrl } from '#/seo'
 import { pages, site } from '#/site'
 
 /** The newer of two dates written as YYYY-MM-DD; ISO dates sort as text. */
 const newer = (a: string, b: string | undefined) => (b && b > a ? b : a)
+
+const lastUpdate = (list: { updated: string }[]) =>
+  list.reduce((latest, post) => newer(latest, post.updated), '')
 
 /**
  * Every page search engines should index, at the URL its canonical link names, with
@@ -29,6 +41,15 @@ async function sitemapEntries() {
     ...posts.map((post) => ({
       path: postPath(post.slug),
       updated: post.updated,
+    })),
+    // A list page changes when its newest post does.
+    ...activeCategories.map((category) => ({
+      path: categoryPath(category.id),
+      updated: lastUpdate(postsInCategory(category.id)),
+    })),
+    ...activeAuthors.map((author) => ({
+      path: authorPath(author.id),
+      updated: lastUpdate(postsByAuthor(author.id)),
     })),
   ]
 }

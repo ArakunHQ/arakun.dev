@@ -23,7 +23,8 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 - `src/site.ts`: the facts and links every page shares (license, install URL, GitHub URLs, and the fallback version and download URLs).
 - `docs/`: the docs at docs.arakun.dev, a Mintlify site written from the app's README at github.com/ArakunHQ/arakun. See "Writing docs" below. `/docs/<page>` on this site redirects there (`src/routes/docs.$.ts`).
 - `src/styles.css`: the Brandbook tokens and every component's styles. Dark is the default; light is `data-theme="light"` on `<html>`.
-- `src/routes/`: one file per page (`index`, `features`, `download`, `changelog`, `privacy`).
+- `src/routes/`: one file per page (`index`, `features`, `download`, `changelog`, `privacy`, and the `blog.*` pages).
+- `content/blog/`, `src/blog-data.ts`, `src/blog.ts`, `vite/blog.ts`, `src/components/blog*.tsx`: the blog. See "Writing a blog post" below.
 - `src/releases.ts`, `src/release-entry.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the GitHub sync of the changelog, the version and the downloads, and each release's changelog entry (see below).
 - `src/components/ui.tsx`: buttons, the install line, cards and other shared pieces.
 - `src/components/chrome.tsx`: the sticky header, the theme switch and the footer.
@@ -58,6 +59,34 @@ npx mint dev        # http://localhost:3000
 npx mint validate   # what Mintlify checks before it deploys
 npx mint broken-links
 ```
+
+## Writing a blog post
+
+A post is one MDX file, `content/blog/<slug>.mdx`. The file name is its URL: `/blog/<slug>`.
+
+```mdx
+---
+title: The full title, shown on the page and in search results
+cardTitle: A short title for the link preview card (optional)
+description: One or two sentences for the overview, search results and the preview card.
+published: 2026-11-22
+updated: 2026-11-22 # optional, when you change a published post
+authors: [arakun-team]
+categories: [benchmarks, performance]
+featured: true # optional: the overview leads with the newest featured post
+draft: true # optional: shows in `pnpm dev`, left out of every build
+---
+
+## A section
+
+Text in Markdown. `##` headings become the "On this page" list.
+```
+
+- **Authors and categories** live in `src/blog-data.ts`. Add an author there (name, role, a short bio, links and a square avatar under `public/blog/authors/`) before you name them in a post. The build fails on an author or category id it does not know.
+- **Components** work without an import: `BarChart`, `Callout`, `StatGrid` with `Stat`, `Figure`, `DataTable` and `Release`. `src/components/blog-mdx.tsx` documents each one. Put a post's images under `public/blog/<slug>/`.
+- **New component:** add it to `mdxComponents` in `src/components/blog-mdx.tsx` and give it a plain Markdown form in `asMarkdown` in `vite/blog.ts`. Agents that ask for `/blog/<slug>` as Markdown get that form, and the build fails on a component without one.
+- Reading time, the contents list, the link preview card, the sitemap entry and the author and category pages all come from the file. Nothing else needs a change.
+- Never write an Arakun version URL into a post: use `<Release version="v0.18.1" />`.
 
 ## The changelog syncs from GitHub
 
