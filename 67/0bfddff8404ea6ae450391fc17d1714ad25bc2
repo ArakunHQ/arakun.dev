@@ -1,0 +1,52 @@
+src/routes/download.tsx
+  s_5b955ca99c1477::t_09adc451f4c709 112,114
+  s_5b955ca99c1477::t_4d6906e624f0fb 1
+package.json
+  s_5b955ca99c1477::t_5cf1d77ad4ff2c 17
+tsconfig.json
+  s_5b955ca99c1477::t_09adc451f4c709 9
+src/routeTree.gen.ts
+  s_5b955ca99c1477::t_85fbc6cd32a509 23,80-82,98,112,127,143,157,171,186,268-272,290
+AGENTS.md
+  s_5b955ca99c1477::t_1df2c7468b8162 89-92
+src/seo.ts
+  s_5b955ca99c1477::t_4697260f28cb17 4
+src/routes/privacy.tsx
+  s_5b955ca99c1477::t_4d6906e624f0fb 122-123
+src/components/chrome.tsx
+  s_5b955ca99c1477::t_09adc451f4c709 41,142-144
+src/components/ui.tsx
+  s_5b955ca99c1477::t_09adc451f4c709 342,344
+vite/og.ts
+  s_5b955ca99c1477::t_006ec91d923bd8 173
+README.md
+  s_5b955ca99c1477::t_0a9e52025de19f 24,26,37-53,59
+  s_5b955ca99c1477::t_f1b76b716f63aa 121-123
+src/routes/sitemap[.]xml.ts
+  s_5b955ca99c1477::t_4d6906e624f0fb 6
+CONTRIBUTING.md
+  s_5b955ca99c1477::t_1df2c7468b8162 115
+src/site.ts
+  s_5b955ca99c1477::t_ed91f27030c15e 16,22-23,69,75
+docs/docs.json
+  s_5b955ca99c1477::t_817d23e9997c41 164-168
+src/routes/docs.$.ts
+  s_5b955ca99c1477::t_ed91f27030c15e 1-3,7-8,10,12-13,15-16
+  s_5b955ca99c1477::t_a6bab43d839182 4,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "670bfddff8404ea6ae450391fc17d1714ad25bc2",
+  "prompts": {},
+  "sessions": {
+    "s_5b955ca99c1477": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aac5447a-b3f8-45d2-acfa-901b20f94aa8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
