@@ -1,0 +1,159 @@
+---
+title: How the command works
+description: "How the arakun command works: it acts on the environment of the folder you run it in, from your terminal or from an agent."
+---
+
+While Arakun is running, `arakun <command>` acts on the environment of the current folder. It talks to the app over a local control socket: `$XDG_RUNTIME_DIR/arakun/control.sock`, or `%LOCALAPPDATA%\arakun\control.sock` on Windows.
+
+Terminals and agents started by Arakun get `ARAKUN_SOCKET` and `arakun` on their `PATH`. The agents also get a note about it in their system prompt. Set `ARAKUN_AGENT_HINT=off` to remove that note.
+
+<Note>
+**Sandboxed agents**
+
+An agent in a sandboxed project reaches Arakun through a socket of its own. That socket refuses `arakun run`, `arakun agent` and anything else that would act outside the sandbox.
+</Note>
+
+## Everyday commands
+
+```sh
+arakun .                    # add this project, or switch to it; starts Arakun if needed
+arakun ls                   # projects, environments and sessions
+arakun show                 # bring the window up
+arakun palette              # bring the window up with Ctrl+K open
+arakun notify "done"        # desktop notification
+arakun notices --unseen     # notifications you haven't read yet
+arakun rename fix/tab-name  # rename this environment's branch
+arakun quit                 # quit Arakun, also when its window is hidden
+arakun restart              # quit and start again; running agent turns go on
+arakun --version            # print the version
+```
+
+`arakun rename` works only before the branch is pushed. The folder keeps its name.
+
+## One Arakun at a time
+
+Only `arakun` alone and `arakun <dir>` start the app. Run `arakun` again while it runs and it brings the window up instead. `arakun <dir>` adds that project to the running window.
+
+An Arakun with its own `ARAKUN_STATE`, such as `arakun dev`, has its own socket and its own `arakun` command. The command in your terminal keeps reaching your daily Arakun.
+
+## Help and mistakes
+
+- `arakun --help` lists every command.
+- `-h` or `--help` after a command prints its usage and runs nothing.
+- A command or flag it doesn't know prints an error and exits with code 2.
+- Help and flags count only before the prompt, message or command line a command passes on. So `arakun run make --help` runs `make --help`.
+- A message that starts with a dash needs `--` before it: `arakun notify -- -1 test failed`.
+- `-s` or `--side` shows a tab in the pane beside the active one.
+
+## Every command
+
+Each group has a page of its own.
+
+<AccordionGroup>
+<Accordion title="Pages, files and terminals">
+
+```sh
+arakun browse -s localhost:3000       # open a page beside the chat
+arakun open -s src/main.rs:42         # open a file at line 42
+arakun page screenshot                # drive the environment's browser tab
+arakun run --port 5173 npm run dev    # new terminal; wait until the port answers
+arakun logs 2 --until compiled        # wait until terminal 2 prints "compiled"
+arakun check                          # run the project check here
+```
+
+See [Open pages and files](/open-pages-and-files), [Read a terminal](/read-a-terminal) and [Run the project check](/run-the-project-check).
+
+</Accordion>
+<Accordion title="Output and web pages for agents">
+
+```sh
+arakun shrink -- cargo test           # run it and print a summary of the output
+arakun fetch <url>                    # a web page as Markdown, through Browser Run
+arakun crawl <url>                    # a site's pages as Markdown
+```
+
+See [Shrink command output](/shrink-command-output) and [Fetch web pages](/fetch-web-pages).
+
+</Accordion>
+<Accordion title="Memory">
+
+```sh
+arakun mem search <words>             # search what agents remember about this project
+arakun mem scripts                    # scripts agents keep writing here, worth keeping
+```
+
+`arakun mem help` lists the rest. See [Memory](/memory).
+
+</Accordion>
+<Accordion title="Agents in the background">
+
+```sh
+arakun agent new <prompt>             # an OpenCode or Workers AI agent, listed in the sidebar
+arakun agent run <prompt>             # a headless agent that goes on with Arakun closed
+arakun agent ls                       # the sessions and their status
+arakun agent wait <id>                # wait until it stops working
+arakun agent pending                  # tool calls headless agents wait on you for
+arakun agent approve <id> <req_id>    # or deny
+```
+
+See [Headless agents](/headless-agents).
+
+</Accordion>
+<Accordion title="GitHub">
+
+```sh
+arakun github draft o/r#12 --verdict approve --head <sha> --body-file - < review.md
+arakun github pilot connect <url> --token -
+```
+
+`github draft` saves a review draft and sends nothing. See [Leave a review draft](/leave-a-review-draft). `github pilot` connects arakun-pilot, the pull request agent; `arakun github pilot help` lists its commands.
+
+</Accordion>
+<Accordion title="The island and notices">
+
+```sh
+arakun island alert "Backup done" "412 files"   # show a card on the island
+arakun notices                                  # every notice, newest first
+```
+
+See [Dynamic Island](/dynamic-island) and [Inbox](/inbox).
+
+</Accordion>
+<Accordion title="Claude seats and usage">
+
+```sh
+arakun seat add work < token.txt      # save a Claude seat (a `claude setup-token` token)
+arakun seat ls                        # the seats and their 5-hour and weekly usage
+arakun seat rm work                   # forget a seat
+arakun usage tools --days 7           # which tools' results used the tokens of Workers AI turns
+```
+
+</Accordion>
+<Accordion title="Updates, servers and feedback">
+
+```sh
+arakun update --check                 # say whether there is a new release
+arakun update                         # download and install it
+arakun update --channel nightly       # switch to nightly builds of main (or stable)
+arakun server serve                   # run sessions on this machine without the window
+arakun feedback --kind bug "..."      # tell the Arakun team about a problem
+```
+
+A running Arakun installs the update when it quits. Nightly builds can break. See [Server](/server) for `arakun server help`.
+
+`arakun feedback` takes `bug`, `feature`, `ux` or `other`, up to 4000 characters, or `-` to read stdin. Agents use it too. It needs usage telemetry on.
+
+</Accordion>
+</AccordionGroup>
+
+## Without a running Arakun
+
+These work with the app closed: `arakun --version`, `arakun shrink`, `arakun fetch`, `arakun crawl`, `arakun mem`, `arakun island` and [headless agents](/headless-agents).
+
+## Open the palette from anywhere
+
+Bind `arakun palette` to a global key in your desktop. On Hyprland, for example:
+
+```ini hyprland.conf
+bind = SUPER, K, exec, arakun palette
+```

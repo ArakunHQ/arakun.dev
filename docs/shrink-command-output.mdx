@@ -1,0 +1,31 @@
+---
+title: Shrink command output
+description: Run a command with arakun shrink and get a short summary of its output instead of all of it, with the whole output saved to a file.
+---
+
+A test run or a build can print thousands of lines. An agent that reads all of them fills its context with lines that say nothing. `arakun shrink` runs the command and prints a short summary instead.
+
+```sh
+arakun shrink -- cargo test
+```
+
+## What the summary keeps
+
+- **A test run:** the failures and the result line. Passing tests and build progress go.
+- **A log:** runs of three or more lines alike collapse to one.
+- **JSON:** its outline.
+- **CSV:** the header and a few rows.
+
+Anything else keeps all its lines, without colors and progress bars. Output under about 4,000 characters prints whole. A summary is at most about 12,000 characters; past that it keeps a short head and the tail.
+
+## Nothing is lost
+
+The whole output goes to a file, readable only by you. The summary ends with its path, so an agent can read more when it needs to.
+
+`arakun shrink` exits with the command's exit code, so scripts and agents still see a failure.
+
+## Usage
+
+- `--` before the command is optional. A command that starts with a dash needs it.
+- The command runs in the shell, so pipes and `&&` work.
+- It works without a running Arakun.

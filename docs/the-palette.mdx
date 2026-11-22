@@ -1,0 +1,67 @@
+---
+title: Use the palette
+description: "Search everything from one box, pin what you open most, and set reminders and to-dos from the palette."
+---
+
+Press <kbd>Ctrl+K</kbd> or <kbd>Ctrl+P</kbd>. One search covers the sessions of every project, GitHub, runs, files and symbols, views, commands, settings and memory.
+
+## Narrow the search
+
+| Start with | To search |
+| --- | --- |
+| `>` | commands |
+| `/` | files |
+| `:` | settings |
+| `@` | people |
+| `#` | pull requests |
+
+`#` lists every open pull request of your projects' repositories, not only yours. `#86` finds that one even when it is closed or merged. A first word that names a repository or project narrows to it, as in `#arakun 86`.
+
+## Move through rows
+
+- <kbd>→</kbd> opens a row's actions or goes into it, such as a project, a person or Branches. <kbd>←</kbd> goes back.
+- <kbd>Space</kbd>, after the arrows, marks rows for the bar at the bottom.
+- <kbd>Ctrl+Enter</kbd> asks an agent.
+
+## Pin what you open most
+
+<kbd>Ctrl+P</kbd> on a row pins it to the top of the palette and the sidebar.
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>Ctrl+1…9</kbd> | Open a pin, in the palette |
+| <kbd>Ctrl+Alt+1…9</kbd> | Open a pin, anywhere |
+| <kbd>Alt+Up</kbd>, <kbd>Alt+Down</kbd> | Reorder pins |
+
+## Reminders and to-dos
+
+Type a sentence:
+
+- `remind me in 20 min to review the PR`
+- `remind me at 5pm to stretch`
+- `timer 10 min`
+
+A reminder rings on the [Dynamic Island](/dynamic-island). One that comes due while Arakun is closed rings the next time it opens, marked as missed.
+
+`to-do: …`, or a reminder with no time, adds a to-do. Type `to-do` to list them, and press <kbd>Enter</kbd> on one to tick it off.
+
+## Ask in plain words
+
+- A question offers a short answer from Claude Haiku, through Claude Code. Nothing is sent until you press <kbd>Enter</kbd> on the offer.
+- A sentence such as `merge #64 when the checks pass and tell me` becomes an automation once you confirm it. If Arakun can't read it, it offers to have Claude read it, again only on <kbd>Enter</kbd>.
+
+## Open it from any app
+
+```sh
+arakun palette
+```
+
+This brings the window up with the palette open. Bind it to a global key in your desktop. On Hyprland, for example:
+
+```ini
+bind = SUPER, K, exec, arakun palette
+```
+
+<Note>
+Pins are kept in `pins.json`, reminders in `rules.json`, to-dos in `todos.json` and what you open in `palette-frecency.json`, next to the state file.
+</Note>

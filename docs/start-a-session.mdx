@@ -1,0 +1,85 @@
+---
+title: Start a session
+description: "Start your first agent session in Arakun: set it up, add a project, pick an agent, write the task and let Arakun make the worktree and name the branch."
+---
+
+## First launch
+
+Before you have a project, Arakun checks the machine for agents and GitHub. Then it walks you through four short steps, next to a small preview of the window that changes as you pick:
+
+1. The agent new sessions start with.
+2. Your first project.
+3. The color scheme and the sidebar layout.
+4. GitHub, the phone remote and crash reports.
+
+<kbd>Enter</kbd> goes to the next step and <kbd>Esc</kbd> goes back. Every step can be skipped, and **Skip setup** leaves at once. To see it again, press <kbd>Ctrl+K</kbd> and pick **Show onboarding**.
+
+You can sign in to an agent before you add a project. The sign-in runs in a terminal of your home folder.
+
+## Your first session
+
+<Steps>
+<Step title="Add a project">
+
+In the project's folder, run:
+
+```sh
+arakun .
+```
+
+This adds the project, or switches to it. It starts Arakun if it is not running.
+
+Or press <kbd>Ctrl+O</kbd>. It searches the git repositories in your home folder. Paste a clone URL or type a GitHub `owner/repo` to clone it and add it in one step.
+
+</Step>
+<Step title="Start a new session">
+
+Press <kbd>Ctrl+T</kbd>, or click **New session** at the top of the sidebar. A composer opens at once.
+
+</Step>
+<Step title="Pick the agent and the model">
+
+The menu next to the composer lists the models of the agent in use, its reasoning levels and, where the agent has one, a fast mode switch. The strip of agent icons at the bottom shows the models of another agent; picking one of them switches agent. The chip beside it sets the agent's mode, such as Plan mode.
+
+</Step>
+<Step title="Write the task">
+
+- <kbd>Enter</kbd> sends. <kbd>Shift+Enter</kbd> adds a line.
+- <kbd>Up</kbd> on an empty composer recalls earlier prompts.
+- Paste or drop images to attach them.
+
+</Step>
+</Steps>
+
+## Each session gets its own worktree
+
+When you send the first prompt, Arakun gives the session its own git worktree on a new branch, so agents don't step on each other. A prompt written in the main checkout, such as on a project's start screen, starts in a new worktree too.
+
+- The new branch starts from origin's default branch (usually `main`), fetched first. Set another **Base branch** in Settings › Project.
+- <kbd>Alt</kbd>+click on **New session** asks for the branch first.
+- <kbd>Ctrl+Shift+N</kbd> makes a new worktree at once. <kbd>Ctrl+Alt+N</kbd> asks for the branch and where to start from.
+- Before a repository's first commit there is nothing to branch from, so sessions start in the main checkout.
+
+Every environment has its own sessions, terminals and draft prompt.
+
+## Find your sessions
+
+On a new install, the sidebar lists every session of every project, under its project. Each row has a mark for its state: a ring while it works, `!` when it needs you, a cross when it failed, a check when its checks passed and a faint dot when idle.
+
+The title bar holds the sessions you pin to it. Drag a row up to the bar, or press <kbd>Alt+P</kbd> with the pointer on the row. Settings › Appearance › Tabs and sessions has three presets: **Focused** (this layout), **Classic** (every open tab in one row, projects and worktrees in the sidebar) and **Everything**.
+
+## While the agent works
+
+- <kbd>Enter</kbd> queues your next message. <kbd>Ctrl+Enter</kbd> stops the turn and sends it now.
+- <kbd>Esc</kbd> stops the turn.
+- A running command shows its time so far, and a subagent how long it has run.
+
+To hand a running session to another agent, open the model menu, pick that agent in the strip and click **Continue with**.
+
+## Branch names from the task
+
+A new worktree starts on a random branch name, such as `env/brave-otter`. After the first prompt, a small model names the branch after the task, such as `fix/terminal-tab-name`, and Arakun renames it. The folder keeps its name.
+
+By default the agent you sent the prompt to names it, when that agent is Claude Code (with `haiku`) or Droid. Other agents leave the name alone. Settings › Branches can pick Claude Code or Droid for every environment, or turn naming off.
+
+To rename the branch yourself before it is pushed, run `arakun rename <branch>` in the environment.

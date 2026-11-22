@@ -80,6 +80,30 @@ Inside a component, leave a blank line after the opening tag and before the clos
 one, so the Markdown in between is read as Markdown. `pnpm dev` reloads a page when its
 file changes.
 
+## The Mintlify docs
+
+`docs/` holds the same docs as a [Mintlify](https://mintlify.com/docs) site, brought up to
+date with the app's README. Mintlify builds it from this repository; point its GitHub app
+at the `docs` folder.
+
+- `docs/docs.json`: the navigation, the Brandbook colors, the logo and the links. Its
+  `variables` hold the facts that `src/site.ts` holds for the website: write
+  `{{version}}`, `{{installUrl}}` and so on in a page, and bump `version` on a release.
+  Mintlify does not fill them in inside a link's URL, so write those URLs out.
+- `docs/logo/`: the app icon with the "Arakun" wordmark in Geist 600, its letters as
+  outlines so the logo needs no font. `docs/style.css` adds Geist Mono and the tight
+  headings.
+- Mintlify components replace the ones above: `<Note>`, `<Tip>`, `<Warning>`,
+  `<Danger>`, `<Check>`, `<Steps>` with `<Step title="…">`, `<Tabs>` with
+  `<Tab title="…">`, `<Columns>` with `<Card>`, `<AccordionGroup>` and `<CodeGroup>`.
+  Links to another page are `/<slug>`, with no `/docs`.
+
+```sh
+cd docs
+npx mint dev        # http://localhost:3000
+npx mint validate   # what Mintlify checks before it deploys
+```
+
 ## The changelog syncs from GitHub
 
 The Changelog page reads the releases of github.com/ArakunHQ/arakun. Publish a

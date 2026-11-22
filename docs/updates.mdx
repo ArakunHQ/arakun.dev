@@ -1,0 +1,116 @@
+---
+title: Update Arakun
+description: "How Arakun updates itself, how to update from a terminal, and how to follow nightly builds."
+---
+
+## Updates come on their own
+
+A release build asks GitHub for the latest release every 6 hours. When there is a newer one, it downloads it, checks it, and puts it next to the installed app. The update is installed when you quit Arakun, so the next start runs it.
+
+Settings › General › Updates shows the version and has:
+
+- **Check now**,
+- **Restart now**, on Linux and macOS,
+- **Update automatically**. Turn it off to stop the checks.
+
+`ARAKUN_UPDATES=0` turns the checks off for one run.
+
+## Update from a terminal
+
+<CodeGroup>
+```sh Update
+arakun update           # download the latest release and install it
+```
+```sh Check only
+arakun update --check   # say whether there is a newer release
+```
+</CodeGroup>
+
+If Arakun is running, the update is installed when it quits. On Linux and macOS, `arakun restart` does that now. On Windows, quit Arakun and open it again.
+
+## When Arakun can't update itself
+
+- **A build from source** never updates itself. Pull and build it again.
+- **A binary that belongs to another user**, such as one a package manager installed, is left alone. Update it the way it was installed.
+- **A release with another version of the browser runtime** (CEF) is not installed by the updater. It says so. Run the install script once Arakun is closed.
+
+## When an update is asked for
+
+When a version has a serious problem, Arakun can ask you to update, or require it.
+
+- **Asked:** Arakun downloads the latest release and asks you to restart into it. **Later** or <kbd>Esc</kbd> puts it off until the next start.
+- **Required:** a dialog stays over the window until you restart into the new version or quit. On Windows, quit and open Arakun again.
+
+To know this, a release build reads a flag from Arakun's PostHog project once an hour. The request carries only the version, the update channel, the operating system and the processor type.
+
+## Nightly builds
+
+Every night, if `main` changed, a nightly build is published as a pre-release, such as `0.5.1-nightly.202611180300`.
+
+<Danger>
+**Nightlies can break**
+
+Nobody tests them by hand. One can crash, lose a session or change how your data is stored, and a release may not read what a nightly wrote. Don't use them for work you can't redo.
+</Danger>
+
+<Tabs>
+<Tab title="Switch an install">
+
+Turn on **Nightly builds** in Settings › General › Updates, or run:
+
+```sh
+arakun update --channel nightly
+```
+
+The updater then takes whichever is newest of the nightlies and the releases.
+
+</Tab>
+<Tab title="Install from scratch">
+
+<CodeGroup>
+```sh macOS and Linux
+curl -fsSL {{installUrl}} | sh -s -- --nightly
+```
+```powershell Windows
+$env:ARAKUN_VERSION = "nightly"
+irm {{installUrl}}.ps1 | iex
+```
+```sh Server alone
+curl -fsSL {{installServerUrl}} | sh -s -- --nightly
+```
+</CodeGroup>
+
+A nightly installed this way follows nightlies. The server alone does not update itself: run the line again for a newer one.
+
+</Tab>
+</Tabs>
+
+### Go back to releases
+
+```sh
+arakun update --channel stable
+```
+
+Or turn the switch off. The nightly stays until a release newer than it comes out. To go back now, install the latest release again. `arakun update --channel` says which channel you follow.
+
+## What is checked
+
+- `SHA256SUMS` is signed with Arakun's release key.
+- The download matches the checksum in it.
+- The new binary starts and says the version it should.
+
+A missing or bad signature stops the update. Only the release workflow can use the key, so someone who can change a release on GitHub can't make the updater install anything. Nightlies are signed with their own key, which the updater accepts for nightly versions only.
+
+<Accordion title="Where the updater keeps its files">
+
+In Arakun's data folder (`~/.local/share/arakun` on Linux and macOS, `%LOCALAPPDATA%\arakun` on Windows):
+
+| File | Holds |
+| --- | --- |
+| `update.json` | The version waiting to be installed, its checksum, and the last one you were told about |
+| `update.lock` | Held while one updater runs |
+| `no-auto-update` | There while **Update automatically** is off |
+| `update-channel` | `stable` or `nightly`, once you pick one |
+| `update-download/` | The download, removed when it is done |
+
+</Accordion>

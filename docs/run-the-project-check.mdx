@@ -1,0 +1,42 @@
+---
+title: Run the project check
+description: Set one command per project, such as npm test, that Arakun runs after each turn that edits files and sends back to the agent when it fails.
+---
+
+The project check is a command you set per project, such as `cargo test` or `npm test`.
+
+## Set it
+
+Set it in Settings › Project or in the project's menu, or from a terminal:
+
+```sh
+arakun check --set npm test
+```
+
+A project without a check gets an offer after a turn that edits files: **No check here yet. Run "…" after turns that edit files?** Arakun picks the command from the project's files, such as a Makefile's `check` or `test` target, `cargo check --all-targets`, the `typecheck` and `test` scripts in `package.json`, `go test ./...` or `pytest`.
+
+- **Use it** saves it and checks the turn that prompted the offer.
+- **Edit…** lets you change the command first.
+- **Don't ask** stops the offer for that project.
+
+## When it runs
+
+It runs after each turn that edits files. The transcript shows each run. When it fails, the tail of the output goes back to the agent, up to three times in a row. After that, the failure is left to you.
+
+A check still running after 10 minutes is stopped and counts as failed.
+
+To run it yourself in the current environment:
+
+```sh
+arakun check
+```
+
+## It does not stall your computer
+
+Checks run one at a time across all sessions, at low priority, with half the cores for builds (`CARGO_BUILD_JOBS`). Several agents finishing together don't slow the machine down.
+
+In a sandboxed project the check runs in the agent's sandbox, or not at all.
+
+## Loops
+
+Arakun notices when an agent loops: the same failing command or the same edit, over and over. It offers **Stop and rethink** or **Keep going**.

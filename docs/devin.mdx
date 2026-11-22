@@ -1,0 +1,65 @@
+---
+title: Devin
+description: Use Cognition's Devin CLI as an agent in Arakun. Install devin, sign in or use a Windsurf API key, pick a mode, and see your plan's quota.
+---
+
+Arakun runs Devin through the `devin` CLI. It starts `devin acp`, the CLI's own agent protocol server, so there is no adapter to install.
+
+## What you need
+
+The [Devin CLI](https://docs.devin.ai/work-with-devin/devin-cli). Arakun looks for `devin` on your `PATH` and in `~/.local/bin`. Arakun does not install it: Cognition's installer also sets up its updates.
+
+- `ARAKUN_DEVIN_BIN` picks another `devin`.
+- `ARAKUN_DEVIN_ACP` runs another command instead of `devin acp`.
+
+## Sign in
+
+Devin runs on one of these:
+
+- **Your Devin account.** Open Settings › Devin and click **Sign in**, or press <kbd>Ctrl+K</kbd> and pick **Sign in to Devin**. A terminal runs `devin auth login`; approve the sign-in in the browser. If you signed in to `devin` in a terminal before, you're done.
+- **A Windsurf API key.** Set `WINDSURF_API_KEY` in the environment Arakun starts in. Settings › Devin then names the variable.
+
+**Sign out** in Settings › Devin runs `devin auth logout`.
+
+Arakun has no account of its own. It checks that Devin's sign-in file is there, `~/.local/share/devin/credentials.toml` (under `$XDG_DATA_HOME` when that is set). It reads the key only to show your plan's quota, sends it only to server.codeium.com, and never changes it.
+
+## Pick a mode and a model
+
+The menu next to the composer lists the models Devin offers. Signed out, Devin lists none. The chip next to it sets Devin's mode: Code, Smart, Ask, Plan or Bypass. Bypass never asks. The environment remembers your picks for its next session.
+
+## Usage
+
+The Usage tab reads Devin's own session history, so sessions you run in a terminal count too. It reads `~/.local/share/devin/cli/sessions.db` (under `$XDG_DATA_HOME` when that is set), or `sessions.db` in `DEVIN_SESSIONS_DIR`. Models without a known API price show as unpriced, not as free.
+
+It also shows your plan's daily and weekly quota (Max has only the weekly one), and the sidebar card can show it too. Arakun sends a desktop notification when one passes 80% and when it is full. The quota comes from the endpoint the devin CLI's `/usage` reads. That is not a documented API, so it can stop working after a Devin update; then the quota is left out.
+
+## Good to know
+
+- Devin reads the project's `AGENTS.md` itself. Arakun can't add its note about the [`arakun` command](/the-arakun-command) to Devin's prompt.
+- With **Sandbox agents** on in Settings › Project, Devin runs in a sandbox.
+- Devin can write commit messages and pull request descriptions. It runs in its default mode for that, which only reads.
+- Removing a session from Arakun leaves Devin's own copy of it.
+
+## What does not work yet
+
+- Plans billed in credits or ACUs show no quota.
+- Billed ACUs and Devin's experimental file-based session history are not counted in the Usage tab.
+- Arakun doesn't read or change Devin's MCP servers.
+
+## Common errors
+
+<AccordionGroup>
+
+<Accordion title="devin was not found on PATH or in ~/.local/bin">
+
+Install the [Devin CLI](https://docs.devin.ai/work-with-devin/devin-cli), or point `ARAKUN_DEVIN_BIN` at the binary.
+
+</Accordion>
+
+<Accordion title="Devin is not signed in">
+
+Click **Sign in in a terminal** under the error, or run `devin auth login` in a terminal and sign in in the browser. Or set `WINDSURF_API_KEY`. Then retry.
+
+</Accordion>
+
+</AccordionGroup>

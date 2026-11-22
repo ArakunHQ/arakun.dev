@@ -1,0 +1,90 @@
+---
+title: Crash reports, usage counts and feedback
+description: What Arakun sends when you allow crash reports and usage counts, what feedback and surveys send, how to change your answer, and how to turn it all off.
+---
+
+Arakun sends nothing until you say so. On first launch it asks whether to send crash reports and anonymous usage counts to Arakun's PostHog project: as a step of the setup, or in a dialog when you skip the setup or already have a project.
+
+What happens before you answer waits in memory. It is sent if you turn usage counts on, and dropped if you don't.
+
+## What is sent
+
+<AccordionGroup>
+<Accordion title="Crash reports">
+
+A crash's message and stack trace. Before it leaves your machine, your home folder becomes `~`, and paths, links, emails and anything shaped like a key or token are removed. Its other words are sent as they are, so a crash message can still name something it was working on.
+
+When an agent stops with an error, the report holds:
+
+- the agent's name and version number (only the number)
+- a fixed category, such as "rate limited" or "not signed in"
+- the step that failed, such as starting the agent or a turn
+- the agent's error code or exit code
+- whether the session's folder still exists
+
+It never holds the error's text.
+
+</Accordion>
+<Accordion title="Usage counts">
+
+- App launched, and app quit with the minutes it was open
+- Setup finished: whether you added a project or skipped, and the step you were on
+- Session started, with the agent
+- Agent turn finished, with the agent, how it stopped and how many seconds it took
+- Project added and environment created
+- A built-in view opened, with its name
+- A browser tab opened
+- An update request shown, and whether it asked or required the update
+
+</Accordion>
+<Accordion title="Feedback">
+
+What you write when you press Send on a feedback form, or on the form after an agent error or a crash. The form may ask for an email address so we can follow up; it is optional.
+
+Feedback is sent even with crash reports and usage counts off, because pressing Send is your yes. A bug, feature or UX report may become a public GitHub issue, without paths, links, keys or emails.
+
+</Accordion>
+</AccordionGroup>
+
+Each report carries Arakun's version, your OS and the CPU architecture. Arakun never sends prompts, replies or file contents. [Privacy](https://arakun.dev/privacy) says who receives the reports and how long we keep them.
+
+## Feedback and surveys
+
+Open a feedback form from Settings › Privacy, from **Send Feedback…** in the palette, or on macOS from the Help menu.
+
+- **Surveys.** Surveys made in PostHog show up only with usage counts on, at most once per launch. Arakun fetches them only then, in an anonymous request with the project token and no id. With usage counts off, the feedback forms use the questions built into Arakun.
+- **Feedback from agents.** An agent can send feedback with `arakun feedback`, but only with usage counts on. You then get a notice in the [Inbox](/inbox) with the full text.
+
+## Change your answer
+
+Open Settings › Privacy and turn Crash reports or Usage counts on or off. Each switch works on its own.
+
+## Turn it all off
+
+Set `DO_NOT_TRACK=1` or `ARAKUN_TELEMETRY=0` in the environment Arakun starts in. Crash reports and usage counts stay off, all feedback is blocked, and Arakun does not ask. `ARAKUN_TELEMETRY=1` turns both on.
+
+## Update checks
+
+Once an hour, and a few seconds after it starts, Arakun reads a feature flag from its PostHog project that can ask you to update, or require it, when a version has a serious problem. It does this whatever you answered. The request carries only the version, the update channel, the OS and the processor type. It carries your random id only if you agreed to usage counts, and a new id each start otherwise.
+
+## The crash log
+
+Whatever you answer, Arakun writes each crash to `crash.log` in its data folder: when it happened, the version, the thread, the message (cleaned the same way) and the stack trace. That file stays on your machine. Attach it when you report a crash. It keeps the most recent crashes, up to about 256 KB.
+
+A crash in background work does not close Arakun. What was running shows an error, and the log says "Arakun carried on".
+
+## The files
+
+Two files in Arakun's data folder hold the setting:
+
+- `telemetry.json`: your answer.
+- `telemetry-id`: a random id that the reports carry. It is not tied to any account. PostHog makes no person profile from it, and no location from your IP.
+
+The data folder is in one of these places:
+
+| Platform | Data folder |
+| --- | --- |
+| Linux and macOS | `~/.local/share/arakun` |
+| Windows | `%LOCALAPPDATA%\arakun` |
+
+Delete `telemetry-id` and Arakun makes a new id. To have the reports for an id deleted, send the id to [{{privacyEmail}}](mailto:privacy@arakun.dev).

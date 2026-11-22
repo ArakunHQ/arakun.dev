@@ -1,0 +1,69 @@
+---
+title: Review the work
+description: "Check what an agent did in Arakun: read the diff of each turn, let the project check run, commit, and open and finish the pull request."
+---
+
+## See what each turn changed
+
+A session's transcript shows markdown, diffs, tool calls and images. Per-turn diffs show what each turn changed, including changes made by shell commands. Files over 1 MB are left out. Sessions can be resumed.
+
+The Workspace panel has four tabs:
+
+- **Sessions** of the environment.
+- **Explorer**, the environment's files.
+- **Changes**, the uncommitted changes.
+- **Session**, the session's pull request with its review and checks, and its subagents. It opens when a session first links a pull request. <kbd>Ctrl+Alt+S</kbd> switches to it and back.
+
+The Branches tab shows the history of the default branch, newest first, with up to three branches as colored lanes beside it. Point at a commit to see its author and agent, what it changed and its pull request.
+
+## Let the project check run
+
+Set a check command for the project, such as `cargo test` or `npm test`. It runs after each turn that edits files. When it fails, the end of the output goes back to the agent, up to three times in a row.
+
+Arakun also notices when an agent loops, running the same failing command or making the same edit again and again, and offers to stop and rethink.
+
+<Columns cols={2}>
+  <Card title="Run the project check" href="/run-the-project-check">
+    One command that runs after each turn that edits files.
+  </Card>
+</Columns>
+
+## Commit
+
+The Commit changes dialog takes the staged changes, or every change when nothing is staged. **Write with …**, named after the agent, writes the message in the style of your last commits. You edit it before you commit.
+
+Only the agent of the environment's latest session gets the diff. When that agent isn't set up, no other agent is asked, and the dialog says why.
+
+## Open the pull request
+
+The pull request chip of the Changes panel opens the branch's pull request, or a dialog that creates one. It fills in:
+
+- The title, from the first commit.
+- The branch it merges into: the remote's default one. Type another for a stack.
+- The description: the repository's pull request template, else the commit messages.
+
+It opens as a draft unless you turn that off, and pushes the branch first when GitHub doesn't have its commits. **Write with …** writes the title and description, from the same agent as above. Nothing goes to GitHub until you create the pull request. **Open GitHub's form** opens the page in your browser, to write it there instead.
+
+## Finish on GitHub
+
+The GitHub tab opens on one line that says how many things need you. Below it, your pull requests are grouped by where they stand: Needs you, Stuck, Waiting on CI, Waiting on others and Ready to merge. It also lists the reviews asked of you, mentions and assignments, and the open issues assigned to you.
+
+Pick an item to open its sheet: where it stands, who has it, what comes next, its checks and stack, and tabs for the conversation, checks and files. You can comment, approve, request changes or merge from there. A comment posts at once. Approve, request changes and merge ask a second time, and stop if new commits came after you looked.
+
+An agent can do the fixing:
+
+- **Fix conflicts** starts a session that merges the base branch in, settles the conflicts, runs the tests and commits.
+- **Address N comments** starts a session with the open review threads. The agent fixes each one or says why not, and lists a reply per thread for you to post.
+- **Fix with agent**, under failed checks, starts a session with the failed checks and their logs. **Re-run failed** starts the failed jobs again.
+
+None of them pushes, replies or resolves anything on GitHub.
+
+<Note>
+It reads GitHub through the `gh` CLI, so install `gh` and sign in first.
+</Note>
+
+## After the merge
+
+Once an environment's pull request is merged, Arakun archives it: its open review threads are resolved, its notifications are marked read, and its sessions from before the merge are archived. Turn this off in Settings › Branches › Archive after merge.
+
+Settings › Branches › Remove old environments (Off, 7, 14 or 30 days) removes a worktree once its pull request is merged or closed and it sat unused that long. It keeps any environment with uncommitted files or commits that aren't in the pull request. The branch is kept.

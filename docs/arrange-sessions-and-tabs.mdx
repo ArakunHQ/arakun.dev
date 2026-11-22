@@ -1,0 +1,90 @@
+---
+title: Arrange sessions and tabs
+description: "Find every session in the sidebar, pin the ones you want in the title bar, and act on several at once."
+---
+
+## Pick a layout
+
+Settings › Appearance › Tabs and sessions sets where sessions and tabs show. Three presets set everything at once:
+
+| Preset | What it shows |
+| --- | --- |
+| **Focused** | Sessions in the sidebar tree, pinned tabs in the title bar. A new install starts here. |
+| **Classic** | Every open tab in one row, and the sidebar with projects and worktrees. |
+| **Everything** | The tree and every open tab. |
+
+After a preset, each option can change: where sessions live, what the title bar shows, how a state looks (icon, dot or word), grouping by project, projects with nothing running, long titles and the sidebar width.
+
+<Note>
+A state file from before this setting opens on Classic, so your window doesn't change after an update. Pick Focused to switch.
+</Note>
+
+## Read the sidebar
+
+With Focused, the sidebar lists every session of every project, under its project. Each row has a mark for its state:
+
+| Mark | Means |
+| --- | --- |
+| A ring | It works. |
+| `!` | It needs you. |
+| A cross | It failed, or its checks failed. |
+| A check | Its checks passed. |
+| A faint dot | It is idle. |
+
+The end of the row says what wants you, or the number of the pull request.
+
+A project with nothing running folds. The project on screen and any project with a session that works or needs you stay open. Click a project to fold or open it. Settings can keep such projects open or hide them.
+
+Archived sessions stay out of the list. The archived toggle shows them.
+
+## Pin sessions to the title bar
+
+With sessions in the sidebar, the title bar holds the sessions pinned to it, from any project, plus the tab on screen and pages, files and views.
+
+- Drag a row up to the bar. A line marks where it lands.
+- Or pick Pin to the title bar in the row's right-click menu.
+- Or press <kbd>Alt+P</kbd> while the pointer is on the row. On the bar, <kbd>Alt+P</kbd> pins or unpins the tab on screen.
+
+Close a pinned tab with <kbd>Ctrl+W</kbd>, or drag it back to the sidebar, to unpin it. The session stays in the tree. With nothing pinned, the session you open pins itself.
+
+When the bar fills, tabs shrink and the rest go under **N more**, which can also unpin the ones that are done. With the sidebar hidden, a **Sessions** button opens the tree as a menu with a search. It shows how many sessions need you.
+
+## See what needs you
+
+The **Active** list at the top of the sidebar shows the sessions of every project that need you, because they wait for an answer or failed, then the ones that run. A click opens the session in its project. Move or remove the list from Customize › Sidebar.
+
+An environment needs you when:
+
+- a session asks something,
+- a session finished a turn you haven't opened yet,
+- CI on its branch fails,
+- its pull request has changes requested or conflicts.
+
+## Act on several at once
+
+<kbd>Ctrl</kbd>+click (<kbd>Cmd</kbd>+click on macOS) rows to pick them, and <kbd>Shift</kbd>+click to pick a run of them. A bar under them can:
+
+- settle their sessions,
+- close them: their tabs close and idle agents stop, and the worktrees stay,
+- delete the worktrees, after one question. Branches stay, and so does the main checkout.
+
+<kbd>Esc</kbd> clears the pick.
+
+## Move between tabs
+
+The window has one row of tabs for every environment. Going to a tab shows its environment, and going to an environment shows the tab it showed last.
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>Ctrl+Tab</kbd>, <kbd>Ctrl+1…9</kbd> | Switch tabs, across environments |
+| <kbd>Alt+Up</kbd>, <kbd>Alt+Down</kbd> | Switch environments |
+| <kbd>Ctrl+W</kbd> | Close the tab |
+| <kbd>Ctrl+Alt+T</kbd> | Reopen the last closed tab where it was |
+| <kbd>Ctrl+Shift+PageUp</kbd>, <kbd>Ctrl+Shift+PageDown</kbd> | Move the tab left or right |
+| <kbd>Ctrl+Alt+B</kbd> | Toggle the workspace panel |
+
+A middle click closes a tab. Drag a tab left or right to move it; the order stays after a restart.
+
+<Tip>
+GNOME, Ubuntu and some KDE setups keep <kbd>Ctrl+Alt+T</kbd> for their own terminal. Use Reopen closed tab in the File menu or a tab's right-click menu there.
+</Tip>

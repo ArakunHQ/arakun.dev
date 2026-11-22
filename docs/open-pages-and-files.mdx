@@ -1,0 +1,57 @@
+---
+title: Open pages and files
+description: Show a web page or a file beside the chat with arakun browse and arakun open, and let an agent drive a page with arakun page.
+---
+
+## Open a page
+
+```sh
+arakun browse -s localhost:3000
+```
+
+This opens the page in a browser tab beside the chat. Leave out `-s` to open it as a tab of its own. A path opens as `file://`.
+
+## Open a file
+
+```sh
+arakun open -s src/main.rs:42
+```
+
+This opens the file beside the chat at line 42.
+
+## Let an agent drive a page
+
+Agents can test what they build in the environment's browser tab:
+
+```sh
+arakun page                      # list the browser tabs
+arakun page screenshot [file]    # save a PNG of the page and print where
+arakun page console              # what the page logged since it loaded
+arakun page text                 # the page's title, address and visible text
+arakun page open <url>           # load a page in the tab and wait for it
+arakun page reload               # load it again
+arakun page click <selector|text>   # click an element like a user would
+arakun page type <field> <text>  # type into a field: CSS selector, label or placeholder
+arakun page press <key>          # Enter, Tab, Escape, Backspace, an arrow…
+arakun page eval <js>            # run JavaScript in the page and print the result
+```
+
+With several tabs, `-t N` picks one: `arakun page -t 2 screenshot`.
+
+<Note>
+`click`, `type`, `press` and `eval` only act on pages served from this machine: `localhost`, `127.0.0.1` and `file://`.
+</Note>
+
+## Links open in Arakun
+
+Links you click in a session, the GitHub view or a pin open in a browser tab. To open them in your own browser, turn off **Open links in Arakun** in Settings › General. A link clicked inside a browser tab always stays in Arakun.
+
+A link to a pull request or issue on the host `gh` is signed in to opens in the GitHub tab instead.
+
+## The browser
+
+Release builds include the browser. It is based on CEF (Chromium) and adds a few hundred MB.
+
+- **Linux.** Keep the `cef` folder next to `arakun`, or in `~/.local/share/arakun/cef`. Without it, everything but browser tabs works. On Ubuntu 23.10 and later, browser tabs also need an AppArmor profile; a browser tab says why it can't start. The README of ArakunHQ/arakun has the profile.
+- **Windows and macOS.** Browser tabs are barely tested yet.
+- **Built from source.** The `browser` feature is on by default and needs CEF. A build with `--no-default-features` has no browser and opens links in your own browser.

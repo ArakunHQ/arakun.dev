@@ -1,0 +1,57 @@
+---
+title: Codex
+description: "Use OpenAI's Codex as an agent in Arakun: sign in with your ChatGPT plan or an OpenAI API key, and what to know before you start."
+---
+
+Arakun runs OpenAI's Codex through the ACP adapter `@agentclientprotocol/codex-acp`. The adapter brings its own `codex`, so you don't need to install the Codex CLI.
+
+## What you need
+
+- Node.js with `npm`. Arakun installs the adapter itself.
+- A Codex sign-in: your ChatGPT plan, or an OpenAI API key.
+
+The first Codex session asks before it installs the adapter. It shows the package, the folder and the npm command, so you can run the command yourself instead. The adapter goes in `~/.local/share/arakun/agents/codex`, or `%LOCALAPPDATA%\arakun\agents\codex` on Windows.
+
+## Sign in with ChatGPT
+
+<Steps>
+
+<Step title="Start the sign-in">
+
+Open Settings › Codex and click **Sign in**. Or press <kbd>Ctrl+K</kbd> and pick **Sign in to Codex**. Arakun opens a terminal that runs `codex login`. You don't need a project open.
+
+</Step>
+
+<Step title="Approve it in the browser">
+
+Sign in with your ChatGPT account and approve the sign-in.
+
+</Step>
+
+<Step title="Start a session">
+
+Settings › Codex now says "Signed in · ChatGPT". Codex sessions use your plan.
+
+</Step>
+
+</Steps>
+
+This is the same sign-in the `codex` CLI uses. If you ran `codex login` in a terminal before, Arakun finds it in `~/.codex` (or `CODEX_HOME`) and you're already signed in. **Sign out** in Settings › Codex signs Codex out.
+
+## Use an API key instead
+
+Set `CODEX_API_KEY` or `OPENAI_API_KEY` in the environment Arakun starts in. Settings › Codex then says "API key" and names the variable. When Codex is also signed in with ChatGPT, the ChatGPT sign-in comes first.
+
+## Pick a model
+
+The menu next to the composer lists the models Codex offers and their reasoning levels. They show once the adapter is installed. Reasoning levels are per model. The environment remembers your pick for its next session.
+
+The chip next to it sets Codex's sandbox and approval preset. With full access, Codex never asks.
+
+## Good to know
+
+- The Usage tab doesn't show your ChatGPT plan's limits yet. When they run out, Codex says so in the session.
+- If your Codex accounts sit behind CLIProxyAPI, the Usage tab can show their 5-hour and weekly limits. Add the proxy's management key there.
+- With **Sandbox agents** on in Settings › Project, Codex runs in a sandbox.
+- `ARAKUN_CODEX_ACP` runs another adapter command instead of the one Arakun installs.
+- Once the adapter is installed, Arakun updates it to the version it was built with, without asking.

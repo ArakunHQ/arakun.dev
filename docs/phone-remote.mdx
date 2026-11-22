@@ -1,0 +1,68 @@
+---
+title: Phone remote
+description: Follow your Arakun sessions from a phone, send prompts and answer the agent, over your local network, Tailscale or an encrypted relay.
+---
+
+Arakun serves a web page that lets a paired phone follow sessions, read them live, send prompts, stop a turn and answer the agent.
+
+## Pair a phone
+
+<Steps>
+<Step title="Turn on the Phone tab">
+
+Turn on **Phone** under Arakun › Extensions, or Settings › General › Sidebar. It is already on if you chose to pair a phone in the first-run setup.
+
+</Step>
+<Step title="Pick how the phone reaches this computer">
+
+**Same Wi-Fi**, **Tailscale** or the relay. See below.
+
+</Step>
+<Step title="Press Pair a phone">
+
+Scan the code with the phone's camera. Or open the page on the phone and type the code, or send it the link.
+
+</Step>
+</Steps>
+
+The code or link works once. Each phone gets a key of its own, which you can revoke under **Paired phones**.
+
+## How the phone reaches your computer
+
+- **Over the local network.** This is the default.
+- **Over Tailscale.**
+- **Through an end-to-end encrypted relay.**
+
+On the local network and over Tailscale, the page comes from the computer itself. It only opens while the computer is on and awake. The relay works from anywhere and says when the computer is offline; the Phone tab then offers **Use Relay**.
+
+## The relay
+
+The relay defaults to the hosted one at `arakun.dev`. The relay can't hand your computer's address to anyone else: it comes from a key only your computer has.
+
+You can run your own relay: it is a Cloudflare Worker in the `relay/` folder of the repository. Point `relay_base` in `phone.json` at it.
+
+## Send prompts
+
+While the agent works, a prompt you send waits for the turn to end. With something written, **Stop** becomes **Stop and send**.
+
+## Shortcuts
+
+The page keeps shortcuts, phrases you send often, as a row of buttons over the box.
+
+- A shortcut that sends right away shows while the agent waits for you. The others show while you write, and fill the box.
+- `{number}` in a shortcut is a blank you type each time, on the number keyboard.
+- Hold a message you sent to keep it as a shortcut, or tap **+** in the row.
+
+Shortcuts stay in that phone's browser.
+
+## Charts and diagrams
+
+Charts and diagrams in a reply (` ```chart ` and ` ```mermaid ` blocks) are drawn on the phone as they are in the app. **Code** shows the block's text, and **Open** shows the drawing full screen.
+
+## Servers
+
+A phone paired with the app also sees and works in the sessions of your [servers](/server).
+
+<Tip>
+In redacted mode, the Phone tab hides the pairing code, its addresses and the names of paired phones. **Copy link** still copies the real link.
+</Tip>

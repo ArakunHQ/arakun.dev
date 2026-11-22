@@ -1,0 +1,73 @@
+---
+title: Fetch web pages
+description: Read a web page or a whole site as Markdown with arakun fetch and arakun crawl, loaded in a real browser on Cloudflare Browser Run.
+---
+
+Some pages need JavaScript to show anything. `arakun fetch` and `arakun crawl` load them in Cloudflare Browser Run, a real browser on Cloudflare's network, and give back Markdown an agent can read.
+
+They work without a running Arakun.
+
+## Set up a token
+
+<Steps>
+<Step title="Create a Cloudflare API token">
+
+Give it the **Browser Run - Edit** permission. The `cf` sign-in doesn't carry it.
+
+</Step>
+<Step title="Store it with its account">
+
+```sh
+arakun fetch --set-token <account-id> < token.txt
+```
+
+The token is read from stdin and kept in the system keyring.
+
+</Step>
+</Steps>
+
+Or set `CLOUDFLARE_BROWSER_RUN_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` instead.
+
+## Fetch a page
+
+```sh
+arakun fetch https://example.com          # the page as Markdown
+arakun fetch --html https://example.com   # the rendered HTML
+arakun fetch --links https://example.com  # the links on the page
+```
+
+## Crawl a site
+
+```sh
+arakun crawl --limit 50 --depth 2 https://example.com/docs
+```
+
+This prints the site's pages as Markdown, one after another, as they are read.
+
+<ParamField path="--limit N">
+  The most pages to read. The default is 20.
+</ParamField>
+
+<ParamField path="--depth N">
+  How many links deep to go from the first page.
+</ParamField>
+
+<ParamField path="--render">
+  Run each page's JavaScript before reading it.
+</ParamField>
+
+<ParamField path="--include <glob>">
+  Read only pages whose address matches. Repeat it for more patterns.
+</ParamField>
+
+<ParamField path="--exclude <glob>">
+  Skip pages whose address matches. Repeat it for more patterns.
+</ParamField>
+
+A crawl gives up after 30 minutes.
+
+## Limits
+
+- What you can fetch depends on your Workers plan. On a rate limit, Arakun waits and tries again a few times.
+- It does not get past captchas.
+- `arakun crawl` honors `robots.txt` and Content Signals.

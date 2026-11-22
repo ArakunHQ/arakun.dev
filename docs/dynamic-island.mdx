@@ -1,0 +1,92 @@
+---
+title: Dynamic Island
+description: The Dynamic Island shows at the top of the screen what the agents of every project are doing, and a card when one finishes, fails or needs you.
+---
+
+It is a small black shape that stays on top of whichever window is in front, so you can work elsewhere and still see when an agent needs you.
+
+## What it shows
+
+- **A dot per busy session.** When nothing has run for two minutes, the raccoon on it falls asleep.
+- **A card** when a session finishes, fails or needs an answer. **View** opens the session; **Later** puts the card away. A click anywhere on the card opens it too. A card goes away by itself after about 12 seconds, longer when there is more to read, and never later than 25 seconds. A short notice with nothing to open goes after 5.
+- **The list of sessions** when you hover over it. Click a row to open that session.
+- **Approve and Deny** when a [headless agent](/headless-agents) asks to run a tool call. These cards wait for your answer. **Approve** counts only once the card has been up a moment and you moved the pointer to it, so a click meant for something else doesn't approve.
+
+Every notice also lands in the [Inbox](/inbox), so you can read it later.
+
+## Where it works
+
+<Tabs>
+<Tab title="Linux">
+
+It works on Wayland, with a compositor that has the wlr-layer-shell protocol, such as Hyprland or Sway. It doesn't work on X11.
+
+</Tab>
+<Tab title="macOS">
+
+On a MacBook it grows out of the notch, or out of the screen's own Dynamic Island on models that have one, and sits on the built-in screen. On a Mac without either, it hangs from the top of the main screen.
+
+It quits with the app, unless a headless agent still runs.
+
+<Note>
+**The shape around the notch is wrong**
+
+Set `ARAKUN_ISLAND_EDGE` to `flat`, `notch:<width>x<height>` or `pill:<width>x<height>+<gap to the top>`, in points. The shape around a notch and around the MacBook Pro's Dynamic Island hasn't been tested on those screens yet.
+</Note>
+
+</Tab>
+<Tab title="Windows">
+
+It sits at the top center of the main screen. Clicks around its shape reach the windows below, and a click on it never takes the focus from the window you type in.
+
+It stays up after Arakun closes. It shows no headless agents, since they don't run on Windows. After you change the display's scale, it keeps its old size until it restarts.
+
+</Tab>
+</Tabs>
+
+## Agents outside Arakun
+
+<Note>
+Windows only for now.
+</Note>
+
+Claude Code running in another terminal or an editor can show on the island through its hooks. Add this to `~\.claude\settings.json`, with your own path to `arakun.exe`:
+
+```json settings.json
+{
+  "hooks": {
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "\"C:/Users/<you>/AppData/Local/arakun/bin/arakun.exe\" island hook" }] }],
+    "PostToolUse": [{ "hooks": [{ "type": "command", "command": "\"C:/Users/<you>/AppData/Local/arakun/bin/arakun.exe\" island hook" }] }],
+    "Notification": [{ "hooks": [{ "type": "command", "command": "\"C:/Users/<you>/AppData/Local/arakun/bin/arakun.exe\" island hook" }] }],
+    "Stop": [{ "hooks": [{ "type": "command", "command": "\"C:/Users/<you>/AppData/Local/arakun/bin/arakun.exe\" island hook" }] }],
+    "SessionEnd": [{ "hooks": [{ "type": "command", "command": "\"C:/Users/<you>/AppData/Local/arakun/bin/arakun.exe\" island hook" }] }]
+  }
+}
+```
+
+The island lists the session while it works, and shows a card when it waits for you or finishes. The hook never fails, even when the island is not running. `arakun island hook <name>` shows another name than "Claude Code".
+
+Any other agent can tell the island by hand:
+
+```sh
+arakun island session <id> <working|waiting|done|error|ended> [project] [doing]
+```
+
+**View** on such a card only puts it away, since Arakun has nothing to open for it.
+
+## Turn it off
+
+Turn off **Dynamic Island** in Settings. The island runs as its own process, `arakun island-host`, and turning it off ends that process.
+
+## From a terminal
+
+The island works with the app closed, so a script can use it too:
+
+```sh
+arakun island alert "Backup done" "412 files"   # show a card
+arakun island                                   # print the state it shows
+arakun island working                           # show a state, to try it
+arakun island auto                              # follow the agents again
+```
+
+The states are `sleeping`, `idle`, `working`, `speaking` and `listening`. `arakun island list` pins or unpins the list of sessions.

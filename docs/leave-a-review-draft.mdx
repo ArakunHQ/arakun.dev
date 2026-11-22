@@ -1,0 +1,39 @@
+---
+title: Leave a review draft
+description: Let an agent review a pull request and save its review as a draft in Arakun's GitHub tab. Nothing is posted until you post it.
+---
+
+An agent can review a pull request for you and leave a draft. The draft sends nothing. You post it, edit it or discard it in the GitHub tab.
+
+```sh
+arakun github draft o/r#12 --verdict approve --head <sha> \
+  --body-file - --agent Claude < review.md
+```
+
+<ParamField path="--verdict" type="approve | request-changes | comment" required>
+  What the review says.
+</ParamField>
+
+<ParamField path="--body-file" type="file | -" required>
+  The review's text: a file, or `-` for stdin.
+</ParamField>
+
+<ParamField path="--head" type="sha">
+  The commit the agent read. An approval needs it.
+</ParamField>
+
+<ParamField path="--agent" type="name">
+  Who wrote it.
+</ParamField>
+
+Drafts are kept in `github/drafts/`, next to Arakun's state file.
+
+## Safety
+
+<Check>
+**Nothing goes out without you**
+
+Posting a draft asks a second time. An approval goes out only for the commit the agent read. After new commits, the draft can only be posted as a comment.
+
+When an agent passes a file outside its workspace, or runs the command on one line with other commands, Arakun asks you first.
+</Check>

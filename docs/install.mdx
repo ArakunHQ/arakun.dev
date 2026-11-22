@@ -1,0 +1,124 @@
+---
+title: Install Arakun
+description: Install Arakun on macOS, Linux or Windows with one line in a terminal, pick a version, keep it up to date, and see what Linux needs.
+---
+
+## Run the installer
+
+<CodeGroup>
+```sh macOS and Linux
+curl -fsSL {{installUrl}} | sh
+```
+```powershell Windows
+irm {{installUrl}}.ps1 | iex
+```
+</CodeGroup>
+
+On macOS and Linux, run it in a terminal. It works on macOS with Apple silicon and on Linux x86_64 and arm64. It picks the build for your machine. On Windows, run it in PowerShell.
+
+## What the script does
+
+It downloads the latest release, checks it against `SHA256SUMS` and installs it for your user. When `minisign` is installed (or OpenSSL 3 on Linux and macOS), it also checks that `SHA256SUMS` is signed with Arakun's release key. Without one, it checks only the checksum and says so. On macOS, `brew install minisign` adds the check.
+
+| Platform | Installs to | To uninstall |
+| --- | --- | --- |
+| macOS | `~/Applications/Arakun.app`, linked as `~/.local/bin/arakun` | `rm -rf ~/Applications/Arakun.app ~/.local/bin/arakun` |
+| Linux | `~/.local/bin/arakun`, and the browser's runtime in `~/.local/share/arakun/cef` | `rm -rf ~/.local/bin/arakun ~/.local/share/arakun/cef` |
+| Windows | `%LOCALAPPDATA%\Programs\Arakun`, added to your user `PATH`, with a Start menu shortcut | Delete that folder and the shortcut, and remove it from `PATH` |
+
+## A given version
+
+```sh
+curl -fsSL {{installUrl}} | sh -s -- --version v{{version}}
+```
+
+Or set `ARAKUN_VERSION=v{{version}}`. On Windows, set `$env:ARAKUN_VERSION = "v{{version}}"` before you run the installer.
+
+Linux arm64 builds start at v0.5.0. On an arm64 machine, an older version does not install.
+
+<Warning>
+There is no build for Intel Macs yet. [Build from source](https://github.com/ArakunHQ/arakun#build-from-source) there.
+</Warning>
+
+## Nightly builds
+
+Every night that `main` changed, a nightly build comes out. Nightlies are for testers. Nobody tests them by hand: one can crash, lose a session or change how your data is stored, and a release may not read what a nightly wrote.
+
+```sh
+curl -fsSL {{installUrl}} | sh -s -- --nightly
+```
+
+On Windows, set `$env:ARAKUN_VERSION = "nightly"` first. A nightly installed this way keeps following nightlies.
+
+## Updates
+
+A release keeps itself up to date. Every 6 hours it asks GitHub for the latest release, downloads it and checks it against the signed `SHA256SUMS`. The update is installed when you quit Arakun, so the next start runs it.
+
+Settings › General › Updates shows the version and has **Check now**, and **Restart now** on Linux and macOS. Turn off **Update automatically** there to stop the checks. **Nightly builds** there switches to nightlies.
+
+From a terminal:
+
+```sh
+arakun update            # download the latest release; installed when Arakun quits
+arakun update --check    # only say whether there is a newer one
+arakun restart           # install it now (Linux and macOS)
+```
+
+<Note>
+Arakun updates itself only where it runs from, so that folder must be yours. A copy that a package manager installed, or a build from source, does not update itself.
+</Note>
+
+## Only the server
+
+On a Linux machine with no display (x86_64 or arm64), such as a VPS, install `arakun-server` alone. It needs glibc 2.35 or newer and none of the desktop libraries. See [Server](/server). On other architectures, [build it from source](https://github.com/ArakunHQ/arakun#build-from-source).
+
+```sh
+curl -fsSL {{installServerUrl}} | sh
+```
+
+It installs `~/.local/bin/arakun-server`. It also installs what the server runs agents with, if it is missing: git and gh with the system's package manager, Node.js 22 in `~/.local/share/arakun/node`, and Claude Code (run `claude` once to sign in). `--no-tools` leaves all four to you, and `--nightly` installs the newest nightly.
+
+The server does not update itself. Run the line again for a new release, then restart the service if it runs as one.
+
+## What Linux needs
+
+glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+), a Vulkan driver and the usual desktop libraries: libxkbcommon, Wayland or X11, fontconfig and freetype.
+
+Without a GPU, as in a VM, Mesa's software Vulkan driver works, only slower: `mesa-vulkan-drivers` on Debian, Ubuntu and Fedora, `vulkan-swrast` on Arch. Without a graphics driver or a desktop, `arakun` says what is missing and exits.
+
+## Agents come separately
+
+Arakun does not bundle the agents. Install the ones you want to use. The first launch checks which ones are there. Each agent's page in these docs says what it needs.
+
+<Columns cols={2}>
+  <Card title="Claude Code" href="/claude-code">
+    Runs through the ACP adapter.
+  </Card>
+  <Card title="Codex" href="/codex">
+    OpenAI's Codex, signed in with your ChatGPT plan or an API key.
+  </Card>
+  <Card title="Droid" href="/droid">
+    Runs Factory's droid CLI.
+  </Card>
+  <Card title="OpenCode" href="/opencode">
+    Runs the opencode CLI.
+  </Card>
+  <Card title="Devin" href="/devin">
+    Runs Cognition's devin CLI.
+  </Card>
+  <Card title="Cursor" href="/cursor">
+    Runs the Cursor CLI, cursor-agent.
+  </Card>
+  <Card title="Antigravity" href="/antigravity">
+    Runs Google's agy CLI.
+  </Card>
+  <Card title="Workers AI" href="/workers-ai">
+    A tool loop Arakun runs against the Workers AI API.
+  </Card>
+</Columns>
+
+<Note>
+**Optional tools**
+
+`git` for Changes, worktrees and branches, `gh` for CI and the GitHub tab, `bwrap` for headless and sandboxed agents on Linux, `secret-tool` for stored logins on Linux, `tailscale` for the phone over Tailscale, `cf` for the Cloudflare tab.
+</Note>

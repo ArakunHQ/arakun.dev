@@ -1,0 +1,47 @@
+---
+title: Read a terminal
+description: Start a dev server or watcher in a terminal you can see with arakun run, and read or wait for its output with arakun logs.
+---
+
+Each environment has a dock of terminals. They are numbered, so agents and scripts can read them.
+
+## Start a command and wait for it
+
+```sh
+arakun run --port 5173 npm run dev
+```
+
+This opens a new terminal in the dock, runs the command and waits until the port answers.
+
+`arakun run` takes these flags before the command:
+
+<ParamField path="--ready <text>">
+  Wait until the output shows this text, in any case.
+</ParamField>
+
+<ParamField path="--port <n>">
+  Wait until this port answers. With `--ready` too, it waits for both.
+</ParamField>
+
+<ParamField path="--timeout <secs>">
+  How long to wait, with `--ready` or `--port`. The default is 60 seconds, the most 600.
+</ParamField>
+
+It fails with the tail of the output if the command exits first, or is not up in time. Flags after the command belong to it, so `vite --port 3000` keeps its own.
+
+## Read the output
+
+```sh
+arakun logs 2          # the last 200 lines of terminal 2
+arakun logs -n 50 dev  # the last 50 lines of the terminal with "dev" in its title
+```
+
+Name a terminal by its number or by a word of its title. When that is unclear, `arakun logs` lists the terminals.
+
+## Wait for output
+
+```sh
+arakun logs 2 --until compiled
+```
+
+This waits until terminal 2 prints "compiled", in any case, and prints what it printed. Only output after the call counts. It fails after `--timeout <secs>`, 60 seconds by default.

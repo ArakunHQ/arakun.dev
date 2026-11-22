@@ -1,0 +1,165 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Arakun",
+  "description": "Docs for Arakun, one native window for your coding agents.",
+  "colors": {
+    "primary": "#995c00",
+    "light": "#ffb547",
+    "dark": "#995c00"
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://arakun.dev"
+  },
+  "favicon": "/favicon.svg",
+  "appearance": {
+    "default": "dark"
+  },
+  "background": {
+    "color": {
+      "light": "#ffffff",
+      "dark": "#0b0b0b"
+    }
+  },
+  "fonts": {
+    "family": "Geist"
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "styling": {
+    "codeblocks": "dark"
+  },
+  "variables": {
+    "version": "0.16.1",
+    "installUrl": "https://arakun.dev/install",
+    "installServerUrl": "https://arakun.dev/install-server",
+    "privacyEmail": "privacy@arakun.dev"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get started",
+        "icon": "rocket",
+        "pages": ["index", "install", "updates", "start-a-session", "review-the-work", "github"]
+      },
+      {
+        "group": "Workspace",
+        "icon": "layout-panel-left",
+        "pages": ["projects-and-worktrees", "arrange-sessions-and-tabs", "the-palette", "more-tabs"]
+      },
+      {
+        "group": "Agents",
+        "icon": "bot",
+        "pages": [
+          "claude-code",
+          "droid",
+          "opencode",
+          "codex",
+          "devin",
+          "cursor",
+          "antigravity",
+          "workers-ai"
+        ]
+      },
+      {
+        "group": "The arakun command",
+        "icon": "terminal",
+        "pages": [
+          "the-arakun-command",
+          "open-pages-and-files",
+          "read-a-terminal",
+          "run-the-project-check",
+          "leave-a-review-draft",
+          "shrink-command-output",
+          "fetch-web-pages"
+        ]
+      },
+      {
+        "group": "Know what they are doing",
+        "icon": "radar",
+        "pages": ["dynamic-island", "inbox", "phone-remote"]
+      },
+      {
+        "group": "Go further",
+        "icon": "compass",
+        "pages": ["keyboard-shortcuts", "memory", "headless-agents", "server", "crash-reports"]
+      },
+      {
+        "group": "Make it yours",
+        "icon": "palette",
+        "pages": ["customize", "redacted-mode"]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Features",
+        "href": "https://arakun.dev/features"
+      },
+      {
+        "label": "Changelog",
+        "href": "https://arakun.dev/changelog"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Download",
+      "href": "https://arakun.dev/download"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/ArakunHQ/arakun"
+    },
+    "links": [
+      {
+        "header": "Arakun",
+        "items": [
+          {
+            "label": "Website",
+            "href": "https://arakun.dev"
+          },
+          {
+            "label": "Download",
+            "href": "https://arakun.dev/download"
+          },
+          {
+            "label": "Privacy",
+            "href": "https://arakun.dev/privacy"
+          }
+        ]
+      },
+      {
+        "header": "Source",
+        "items": [
+          {
+            "label": "GitHub",
+            "href": "https://github.com/ArakunHQ/arakun"
+          },
+          {
+            "label": "Issues",
+            "href": "https://github.com/ArakunHQ/arakun/issues"
+          },
+          {
+            "label": "Releases",
+            "href": "https://github.com/ArakunHQ/arakun/releases"
+          }
+        ]
+      }
+    ]
+  },
+  "contextual": {
+    "options": ["copy", "view", "claude", "chatgpt", "cursor", "mcp"]
+  },
+  "errors": {
+    "404": {
+      "redirect": false,
+      "title": "This page is not here",
+      "description": "It may have moved. Search the docs, or start at Install."
+    }
+  }
+}

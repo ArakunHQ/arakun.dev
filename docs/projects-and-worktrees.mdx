@@ -1,0 +1,84 @@
+---
+title: Manage projects and worktrees
+description: "Add or clone a project, give each session its own worktree, commit from the Workspace panel, and let Arakun archive and clean up what is done."
+---
+
+## Add or clone a project
+
+Press <kbd>Ctrl+O</kbd> for Add project. It searches the git repositories in your home folder, or browses a path you type, such as `~/code/`.
+
+To clone a project and add it in one step, paste one of these:
+
+- a clone URL, such as `https://github.com/o/r` or `git@host:o/r.git`,
+- a `gh repo clone o/r` or `git clone …` line,
+- a GitHub `o/r`.
+
+GitHub repositories are cloned with `gh` when it is installed, so private ones use its sign-in. The clone goes in the folder that already holds most of your repositories, or `~/code`.
+
+Each project gets an 8×8 pixel-art icon, drawn from its path. Pick Edit icon… in the project's menu to draw it pixel by pixel, shuffle a new one, start from a classic drawing or change its color.
+
+## One session, one worktree
+
+A new session gets its own git worktree on a random branch, made when you send the first prompt. That prompt then names the branch. See [Start a session](/start-a-session).
+
+| To | Do |
+| --- | --- |
+| Start a session in a new worktree | **New session**, or <kbd>Ctrl+T</kbd> |
+| Pick the branch first | <kbd>Alt</kbd>+click **New session** |
+| Make a worktree at once, on a random branch | <kbd>Ctrl+Shift+N</kbd> |
+| Pick the branch and where to start from | File › New Environment with Options…, or <kbd>Ctrl+Alt+N</kbd> |
+
+<kbd>Ctrl+Shift+N</kbd> fetches first and branches from origin's default branch, usually `main`, or from the project's **Base branch** in Settings › Project. When origin has no such branch, it starts from the local one.
+
+A prompt written in the main checkout, such as on a project's start screen, starts its session in a new worktree too. The main checkout is listed only while it holds older sessions. Open it from the project's right-click menu with Open main checkout.
+
+<Note>
+Before a repository's first commit there is nothing to branch from, so sessions start in the main checkout.
+</Note>
+
+## Use the Workspace panel
+
+The Workspace panel has these tabs:
+
+- **Sessions:** the sessions of the environment.
+- **Explorer:** its files.
+- **Changes:** its uncommitted changes.
+- **Branches:** the default branch's history, newest first, with up to three branches as colored lanes beside it.
+
+In Branches, point at a commit, or move to it with the arrow keys, to see its author and agent, what it changed and its pull request. Click a commit of a branch, or press <kbd>Enter</kbd>, to open that branch.
+
+## Write the commit message
+
+In the Commit changes dialog, **Write with &lt;agent&gt;** writes the message in the style of your last commit subjects. It reads the staged changes, or every change when nothing is staged. You edit the message before you commit.
+
+Only the agent of the environment's latest session gets the diff. When that agent isn't set up, no other agent is asked, and the dialog says why. Closing the dialog while it writes stops the agent.
+
+## Archive what is done
+
+Right-click an environment in the sidebar and pick **Archive**. Then:
+
+- its sessions that aren't working stop asking for you and leave the lists,
+- the open review threads of its branch's pull request are resolved on GitHub,
+- that pull request's notifications are marked read.
+
+A session's own right-click menu archives just that session, without touching GitHub.
+
+To get one back, use the **N archived** row at the end of the sidebar's list, or search. Pick Restore on its right-click menu, or send it a new prompt.
+
+### After a merge
+
+Once an environment's pull request is merged, Arakun archives it the same way. It asks `gh` every few minutes. Turn this off in Settings › Branches › Archive after merge.
+
+### Remove old environments
+
+Settings › Branches › Remove old environments (Off, 7, 14 or 30 days) removes a worktree once its pull request is merged or closed and it sat unused that long. It is off by default. The branch is kept.
+
+An environment stays when it has:
+
+- uncommitted or untracked files,
+- git-ignored files other than build output, such as `target/` or `node_modules/`,
+- a commit that isn't in the pull request,
+- an agent that works or waits for you,
+- an automation that is on and runs in it.
+
+The environment on screen stays too.
