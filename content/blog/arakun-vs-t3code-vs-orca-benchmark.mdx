@@ -113,6 +113,18 @@ Running this benchmark in the open immediately paid off:
 - Orca run 1 spike and GC dip: Orca hit 1,084.2 MiB PSS and 57.69% CPU on run 1 during CLI discovery before settling to 932–940 MiB and 0.40–0.50% CPU on runs 2–5. During the browser test, Orca peaked at 1,210.3 MiB on tab 1 before Chromium GC brought it to 932.9–962.9 MiB on tabs 2–3.
 - Active agent CLIs: these numbers measure the workspace apps themselves. Running Claude Code, Codex or Devin sessions adds each CLI process on top of whichever app hosts it.
 
+## What landed next on `main` (queued for v0.18.2)
+
+Profiling the idle window and multi-agent workloads after v0.18.1 turned up five more wins that are already merged on `main`:
+
+- **Idle wakeups and power (#716):** Replacing fixed 500 ms and 1 s background polls across the frame timer, Dynamic Island, headless scanner and git status poller cut interleaved release idle wakeups (14 s settle + 10 s sample on native Wayland) from **101.7–322.7/s to 22.6–32.3/s** (Dynamic Island main thread **8.0/s → 0.3/s**) and settled idle CPU to **0.10%**, plus added stationary pointer-poll backoff on macOS.
+- **macOS launch path (#719):** Launching from Finder, the Dock or `open -a` no longer blocks `main()` on a synchronous interactive login shell (`zsh -l -i -c`) before opening the window. Arakun now applies the cached login `PATH` in under a millisecond and refreshes it in the background.
+- **Multi-agent typing responsiveness (#718):** Background `ThreadView` tabs now coalesce streaming updates and stop their 250 ms elapsed-time ticks while off-screen, and active tabs coalesce rapid chunks to one update per frame.
+- **Long-turn virtualization (#720):** Live and unfolded turns with more than 16 phases now split into per-phase `gpui::list` rows instead of laying out every phase in one list item, keeping 2,000-item runs O(visible) to open and scroll.
+- **Lower per-session prompt overhead (#717):** Compacting the injected CLI hint and empty-store memory protocol trims fresh-session prompt overhead from ~4,200 chars to ~960 chars (~800 fewer tokens per new thread).
+
+For independent macOS numbers on third-party hardware, we also opened an [ADEMark request](https://github.com/zqkra/ademark/issues/72) so Arakun can be measured on the same Mac mini M4 harness as T3 Code, Orca and `super.engineering`.
+
 ## Hardware, environment and releases tested
 
 All measurements ran on November 22, 2026 using unmodified official Linux x86_64 releases on AMD Ryzen 9 5900X (12 cores / 24 threads), 46 GiB RAM, AMD Radeon RX 9060 XT, Linux 7.3.4-zen2-2-zen, Hyprland Wayland (DP-2, 1920×1080 visible workspace, cursor parked at 500,500). Electron apps ran with `--no-sandbox --ozone-platform=wayland` from extracted AppImages. Conductor was not included because it is macOS-only.
