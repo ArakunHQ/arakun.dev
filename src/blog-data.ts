@@ -59,7 +59,11 @@ export const authors = {
     role: 'Co-founder',
     bio: 'Co-founder of Arakun. Thinks software should work while you sleep. He has not tested this personally; he stays up to watch it.',
     avatar: '/blog/authors/karlo-aldrete.jpg',
-    links: [{ label: 'GitHub', url: 'https://github.com/KarloAldrete' }],
+    links: [
+      { label: 'Website', url: 'https://karloaldrete.xyz' },
+      { label: 'X', url: 'https://x.com/pingkarlo' },
+      { label: 'GitHub', url: 'https://github.com/KarloAldrete' },
+    ],
   },
 } satisfies Record<string, Author>
 
