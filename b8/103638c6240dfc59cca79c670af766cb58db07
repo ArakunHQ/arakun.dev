@@ -1,0 +1,43 @@
+src/seo.ts
+  s_5b955ca99c1477::t_4697260f28cb17 4
+src/routes/privacy.tsx
+  s_5b955ca99c1477::t_4d6906e624f0fb 122-123
+package.json
+  s_5b955ca99c1477::t_5cf1d77ad4ff2c 17
+vite/og.ts
+  s_5b955ca99c1477::t_006ec91d923bd8 173
+src/site.ts
+  s_5b955ca99c1477::t_ed91f27030c15e 16,22-23,69,75
+src/routes/sitemap[.]xml.ts
+  s_5b955ca99c1477::t_4d6906e624f0fb 6
+src/components/chrome.tsx
+  s_5b955ca99c1477::t_09adc451f4c709 41,142-144
+tsconfig.json
+  s_5b955ca99c1477::t_09adc451f4c709 9
+src/components/ui.tsx
+  s_5b955ca99c1477::t_09adc451f4c709 342,344
+src/routes/docs.$.ts
+  s_5b955ca99c1477::t_ed91f27030c15e 1-3,6-10,12-17
+  s_5b955ca99c1477::t_a6bab43d839182 4-5,11
+src/routes/download.tsx
+  s_5b955ca99c1477::t_4d6906e624f0fb 1
+  s_5b955ca99c1477::t_09adc451f4c709 112,114
+src/routeTree.gen.ts
+  s_5b955ca99c1477::t_85fbc6cd32a509 23,80-82,98,112,127,143,157,171,186,268-272,290
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b8103638c6240dfc59cca79c670af766cb58db07",
+  "prompts": {},
+  "sessions": {
+    "s_5b955ca99c1477": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aac5447a-b3f8-45d2-acfa-901b20f94aa8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Rik Visser <rik@rivi.software>"
+    }
+  }
+}
