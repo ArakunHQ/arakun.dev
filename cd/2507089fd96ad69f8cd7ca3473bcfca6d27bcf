@@ -1,0 +1,26 @@
+docs/style.css
+  s_eb06a6bb2066e3::t_3673170171071e 218,222,229,248,269-270,289,294,297,305,378
+  s_eb06a6bb2066e3::t_ef4d1a111506aa 330-331,334
+  s_eb06a6bb2066e3::t_9839c152b25bd2 173-203,208-213,215-217,219-221,223-228,230-232,234-247,249-268,271-288,290-293,295-296,298-304,306-326,358,379,386-387
+  s_eb06a6bb2066e3::t_98dc61d732a3f6 233
+  s_eb06a6bb2066e3::t_bb432a4d67d4b8 327-329,332-333,335-357,370-371,377
+  s_eb06a6bb2066e3::t_d8ab654615739f 87
+  s_eb06a6bb2066e3::t_70abe68a411427 359-365,367-369,372-376,380-385
+  s_eb06a6bb2066e3::t_5cbc559d20a2ae 204-207,214,366
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cd2507089fd96ad69f8cd7ca3473bcfca6d27bcf",
+  "prompts": {},
+  "sessions": {
+    "s_eb06a6bb2066e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aad0ca6c-aaca-4857-aa32-808d1b0eb95a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Rik Visser <rik@rivi.software>"
+    }
+  }
+}
