@@ -25,7 +25,7 @@
   // result in KV, so each release is written once (src/releases.ts). There is no id:
   // the first deploy creates the namespace in the Worker's account and keeps it linked.
   "ai": { "binding": "AI", "remote": true },
-  "kv_namespaces": [{ "binding": "CHANGELOG" }],
+  "kv_namespaces": [{ "binding": "RELEASE_NOTES" }],
   // PostHog project 736741 (US Cloud), for analytics and error reports. The token is
   // public: posthog-js sends it from every browser. Empty turns PostHog off, in the
   // browser and the Worker.
