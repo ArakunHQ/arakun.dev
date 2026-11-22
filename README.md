@@ -94,7 +94,7 @@ release there and it shows on the site within ten minutes. No deploy is needed.
   rewrites them into a short entry per area for people who use the app
   (`src/release-rewrite.ts`). It drops what users would not notice, such as CI,
   tests and dependency bumps. Each release is rewritten once and kept in the
-  `CHANGELOG` KV namespace; new notes on GitHub are rewritten again. Until the
+  `RELEASE_NOTES` KV namespace; new notes on GitHub are rewritten again. Until the
   entry is ready, a few seconds after the first visit, the page shows the GitHub notes.
 - `src/release-notes.ts` holds hand-written entries per tag. They win over both:
   write one when the rewrite gets something wrong. v0.1.0, v0.2.1 and v0.3.0 have one.
@@ -154,7 +154,7 @@ Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
   - `CLOUDFLARE_API_TOKEN`, an environment secret: a Cloudflare API token with
     "Edit Cloudflare Workers" on the account and zone that hold arakun.dev. That
     template includes Workers KV Storage, which the first deploy needs to create the
-    changelog's `CHANGELOG` namespace.
+    changelog's `RELEASE_NOTES` namespace.
   - `CLOUDFLARE_ACCOUNT_ID`, an environment variable: the ID of that account.
 - Limit the environment to `main` (Settings > Environments > production >
   Deployment branches), so no other branch can read the token.

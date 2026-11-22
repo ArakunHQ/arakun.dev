@@ -202,7 +202,7 @@ async function rewrite(release: Release, key: string, kv: KVNamespace, ai: Ai) {
 
 /** Puts the Workers AI entries on the releases that have no hand-written one. */
 function withEntries(releases: Release[]): Promise<Release[]> {
-  const { AI: ai, CHANGELOG: kv } = env
+  const { AI: ai, RELEASE_NOTES: kv } = env
   return Promise.all(
     releases.map(async (release) => {
       // The edge cache may hold releases from before a deploy that added or changed
