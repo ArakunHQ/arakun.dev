@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { postPath, posts } from '#/blog'
 import { getReleases } from '#/releases'
 import { pageUrl } from '#/seo'
 import { pages, site } from '#/site'
@@ -24,6 +25,10 @@ async function sitemapEntries() {
     ...Object.values(pages).map((page) => ({
       path: page.path,
       updated: withReleases.has(page.path) ? newer(page.updated, lastRelease) : page.updated,
+    })),
+    ...posts.map((post) => ({
+      path: postPath(post.slug),
+      updated: post.updated,
     })),
   ]
 }

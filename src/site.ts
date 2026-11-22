@@ -104,6 +104,17 @@ export const pages = {
     description:
       'Every Arakun release, newest first: new features, fixes and changes to the native app for Claude Code, Codex, Devin, Cursor and other coding agents.',
   },
+  blog: {
+    path: '/blog',
+    updated: '2026-11-22',
+    num: '04',
+    label: 'Blog',
+    tab: 'Blog: benchmarks and engineering notes · Arakun',
+    title: 'Engineering notes',
+    lead: 'Measured numbers, architecture notes and decisions behind Arakun.',
+    description:
+      'Measured benchmarks, Rust and GPUI architecture notes, and product decisions from the team building Arakun.',
+  },
   privacy: {
     path: '/privacy',
     updated: '2026-11-22',

@@ -1,3 +1,4 @@
+import { getPost, postPath, posts, postToMarkdown } from '#/blog'
 import type { Release } from '#/releases'
 import { listReleases } from '#/releases'
 import { pageDescription, pageUrl } from '#/seo'
@@ -5,7 +6,7 @@ import { agents, installCommands, pages, pillars, site } from '#/site'
 
 const MARKDOWN_TYPES = new Set(['text/markdown', 'text/x-markdown'])
 const HTML_TYPES = new Set(['text/html', 'application/xhtml+xml'])
-const MARKDOWN_PATHS = new Set(['/', '/features', '/download', '/changelog', '/privacy'])
+const MARKDOWN_PATHS = new Set(['/', '/features', '/download', '/changelog', '/blog', '/privacy'])
 
 function parseQuality(params: string[]): number {
   for (const param of params) {
@@ -64,7 +65,14 @@ function normalizePath(pathname: string): string {
 }
 
 export function hasMarkdownPage(pathname: string): boolean {
-  return MARKDOWN_PATHS.has(normalizePath(pathname))
+  const normalized = normalizePath(pathname)
+  if (MARKDOWN_PATHS.has(normalized)) {
+    return true
+  }
+  if (normalized.startsWith('/blog/')) {
+    return getPost(normalized.slice('/blog/'.length)) !== undefined
+  }
+  return false
 }
 
 const agentLinks = agents
@@ -111,6 +119,17 @@ ${pillars.map((pillar) => `## ${pillar.title}\n\n${pillar.body}`).join('\n\n')}
 ${agentLinks}
 
 Full documentation: ${site.docsUrl} (${site.docsUrl}/llms.txt).
+`,
+  '/blog': `# ${pages.blog.title}
+
+> ${pageDescription(pages.blog)}
+
+${posts
+  .map(
+    (post) =>
+      `- [${post.title}](${pageUrl(postPath(post.slug))}) (${post.published}): ${post.description}`
+  )
+  .join('\n')}
 `,
   '/download': `# ${pages.download.title}
 
@@ -195,6 +214,10 @@ export async function pageMarkdown(pathname: string): Promise<string | null> {
   const normalized = normalizePath(pathname)
   if (normalized === '/changelog') {
     return await changelogMarkdown()
+  }
+  if (normalized.startsWith('/blog/')) {
+    const post = getPost(normalized.slice('/blog/'.length))
+    return post ? postToMarkdown(post) : null
   }
   return staticBodies[normalized] ?? null
 }

@@ -1,3 +1,5 @@
+import type { BlogPost } from '#/blog'
+import { postPath } from '#/blog'
 import type { pages } from '#/site'
 import { site } from '#/site'
 
@@ -86,6 +88,37 @@ export const organization: JsonLd = {
   sameAs: [site.githubOrgUrl],
 }
 
+/** Structured data for a blog article (BlogPosting). */
+export function blogPosting(post: BlogPost): JsonLd {
+  const path = postPath(post.slug)
+  const url = pageUrl(path)
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.published,
+    dateModified: post.updated,
+    url,
+    mainEntityOfPage: url,
+    image: `${site.url}${ogImagePath(path)}`,
+    author: {
+      '@type': 'Organization',
+      name: post.author,
+      url: site.url,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: site.name,
+      url: site.url,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${site.url}/brand/icon-512.png`,
+      },
+    },
+  }
+}
+
 /** Home, then each step to the page. The last step is the page itself. */
 function breadcrumbs(trail: { name: string; path: string }[]): JsonLd {
   return {
@@ -110,6 +143,7 @@ export function pageHead({
   tabTitle,
   title,
   description,
+  ogType,
   trail = [],
   jsonLd = [],
 }: {
@@ -119,6 +153,7 @@ export function pageHead({
   /** The page's own title, for the preview card. */
   title: string
   description: string
+  ogType?: 'website' | 'article'
   /** The breadcrumb steps between the home page and this page, this page last. */
   trail?: { name: string; path: string }[]
   jsonLd?: JsonLd[]
@@ -128,6 +163,7 @@ export function pageHead({
     meta: [
       { title: tabTitle },
       { name: 'description', content: description },
+      ...(ogType ? [{ property: 'og:type', content: ogType }] : []),
       ...pageMeta({ path, title, description }),
     ],
     links: [{ rel: 'canonical', href: pageUrl(path) }],
