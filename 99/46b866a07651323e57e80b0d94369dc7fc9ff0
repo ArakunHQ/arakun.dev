@@ -1,0 +1,23 @@
+src/styles.css
+  s_1db786a4f63833::t_0716568aceac91 1925-2053
+vite/blog.ts
+  s_1db786a4f63833::t_0716568aceac91 114-123,151-164
+src/components/blog-mdx.tsx
+  s_1db786a4f63833::t_0716568aceac91 131-234,330-331
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9946b866a07651323e57e80b0d94369dc7fc9ff0",
+  "prompts": {},
+  "sessions": {
+    "s_1db786a4f63833": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "40129169-e5d0-4e38-81e2-41279bc489f3",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Rik Visser <rik@rivi.software>"
+    }
+  }
+}
