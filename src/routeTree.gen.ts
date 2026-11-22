@@ -24,6 +24,8 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
+import { Route as BlogAuthorAuthorRouteImport } from './routes/blog.author.$author'
+import { Route as BlogCategoryCategoryRouteImport } from './routes/blog.category.$category'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -100,6 +102,16 @@ const DocsSplatRoute = DocsSplatRouteImport.update({
   path: '/docs/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogAuthorAuthorRoute = BlogAuthorAuthorRouteImport.update({
+  id: '/blog/author/$author',
+  path: '/blog/author/$author',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogCategoryCategoryRoute = BlogCategoryCategoryRouteImport.update({
+  id: '/blog/category/$category',
+  path: '/blog/category/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -117,6 +129,8 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
   '/blog/': typeof BlogIndexRoute
+  '/blog/author/$author': typeof BlogAuthorAuthorRoute
+  '/blog/category/$category': typeof BlogCategoryCategoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -134,6 +148,8 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
   '/blog': typeof BlogIndexRoute
+  '/blog/author/$author': typeof BlogAuthorAuthorRoute
+  '/blog/category/$category': typeof BlogCategoryCategoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,6 +168,8 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
   '/blog/': typeof BlogIndexRoute
+  '/blog/author/$author': typeof BlogAuthorAuthorRoute
+  '/blog/category/$category': typeof BlogCategoryCategoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,6 +189,8 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/docs/$'
     | '/blog/'
+    | '/blog/author/$author'
+    | '/blog/category/$category'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,6 +208,8 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/docs/$'
     | '/blog'
+    | '/blog/author/$author'
+    | '/blog/category/$category'
   id:
     | '__root__'
     | '/'
@@ -205,6 +227,8 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/docs/$'
     | '/blog/'
+    | '/blog/author/$author'
+    | '/blog/category/$category'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,6 +247,8 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   DocsSplatRoute: typeof DocsSplatRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  BlogAuthorAuthorRoute: typeof BlogAuthorAuthorRoute
+  BlogCategoryCategoryRoute: typeof BlogCategoryCategoryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -332,6 +358,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/author/$author': {
+      id: '/blog/author/$author'
+      path: '/blog/author/$author'
+      fullPath: '/blog/author/$author'
+      preLoaderRoute: typeof BlogAuthorAuthorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/category/$category': {
+      id: '/blog/category/$category'
+      path: '/blog/category/$category'
+      fullPath: '/blog/category/$category'
+      preLoaderRoute: typeof BlogCategoryCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -351,6 +391,8 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   DocsSplatRoute: DocsSplatRoute,
   BlogIndexRoute: BlogIndexRoute,
+  BlogAuthorAuthorRoute: BlogAuthorAuthorRoute,
+  BlogCategoryCategoryRoute: BlogCategoryCategoryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -4,6 +4,7 @@ import { deployWatch } from '@rivi-software/deploy-watch/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { blog } from './vite/blog.ts'
 import { ogCards } from './vite/og.ts'
 
 // deploy-watch reads the commit from these CI variables itself.
@@ -43,6 +44,7 @@ export default defineConfig(({ command }) => ({
     cloudflare({
       viteEnvironment: { name: 'ssr' },
     }),
+    blog(),
     tanstackStart(),
     viteReact(),
     ogCards(),

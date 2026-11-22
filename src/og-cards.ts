@@ -1,4 +1,4 @@
-import { postPath, posts } from '#/blog'
+import { activeAuthors, activeCategories, authorPath, categoryPath, postPath, posts } from '#/blog'
 import { pages, site } from '#/site'
 
 // The plugin loads this file through Vite, so it gets the path rule from here rather than importing src itself.
@@ -31,5 +31,17 @@ export const ogCards: OgCard[] = [
     label: section(pages.blog.label, post.published),
     title: post.cardTitle ?? post.title,
     line: post.description,
+  })),
+  ...activeCategories.map((category) => ({
+    path: categoryPath(category.id),
+    label: section(pages.blog.label),
+    title: category.label,
+    line: category.description,
+  })),
+  ...activeAuthors.map((author) => ({
+    path: authorPath(author.id),
+    label: section(pages.blog.label, author.role),
+    title: author.name,
+    line: author.bio,
   })),
 ]

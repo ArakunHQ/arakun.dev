@@ -1,0 +1,215 @@
+import type { MDXComponents } from 'mdx/types'
+import type { ComponentProps, ReactNode } from 'react'
+import { site } from '#/site'
+
+// The components a post can use without importing them. Each one also needs a plain
+// Markdown form in vite/blog.ts (asMarkdown), which the build checks, so agents that
+// read /blog/<slug> as Markdown get the same facts.
+
+const SCHEME = /^https?:\/\//u
+
+export interface BarChartRow {
+  /** Draw this bar in the accent color: the result the chart is about. */
+  highlight?: boolean
+  label: string
+  /** A short aside after the label, such as "121 MiB app-only". */
+  note?: string
+  value: number
+  /** The value as people should read it, such as "309 ms (2.5×)". */
+  valueLabel: string
+}
+
+/** Horizontal bars, one per row, scaled to `max` (or to the largest value). */
+export function BarChart({
+  title,
+  subtitle,
+  max,
+  rows,
+}: {
+  max?: number
+  rows: BarChartRow[]
+  subtitle?: string
+  title: string
+}) {
+  const top = max ?? Math.max(...rows.map((row) => row.value))
+  return (
+    <figure className="bench-chart">
+      <figcaption>
+        <span className="bench-chart-title">{title}</span>
+        {subtitle ? <span className="bench-chart-sub mono-label">{subtitle}</span> : null}
+      </figcaption>
+      <div className="bench-bars">
+        {rows.map((row) => {
+          const pct = Math.max(4, Math.min(100, (row.value / top) * 100))
+          return (
+            <div
+              className="bench-row"
+              data-highlight={row.highlight ? 'true' : undefined}
+              key={row.label}
+            >
+              <div className="bench-row-head">
+                <span className="bench-label">
+                  {row.label}
+                  {row.note ? <span className="bench-note"> · {row.note}</span> : null}
+                </span>
+                <span className="bench-val">{row.valueLabel}</span>
+              </div>
+              <div className="bench-track">
+                <div className="bench-fill" style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </figure>
+  )
+}
+
+type CalloutTone = 'note' | 'tip' | 'warning'
+const calloutTitle: Record<CalloutTone, string> = { note: 'Note', tip: 'Tip', warning: 'Warning' }
+
+/** A boxed aside: `<Callout tone="tip" title="Try it">…</Callout>`. */
+export function Callout({
+  tone = 'note',
+  title,
+  children,
+}: {
+  children: ReactNode
+  title?: string
+  tone?: CalloutTone
+}) {
+  return (
+    <aside className="callout" data-tone={tone}>
+      <p className="callout-title mono-label">{title ?? calloutTitle[tone]}</p>
+      <div className="callout-body">{children}</div>
+    </aside>
+  )
+}
+
+/** A row of headline numbers. Put <Stat> elements inside. */
+export function StatGrid({ children }: { children: ReactNode }) {
+  return <div className="stat-grid">{children}</div>
+}
+
+/** One headline number: `<Stat value="309 ms" label="launch into a project" note="2.5× faster" />`. */
+export function Stat({ value, label, note }: { label: string; note?: string; value: string }) {
+  return (
+    <div className="stat">
+      <span className="stat-value">{value}</span>
+      <span className="stat-label">{label}</span>
+      {note ? <span className="stat-note mono-label">{note}</span> : null}
+    </div>
+  )
+}
+
+/** An image with a caption. Put the file under public/blog/<slug>/. */
+export function Figure({
+  src,
+  alt,
+  caption,
+  width,
+  height,
+  wide,
+}: {
+  alt: string
+  caption?: string
+  /** The image's size in pixels, so the page does not jump while it loads. */
+  height: number
+  src: string
+  width: number
+  /** Let the image run wider than the text column on large screens. */
+  wide?: boolean
+}) {
+  return (
+    <figure className="blog-figure" data-wide={wide ? 'true' : undefined}>
+      <img alt={alt} decoding="async" height={height} loading="lazy" src={src} width={width} />
+      {caption ? <figcaption>{caption}</figcaption> : null}
+    </figure>
+  )
+}
+
+/**
+ * Wraps a Markdown table. `highlight={2}` marks the second column as the result
+ * the table is about. Leave a blank line after the opening tag and before the closing one.
+ */
+export function DataTable({ highlight, children }: { children: ReactNode; highlight?: number }) {
+  return (
+    <div className="bench-data" data-highlight={highlight}>
+      {children}
+    </div>
+  )
+}
+
+/** A link to an Arakun release on GitHub: `<Release version="v0.18.1" />`. */
+export function Release({ version }: { version: string }) {
+  return (
+    <a href={`${site.releasesUrl}/tag/${version}`} rel="noopener" target="_blank">
+      {site.name} {version}
+    </a>
+  )
+}
+
+/** Code blocks get a label with their language: ```sh shows "sh". */
+function Pre({ children, ...props }: ComponentProps<'pre'>) {
+  const className = (children as { props?: { className?: string } }).props?.className ?? ''
+  const lang = className.replace('language-', '')
+  return (
+    <div className="blog-code-wrap">
+      {lang && lang !== 'text' ? <span className="blog-code-lang mono-label">{lang}</span> : null}
+      <pre className="blog-code" {...props}>
+        {children}
+      </pre>
+    </div>
+  )
+}
+
+/** Headings link to themselves, so a reader can share a section. */
+function anchored(Tag: 'h2' | 'h3') {
+  return function Heading({ id, children, ...props }: ComponentProps<'h2'>) {
+    return (
+      <Tag id={id} {...props}>
+        {id ? (
+          <a className="heading-anchor" href={`#${id}`}>
+            {children}
+          </a>
+        ) : (
+          children
+        )}
+      </Tag>
+    )
+  }
+}
+
+/** Links to other sites open in a new tab; links on this site stay in it. */
+function Anchor({ href = '', ...props }: ComponentProps<'a'>) {
+  const external = SCHEME.test(href) && !href.startsWith(site.url)
+  return external ? (
+    <a href={href} rel="noopener" target="_blank" {...props} />
+  ) : (
+    <a href={href} {...props} />
+  )
+}
+
+/** A bare Markdown table scrolls sideways on a narrow screen instead of breaking the layout. */
+function Table(props: ComponentProps<'table'>) {
+  return (
+    <div className="bench-table-wrap">
+      <table className="bench-table" {...props} />
+    </div>
+  )
+}
+
+export const mdxComponents: MDXComponents = {
+  a: Anchor,
+  h2: anchored('h2'),
+  h3: anchored('h3'),
+  pre: Pre,
+  table: Table,
+  BarChart,
+  Callout,
+  DataTable,
+  Figure,
+  Release,
+  Stat,
+  StatGrid,
+}

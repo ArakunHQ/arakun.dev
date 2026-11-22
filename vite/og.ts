@@ -6,6 +6,7 @@ import satori from 'satori'
 import type { Plugin } from 'vite'
 import { runnerImport } from 'vite'
 import type * as Cards from '../src/og-cards'
+import { blogContent } from './blog'
 
 type OgCard = Cards.OgCard
 
@@ -177,6 +178,8 @@ export function ogCards(): Plugin {
       root,
       logLevel: 'error',
       resolve: { tsconfigPaths: true },
+      // The cards list blog posts, which come from content/blog through this plugin.
+      plugins: [blogContent()],
     })
     return module.ogCards.map((card) => ({ card, file: module.ogImagePath(card.path) }))
   }

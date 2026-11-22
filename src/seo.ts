@@ -1,5 +1,5 @@
-import type { BlogPost } from '#/blog'
-import { postPath } from '#/blog'
+import type { Author, PostMeta } from '#/blog'
+import { authorPath, postAuthors, postCategories, postPath } from '#/blog'
 import type { pages } from '#/site'
 import { site } from '#/site'
 
@@ -88,8 +88,30 @@ export const organization: JsonLd = {
   sameAs: [site.githubOrgUrl],
 }
 
+/** A blog author, as schema.org Person or Organization, linked to their page and profiles. */
+function authorEntity(author: Author): JsonLd {
+  return {
+    '@type': author.type,
+    name: author.name,
+    url: pageUrl(authorPath(author.id)),
+    description: author.bio,
+    ...(author.avatar ? { image: `${site.url}${author.avatar}` } : {}),
+    sameAs: author.links.map((link) => link.url),
+  }
+}
+
+/** Structured data for an author's page (ProfilePage). */
+export function blogAuthor(author: Author): JsonLd {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    url: pageUrl(authorPath(author.id)),
+    mainEntity: authorEntity(author),
+  }
+}
+
 /** Structured data for a blog article (BlogPosting). */
-export function blogPosting(post: BlogPost): JsonLd {
+export function blogPosting(post: PostMeta): JsonLd {
   const path = postPath(post.slug)
   const url = pageUrl(path)
   return {
@@ -102,11 +124,9 @@ export function blogPosting(post: BlogPost): JsonLd {
     url,
     mainEntityOfPage: url,
     image: `${site.url}${ogImagePath(path)}`,
-    author: {
-      '@type': 'Organization',
-      name: post.author,
-      url: site.url,
-    },
+    author: postAuthors(post).map(authorEntity),
+    articleSection: postCategories(post).map((category) => category.label),
+    timeRequired: `PT${post.readingMinutes}M`,
     publisher: {
       '@type': 'Organization',
       name: site.name,
@@ -153,7 +173,7 @@ export function pageHead({
   /** The page's own title, for the preview card. */
   title: string
   description: string
-  ogType?: 'website' | 'article'
+  ogType?: 'website' | 'article' | 'profile'
   /** The breadcrumb steps between the home page and this page, this page last. */
   trail?: { name: string; path: string }[]
   jsonLd?: JsonLd[]
