@@ -44,12 +44,9 @@ export const authors = {
     type: 'Person',
     name: 'Rik Visser',
     role: 'Builds Arakun',
-    bio: 'Software engineer from the Netherlands. Rik builds Arakun, and tools for radio stations at RIVI Software.',
+    bio: 'Software engineer from the Netherlands, building Arakun.',
     avatar: '/blog/authors/rik-visser.jpg',
-    links: [
-      { label: 'GitHub', url: 'https://github.com/rikvisser-dev' },
-      { label: 'Website', url: 'https://rivi.software' },
-    ],
+    links: [{ label: 'GitHub', url: 'https://github.com/rikvisser-dev' }],
   },
 } satisfies Record<string, Author>
 
