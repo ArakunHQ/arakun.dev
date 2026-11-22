@@ -219,13 +219,22 @@ export function SessionRow({
   )
 }
 
+/** Each capture also comes 720 and 1440 pixels wide (cwebp -resize), so phones get a small one. */
+const srcSet = (name: string) =>
+  `/img/${name}-720.webp 720w, /img/${name}-1440.webp 1440w, /img/${name}.webp 2880w`
+
+// As wide as .wrap's content at most: var(--page) less two gutters.
+const SHOT_SIZES = '(min-width: 1280px) 1152px, 100vw'
+
 const shots = {
   dark: {
     src: '/img/app-dark.webp',
+    srcSet: srcSet('app-dark'),
     alt: 'Arakun on its start screen in the Arakun Black palette: the sidebar, an ASCII raccoon above the composer and a terminal.',
   },
   light: {
     src: '/img/app-light.webp',
+    srcSet: srcSet('app-light'),
     alt: 'Arakun on its start screen in light mode: the sidebar, an ASCII raccoon above the composer and a terminal.',
   },
 }
@@ -254,22 +263,30 @@ export function AppShot({
   const onDark = theme === 'match' ? shots.dark : shots.light
   const onLight = theme === 'match' ? shots.light : shots.dark
   const loading = eager ? 'eager' : 'lazy'
+  // An eager shot is the largest thing on the first screen: fetch it before the rest.
+  const fetchPriority = eager ? 'high' : 'auto'
   return (
     <div className="shot" onPointerLeave={rest} onPointerMove={tilt}>
       <img
         alt={onDark.alt}
         className="only-dark"
+        fetchPriority={fetchPriority}
         height={1800}
         loading={loading}
+        sizes={SHOT_SIZES}
         src={onDark.src}
+        srcSet={onDark.srcSet}
         width={2880}
       />
       <img
         alt={onLight.alt}
         className="only-light"
+        fetchPriority={fetchPriority}
         height={1800}
         loading={loading}
+        sizes={SHOT_SIZES}
         src={onLight.src}
+        srcSet={onLight.srcSet}
         width={2880}
       />
     </div>

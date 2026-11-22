@@ -13,7 +13,7 @@ import {
   useVisitorPlatform,
   Words,
 } from '#/components/ui'
-import { pageHead, softwareApplication, website } from '#/seo'
+import { organization, pageHead, softwareApplication, website } from '#/seo'
 import { pillars, sessions, site } from '#/site'
 
 export const Route = createFileRoute('/')({
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/')({
       tabTitle: `${site.name} · ${site.line}`,
       title: site.name,
       description: site.description,
-      jsonLd: [softwareApplication, website],
+      jsonLd: [softwareApplication, website, organization],
     }),
   component: Home,
 })
