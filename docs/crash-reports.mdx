@@ -41,7 +41,7 @@ It never holds the error's text.
 
 What you write when you press Send on a feedback form, or on the form after an agent error or a crash. The form may ask for an email address so we can follow up; it is optional.
 
-Feedback is sent even with crash reports and usage counts off, because pressing Send is your yes. A bug, feature or UX report may become a public GitHub issue, without paths, links, keys or emails.
+Feedback is sent even with crash reports and usage counts off, because pressing Send is your yes. Each answer also opens a ticket in the Arakun team's private support inbox, with the email you left, if any, so a person can write back. If the ticket fails, the answer still arrives. A person on the team may turn a bug, feature or UX report into a public GitHub issue, without paths, links, keys or emails.
 
 </Accordion>
 </AccordionGroup>
@@ -51,6 +51,8 @@ Each report carries Arakun's version, your OS and the CPU architecture. Arakun n
 ## Feedback and surveys
 
 Open a feedback form from Settings › Privacy, from **Send Feedback…** in the palette, or on macOS from the Help menu.
+
+The **Help** button beside Settings in the sidebar opens a menu with **Send feedback…**, **Report a bug…**, **Request a feature…** and **Documentation**. The bug and feature items open the form with that kind already picked.
 
 - **Surveys.** Surveys made in PostHog show up only with usage counts on, at most once per launch, as a card in a corner of the window. Arakun fetches them only then, in an anonymous request with the project token and no id. With usage counts off, the feedback forms use the questions built into Arakun.
 - **Feedback from agents.** An agent can send feedback with `arakun feedback`, but only with usage counts on. You then get a notice in the [Inbox](/inbox) with the full text.

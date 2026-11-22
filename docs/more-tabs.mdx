@@ -86,7 +86,15 @@ Accounts › Agents adds Doop's MCP server to Claude Code or Droid, so sessions 
 
 ## Marketplace
 
-Plugins, MCP servers and skills to add, and what the agents load now. Discover › Skills searches [skills.sh](https://skills.sh). **Install** copies the skill into `~/.claude/skills`, where Claude Code and Workers AI find it. Skills install on this computer only, not on a paired server.
+Plugins, MCP servers and skills to add, and what the agents load now. Discover › Skills searches [skills.sh](https://skills.sh). **Install** copies the skill into `~/.claude/skills`, where Claude Code and Workers AI find it.
+
+**Install in** picks where Install puts a plugin, skill or MCP server on this computer:
+
+- **Every repo:** for your user.
+- **This repo, shared:** in the repo's committed files (`.claude/settings.json`, `.mcp.json` or `.claude/skills`), for everyone who clones it.
+- **This repo, just me:** Claude Code's `local` scope. A skill goes in the repo's `.claude/skills` and is listed in `.git/info/exclude`.
+
+An MCP server that signs in gets the repo in its name when you install it in a repo, such as `github-acme-web` in acme/web, so each repo has its own sign-in. Paired servers get what you install here too. See [Server](/server).
 
 ## Isometric
 

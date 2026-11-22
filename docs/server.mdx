@@ -100,6 +100,11 @@ To spread new environments across machines, turn on **Spread across machines** i
 
 To add a folder on a server, press the folder button on it in the Servers tab. Clone runs that machine's git, with its logins. In the Marketplace, "Install on" adds a plugin or MCP server for Claude Code on a paired server.
 
+Every paired server also mirrors this computer. When it connects, and after each install here, it adds the plugins (and their marketplaces), the user MCP servers, the skills from skills.sh and the MCP sign-ins it lacks. A notice lists what was added. What you installed in a repo just for you goes to the server's folders with the same `origin`. What you shared with the repo goes with git. The mirror never removes anything.
+
+- Over plain http, only plugins and skills go.
+- A server on macOS doesn't take sign-ins, since Claude keeps them in the Keychain there.
+
 "Forget" on a server in the Servers tab removes it, and has the server forget the app. If the server can't be reached then, remove the app there with `arakun-server unpair <device>`.
 
 <Tip>
