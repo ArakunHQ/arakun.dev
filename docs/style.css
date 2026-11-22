@@ -84,7 +84,7 @@ kbd {
   transform-origin: 50% 90%;
   animation: ak-peek 0.9s var(--ak-ease) both;
 }
-/* The one moment of motion: the raccoon pops up and tilts, like the hero on arakun.dev. */
+/* The raccoon pops up and tilts, like the hero on arakun.dev. */
 @keyframes ak-peek {
   0% {
     opacity: 0;
@@ -96,11 +96,6 @@ kbd {
   }
   100% {
     transform: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ak-mascot {
-    animation: none;
   }
 }
 .ak-home .code-group {
@@ -174,4 +169,219 @@ kbd {
   margin-top: 48px;
   font-size: 14px;
   color: var(--ak-muted);
+}
+
+/*
+ * Motion. Short and quiet, with the same easing as arakun.dev: things settle into place,
+ * nothing bounces except the raccoon. All of it goes away with reduced motion, below.
+ */
+@keyframes ak-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ak-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Each page settles in when it opens, the title first, then the text. */
+#header {
+  animation: ak-rise 0.5s var(--ak-ease) both;
+}
+#content {
+  animation: ak-rise 0.6s var(--ak-ease) 0.06s both;
+}
+/* The home page staggers its own parts. */
+#content:has(.ak-home) {
+  animation: none;
+}
+
+/* The home page comes in from top to bottom, after the raccoon. */
+.ak-hero h1,
+.ak-lead,
+.ak-home > .code-group,
+.ak-version,
+.ak-home [data-name='frame'],
+.ak-group {
+  animation: ak-rise 0.7s var(--ak-ease) both;
+}
+/* biome-ignore lint/suspicious/noDuplicateSelectors: the entrance animations stay together, so their timing reads as one sequence. */
+.ak-hero h1 {
+  animation-delay: 0.15s;
+}
+/* biome-ignore lint/suspicious/noDuplicateSelectors: as above. */
+.ak-lead {
+  animation-delay: 0.22s;
+}
+.ak-home > .code-group {
+  animation-delay: 0.3s;
+}
+/* biome-ignore lint/suspicious/noDuplicateSelectors: as above. */
+.ak-version {
+  animation-delay: 0.36s;
+}
+.ak-home [data-name='frame'] {
+  animation-delay: 0.42s;
+}
+.ak-group:nth-child(1) {
+  animation-delay: 0.5s;
+}
+.ak-group:nth-child(2) {
+  animation-delay: 0.56s;
+}
+.ak-group:nth-child(3) {
+  animation-delay: 0.62s;
+}
+.ak-group:nth-child(n + 4) {
+  animation-delay: 0.68s;
+}
+/* biome-ignore lint/suspicious/noDuplicateSelectors: the motion stays in one place. */
+.ak-row strong {
+  transition: color 0.25s;
+}
+.ak-row:hover strong {
+  color: var(--ak-accent-ink);
+}
+
+/* Links, the sidebar and the table of contents change color softly. */
+#content a,
+#sidebar a,
+#table-of-contents a,
+#pagination a {
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background-color 0.2s,
+    text-decoration-color 0.2s;
+}
+#pagination a {
+  transition-timing-function: var(--ak-ease);
+  transition-duration: 0.25s;
+  transition-property: color, border-color, background-color, transform;
+}
+#pagination a.pagination-prev:hover {
+  transform: translateX(-3px);
+}
+#pagination a:not(.pagination-prev):hover {
+  transform: translateX(3px);
+}
+
+/* Cards lift a little under the pointer. */
+.card {
+  transition:
+    transform 0.3s var(--ak-ease),
+    border-color 0.25s,
+    box-shadow 0.3s var(--ak-ease);
+}
+a.card:hover,
+a:hover > .card {
+  box-shadow: 0 8px 24px -12px rgb(0 0 0 / 0.25);
+  transform: translateY(-2px);
+}
+
+/* An accordion slides open instead of jumping, where the browser can animate height. */
+details.accordion {
+  /* biome-ignore lint/suspicious/useBaseline: browsers without it open the accordion at once, as before. */
+  interpolate-size: allow-keywords;
+}
+/* biome-ignore lint/suspicious/useBaseline: browsers without it open the accordion at once, as before. */
+details.accordion::details-content {
+  height: 0;
+  overflow: clip;
+  transition:
+    height 0.35s var(--ak-ease),
+    content-visibility 0.35s allow-discrete;
+}
+/* biome-ignore lint/suspicious/useBaseline: browsers without it open the accordion at once, as before. */
+details.accordion[open]::details-content {
+  height: auto;
+}
+details.accordion[open] > .accordion-content {
+  animation: ak-rise 0.35s var(--ak-ease) both;
+}
+.accordion-button {
+  transition: background-color 0.2s;
+}
+
+/* A new tab, in Tabs or in a code group, fades in instead of swapping at once. */
+[role='tabpanel'],
+.code-group pre {
+  animation: ak-fade 0.3s var(--ak-ease) both;
+}
+[data-component-part='tab-button'] {
+  transition:
+    color 0.2s,
+    border-color 0.25s;
+}
+
+/*
+ * The assistant pane slides open and shut instead of popping in. Mintlify sets its width
+ * inline: 0 when shut, a pixel width when open or maximized. Visibility waits for the
+ * width, so the pane stays drawn while it closes. The zero min-width gives the open
+ * min-width something to grow from; auto can't be animated.
+ */
+:has(> #chat-assistant-sheet) {
+  min-width: 0;
+  transition:
+    width 0.4s var(--ak-ease),
+    min-width 0.4s var(--ak-ease),
+    visibility 0.4s;
+}
+/* Dragging the edge must follow the pointer at once. */
+:has(> #chat-assistant-sheet):has(> [class*='cursor-col-resize']:active) {
+  transition: none;
+}
+#chat-assistant-sheet[aria-hidden='false'] {
+  animation: ak-slide 0.45s var(--ak-ease) both;
+}
+@keyframes ak-slide {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ak-mascot,
+  #header,
+  #content,
+  .ak-hero h1,
+  .ak-lead,
+  .ak-home > .code-group,
+  .ak-version,
+  .ak-home [data-name='frame'],
+  .ak-group,
+  details.accordion[open] > .accordion-content,
+  [role='tabpanel'],
+  .code-group pre,
+  #chat-assistant-sheet[aria-hidden='false'] {
+    animation: none;
+  }
+  .ak-row,
+  .card,
+  #pagination a,
+  :has(> #chat-assistant-sheet),
+  /* biome-ignore lint/suspicious/useBaseline: browsers without it open the accordion at once, as before. */
+  details.accordion::details-content {
+    transition: none;
+  }
+  a.card:hover,
+  a:hover > .card,
+  #pagination a:hover {
+    transform: none;
+  }
 }
