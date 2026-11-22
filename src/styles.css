@@ -1935,6 +1935,135 @@ svg {
   }
 }
 
+/* Diagrams: Flow (steps joined by arrows) and Layers (stacked bands) */
+.diagram {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
+  margin: var(--spacing-8) 0;
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+.diagram figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+.diagram-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text);
+}
+.diagram-caption {
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  color: var(--color-text-faint);
+}
+.blog-post .flow-steps {
+  flex-direction: row;
+  gap: var(--spacing-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.blog-post .flow-step {
+  display: flex;
+  flex: 1 1 0;
+  gap: var(--spacing-2);
+  align-items: center;
+  min-width: 0;
+}
+.flow-step:first-child {
+  /* The first step has no arrow, so it gives that room back to the others. */
+  flex-grow: 0.8;
+}
+.flow-arrow {
+  flex: none;
+  color: var(--color-text-faint);
+}
+.flow-box,
+.layer {
+  background: var(--color-ground);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+}
+.flow-box {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  align-self: stretch;
+  justify-content: center;
+  min-width: 0;
+  padding: var(--spacing-3);
+}
+.flow-box[data-highlight='true'],
+.layer[data-highlight='true'] {
+  border-color: var(--color-accent-ink);
+}
+.flow-label {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+.flow-box[data-highlight='true'] .flow-label,
+.layer[data-highlight='true'] .layer-label {
+  color: var(--color-accent-ink);
+}
+.flow-note {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--color-text-faint);
+}
+.layers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+.layer {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: var(--spacing-4);
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+}
+.blog-post .layer-items {
+  flex-flow: row wrap;
+  gap: var(--spacing-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.blog-post .layer-items li {
+  padding: 2px var(--spacing-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text);
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+}
+@media (max-width: 720px) {
+  .blog-post .flow-steps {
+    flex-direction: column;
+  }
+  .blog-post .flow-step {
+    flex-direction: column;
+  }
+  .flow-arrow {
+    transform: rotate(90deg);
+  }
+  .layer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-2);
+  }
+}
+
 /* After the article: authors, then related posts */
 .blog-foot {
   display: flex;

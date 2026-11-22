@@ -15,6 +15,8 @@ export interface PostMeta {
   /** A shorter title for the link preview card, when the full one is too long for it. */
   cardTitle?: string
   categories: CategoryId[]
+  /** Cover art for the post's card, by name (vite/og-art.ts). Without it the card shows the raccoon. */
+  cover?: string
   description: string
   draft: boolean
   featured: boolean

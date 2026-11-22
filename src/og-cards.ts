@@ -10,6 +10,8 @@ export { ogImagePath } from '#/seo'
  * og:image at it with pageMeta (src/seo.ts). Only the plugin imports this file.
  */
 export interface OgCard {
+  /** Cover art from vite/og-art.ts, drawn instead of the large raccoon. */
+  art?: string
   label: string
   line: string
   path: string
@@ -31,6 +33,7 @@ export const ogCards: OgCard[] = [
     label: section(pages.blog.label, post.published),
     title: post.cardTitle ?? post.title,
     line: post.description,
+    art: post.cover,
   })),
   ...activeCategories.map((category) => ({
     path: categoryPath(category.id),
