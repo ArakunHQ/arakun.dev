@@ -128,6 +128,17 @@ export function Figure({
   )
 }
 
+/** Pairs each entry with a key from its text, numbering repeats ("git", "git-2"), so two equal labels don't share a key. */
+function keyed<T>(entries: T[], text: (entry: T) => string) {
+  const seen = new Map<string, number>()
+  return entries.map((entry) => {
+    const base = text(entry)
+    const count = (seen.get(base) ?? 0) + 1
+    seen.set(base, count)
+    return { entry, key: count === 1 ? base : `${base}-${count}` }
+  })
+}
+
 export interface FlowStep {
   /** Draw this step in the accent color: the one the text is about. */
   highlight?: boolean
@@ -175,8 +186,8 @@ export function Flow({
         {caption ? <span className="diagram-caption">{caption}</span> : null}
       </figcaption>
       <ol className="flow-steps">
-        {steps.map((step, index) => (
-          <li className="flow-step" key={step.label}>
+        {keyed(steps, (step) => step.label).map(({ entry: step, key }, index) => (
+          <li className="flow-step" key={key}>
             {index > 0 ? <FlowArrow /> : null}
             <div className="flow-box" data-highlight={step.highlight ? 'true' : undefined}>
               <span className="flow-label">{step.label}</span>
@@ -213,16 +224,12 @@ export function Layers({
         {caption ? <span className="diagram-caption">{caption}</span> : null}
       </figcaption>
       <div className="layers">
-        {rows.map((row) => (
-          <div
-            className="layer"
-            data-highlight={row.highlight ? 'true' : undefined}
-            key={row.label}
-          >
+        {keyed(rows, (row) => row.label).map(({ entry: row, key }) => (
+          <div className="layer" data-highlight={row.highlight ? 'true' : undefined} key={key}>
             <span className="layer-label mono-label">{row.label}</span>
             <ul className="layer-items">
-              {row.items.map((item) => (
-                <li key={item}>{item}</li>
+              {keyed(row.items, (item) => item).map(({ entry: item, key: itemKey }) => (
+                <li key={itemKey}>{item}</li>
               ))}
             </ul>
           </div>

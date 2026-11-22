@@ -68,7 +68,7 @@ The app talks to that process in JSON-RPC 2.0 over its standard input and output
 
 The piece in the middle is called `Thread`. It owns one agent process and one session, and it turns whatever the agent sends into the same transcript entries. The view that draws the conversation never learns which protocol ran. Workers AI is the one agent Arakun runs itself. Its tool loop lives in the app, and it still speaks ACP to its `Thread`, only over in-memory channels.
 
-A project can ask for its agents to be sandboxed, with Seatbelt on macOS and bubblewrap on Linux. The agent can then write the workspace, its caches and temporary folders. Credentials of other tools and the workspace's secret files stay hidden from it.
+A project can ask for its agents to be sandboxed, with Seatbelt on macOS and bubblewrap on Linux. The agent can then write the workspace, its caches and temporary folders. Credentials of other tools stay hidden from it, and so do secret files inside the workspace, such as `.env` files and private keys.
 
 ## Terminals that cost nothing when hidden
 
@@ -129,6 +129,6 @@ Reading is as careful. A file Arakun cannot parse, for example one written by a 
 
 Two parts of the desktop app run in processes of their own, on purpose.
 
-The Dynamic Island is one. It has only its own small window, so it paints at the display's rate whatever the main window is doing, and it stays up when the app is closed. Headless agents are the other. `arakun agent run` starts a session in its own process, which drives the same `Thread` on a GPUI app without a window, so the session goes on after you quit.
+The Dynamic Island is one. It has only its own small window, so it paints at the display's rate whatever the main window is doing. On Linux and Windows it stays up when the app is closed. On macOS it stays only while a headless agent is still running. Headless agents are the other. `arakun agent run` starts a session in its own process, which drives the same `Thread` on a GPUI app without a window, so the session goes on after you quit.
 
 The relay, the phone remote and the server are separate programs. They deserve a post of their own.
