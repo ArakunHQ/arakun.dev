@@ -226,29 +226,53 @@ const srcSet = (name: string) =>
 // As wide as .wrap's content at most: var(--page) less two gutters.
 const SHOT_SIZES = '(min-width: 1280px) 1152px, 100vw'
 
+/** Real captures of Arakun v0.18.1, taken with tools/product-shots.sh's `arakun dev` in the app repo. */
 const shots = {
-  dark: {
-    src: '/img/app-dark.webp',
-    srcSet: srcSet('app-dark'),
-    alt: 'Arakun on its start screen in the Arakun Black palette: the sidebar, an ASCII raccoon above the composer and a terminal.',
+  app: {
+    dark: 'Arakun in the Arakun Black palette: a finished Claude Code session that fixed a rate limiter, with the two files it changed in the Changes panel.',
+    light:
+      'Arakun in light mode: a finished Claude Code session that fixed a rate limiter, with the two files it changed in the Changes panel.',
   },
-  light: {
-    src: '/img/app-light.webp',
-    srcSet: srcSet('app-light'),
-    alt: 'Arakun on its start screen in light mode: the sidebar, an ASCII raccoon above the composer and a terminal.',
+  diff: {
+    dark: 'A file diff in a tab of its own in dark mode, next to the Changes list with the lines added and removed per file and the Commit and Merge buttons.',
+    light:
+      'A file diff in a tab of its own in light mode, next to the Changes list with the lines added and removed per file and the Commit and Merge buttons.',
+  },
+  palette: {
+    dark: 'The palette open over the app in dark mode, listing commands with their shortcuts and filters for sessions, GitHub, files and memory.',
+    light:
+      'The palette open over the app in light mode, listing commands with their shortcuts and filters for sessions, GitHub, files and memory.',
+  },
+  customize: {
+    dark: 'The Customize panel beside a diff in dark mode, with the color schemes, contrast, grays and diff colors.',
+    light:
+      'The Customize panel beside a diff in light mode, with the color schemes, contrast, grays and diff colors.',
   },
 }
+
+export type ShotName = keyof typeof shots
+
+const capture = (name: ShotName, mode: 'dark' | 'light') => ({
+  src: `/img/${name}-${mode}.webp`,
+  srcSet: srcSet(`${name}-${mode}`),
+  alt: shots[name][mode],
+})
 
 /**
  * A real capture of the app that tilts toward the pointer.
  * `theme="match"` follows the page theme; `"opposite"` shows the other one.
  */
 export function AppShot({
+  name = 'app',
   theme = 'match',
   eager = false,
+  sizes = SHOT_SIZES,
 }: {
+  name?: ShotName
   theme?: 'match' | 'opposite'
   eager?: boolean
+  /** The `sizes` of the images, for a capture narrower than the page. */
+  sizes?: string
 }) {
   const tilt = (e: PointerEvent<HTMLDivElement>) => {
     const el = e.currentTarget
@@ -260,8 +284,8 @@ export function AppShot({
     e.currentTarget.style.setProperty('--rx', '0deg')
     e.currentTarget.style.setProperty('--ry', '0deg')
   }
-  const onDark = theme === 'match' ? shots.dark : shots.light
-  const onLight = theme === 'match' ? shots.light : shots.dark
+  const onDark = capture(name, theme === 'match' ? 'dark' : 'light')
+  const onLight = capture(name, theme === 'match' ? 'light' : 'dark')
   const loading = eager ? 'eager' : 'lazy'
   // An eager shot is the largest thing on the first screen: fetch it before the rest.
   const fetchPriority = eager ? 'high' : 'auto'
@@ -273,7 +297,7 @@ export function AppShot({
         fetchPriority={fetchPriority}
         height={1800}
         loading={loading}
-        sizes={SHOT_SIZES}
+        sizes={sizes}
         src={onDark.src}
         srcSet={onDark.srcSet}
         width={2880}
@@ -284,7 +308,7 @@ export function AppShot({
         fetchPriority={fetchPriority}
         height={1800}
         loading={loading}
-        sizes={SHOT_SIZES}
+        sizes={sizes}
         src={onLight.src}
         srcSet={onLight.srcSet}
         width={2880}

@@ -1145,6 +1145,33 @@ svg {
   margin: 0 auto;
   overflow: hidden;
 }
+/* Features tour: text beside a capture, the sides swapping each row. */
+.tour {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+}
+.tour-row {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--spacing-12);
+  align-items: center;
+}
+.tour-row:nth-child(even) > .stack {
+  order: 1;
+}
+@media (max-width: 900px) {
+  .tour {
+    gap: var(--spacing-16);
+  }
+  .tour-row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+  }
+  .tour-row:nth-child(even) > .stack {
+    order: 0;
+  }
+}
 .split {
   display: grid;
   grid-template-columns: 1fr minmax(0, 560px);
