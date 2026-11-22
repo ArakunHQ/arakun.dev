@@ -23,7 +23,10 @@ const markdownForAgents = createMiddleware().server(async ({ next, pathname, req
     if (body !== null) {
       return new Response(request.method === 'HEAD' ? null : body, {
         headers: {
-          'cache-control': 'public, max-age=3600',
+          'cache-control':
+            pathname === '/changelog' || pathname === '/changelog/'
+              ? 'public, max-age=300'
+              : 'public, max-age=3600',
           'content-type': 'text/markdown; charset=utf-8',
           vary: 'Accept',
         },
