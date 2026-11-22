@@ -124,11 +124,56 @@ function Privacy() {
             </p>
           </Section>
 
+          <Section title="Feedback and surveys in the app">
+            <p>
+              You can tell us about a bug, a missing feature or something that is hard to use. Each
+              of these sends only what is described here:
+            </p>
+            <ul>
+              <li>
+                <strong>Feedback forms:</strong> Send Feedback, or "Tell us what happened" after an
+                agent error or after the app quit unexpectedly. When you press Send, the app sends
+                your answers as you wrote them, even with crash reports and usage counts off.
+                Pressing Send is your yes. After an error, the answer also holds the error's
+                category, the agent's name and a link to the crash report, if one was sent.
+              </li>
+              <li>
+                <strong>Your email:</strong> the feedback form asks for an email address so we can
+                reply. It is optional. We use it only to answer your feedback.
+              </li>
+              <li>
+                <strong>Surveys:</strong> short questions we write in PostHog. The app shows them
+                only with usage counts on, at most once per launch. It fetches them in a request
+                without your id. Whether you answer or close a survey is sent too, so we know how
+                many people answer.
+              </li>
+              <li>
+                <strong>Feedback from agents:</strong> an agent running in the app can report a
+                problem in Arakun itself, only with usage counts on and at most five times an hour
+                per environment. It sends the kind of report, its text and the agent's name. Before
+                the text leaves your computer, the app removes paths, links, email addresses and
+                anything that looks like a key or token. A notice tells you, and the Inbox shows the
+                full text.
+              </li>
+            </ul>
+            <p>
+              Each answer carries the app's version, your operating system and the id in{' '}
+              <code>telemetry-id</code>. It never holds your prompts, the agents' replies, file
+              contents or project names, unless you write them into your answer.
+            </p>
+            <p>
+              A bug, feature or usability report may become a public issue in the app's GitHub
+              repository, so we can track it in the open. The issue holds the text with paths,
+              links, email addresses and keys removed, the kind of report, the app's version and
+              your operating system. It never holds your email address or your id.
+            </p>
+          </Section>
+
           <Section title="Why we may do this">
             <p>
-              Analytics on the site, and the app's crash reports and usage counts, run on your
-              consent (GDPR Art. 6(1)(a)). Server error reports run on our legitimate interest in
-              keeping the site working (Art. 6(1)(f)).
+              Analytics on the site, the app's crash reports and usage counts, and feedback and
+              survey answers run on your consent (GDPR Art. 6(1)(a)). Server error reports run on
+              our legitimate interest in keeping the site working (Art. 6(1)(f)).
             </p>
           </Section>
 
@@ -139,12 +184,17 @@ function Privacy() {
               the UK and Switzerland, that agreement relies on PostHog's Data Privacy Framework
               certification and on the EU Standard Contractual Clauses.
             </p>
+            <p>
+              Reports that become a GitHub issue are public on GitHub, Inc.'s servers in the United
+              States, and anyone can read them.
+            </p>
           </Section>
 
           <Section title="How long we keep it">
             <p>
-              We keep the site's analytics and error reports, and the app's reports, for one year.
-              Then PostHog deletes them. PostHog's cookie expires after a year.
+              We keep the site's analytics and error reports, and the app's reports, feedback and
+              survey answers, for one year. Then PostHog deletes them. A GitHub issue stays until we
+              delete it; ask us and we will. PostHog's cookie expires after a year.
             </p>
           </Section>
 
@@ -155,12 +205,13 @@ function Privacy() {
                 PostHog and deletes its cookie.
               </li>
               <li>
-                In the app, change your answer at any time in Settings › General, with the Crash
-                reports and Usage counts switches.
+                In the app, change your answer at any time in Settings › Privacy, with the Crash
+                reports and Usage counts switches. With usage counts off, the app shows no surveys
+                and agents cannot send feedback.
               </li>
               <li>
-                Set <code>DO_NOT_TRACK=1</code> or <code>ARAKUN_TELEMETRY=0</code> to turn both off.
-                The app then does not ask.
+                Set <code>DO_NOT_TRACK=1</code> or <code>ARAKUN_TELEMETRY=0</code> to turn both off
+                and block all feedback. The app then does not ask.
               </li>
               <li>
                 Delete <code>telemetry-id</code> to start again with a new id.
@@ -176,7 +227,7 @@ function Privacy() {
             </ul>
           </Section>
 
-          <p className="updated">Last updated November 19, 2026.</p>
+          <p className="updated">Last updated November 22, 2026.</p>
         </article>
       </div>
     </>
