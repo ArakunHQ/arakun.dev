@@ -11,7 +11,8 @@
   // Only the domains below serve the site; no workers.dev address.
   "workers_dev": false,
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "head_sampling_rate": 0.1
   },
   "upload_source_maps": true,
   // The site's domains. Deploying without them detaches them from this Worker,
