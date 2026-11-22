@@ -1,0 +1,35 @@
+.github/scripts/preview-comment.sh
+  s_d7a5480011e74f::t_ffbab1425564f1 1-20
+CONTRIBUTING.md
+  s_d7a5480011e74f::t_f2e0132600d1e1 71,73
+  s_d7a5480011e74f::t_d6b24d3b264cbd 72
+README.md
+  s_d7a5480011e74f::t_f2e0132600d1e1 128-129,148-155,159-167,171-174
+  s_d7a5480011e74f::t_d6b24d3b264cbd 156-158,168-170
+  s_d7a5480011e74f::t_671a2f3bb7c32f 175
+.github/workflows/human-approval.yml
+  s_d7a5480011e74f::t_ffbab1425564f1 47
+.github/workflows/preview.yml
+  s_d7a5480011e74f::t_d6b24d3b264cbd 8-11,13-16,18-22,27,43-44,46-51,55,60,73-74,81-82,84-86,95-122,124-127,129-134,136-137,149-151,153-154,165-166,204,292
+  s_d7a5480011e74f::t_ffbab1425564f1 1-7,12,17,23-26,28-42,45,52-54,56-59,61-72,75-80,83,87-94,123,128,135,138-148,152,155-164,167-203,205-291,293-319
+.github/workflows/ci.yml
+  s_d7a5480011e74f::t_ffbab1425564f1 6,63-78,82-83
+.github/workflows/reviewers.yml
+  s_d7a5480011e74f::t_b9cdb87e21c8d5 63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "238590705e329ccc5cc099b9aaa7b09ed7592f99",
+  "prompts": {},
+  "sessions": {
+    "s_d7a5480011e74f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4182a57c-2b27-4ccb-8ba8-d46519c29064",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Rik Visser <rik@rivi.software>"
+    }
+  }
+}
