@@ -52,6 +52,15 @@ export const authors = {
       { label: 'GitHub', url: 'https://github.com/rikvisser-dev' },
     ],
   },
+  'karlo-aldrete': {
+    id: 'karlo-aldrete',
+    type: 'Person',
+    name: 'Karlo Aldrete',
+    role: 'Co-founder',
+    bio: 'Co-founder of Arakun. Thinks software should work while you sleep. He has not tested this personally; he stays up to watch it.',
+    avatar: '/blog/authors/karlo-aldrete.jpg',
+    links: [{ label: 'GitHub', url: 'https://github.com/KarloAldrete' }],
+  },
 } satisfies Record<string, Author>
 
 export const categories = {
