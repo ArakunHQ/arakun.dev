@@ -44,9 +44,9 @@ export const posts: BlogPost[] = [
     slug: 'arakun-vs-t3code-vs-orca-benchmark',
     cardTitle: 'Arakun vs T3 Code vs Orca',
     title:
-      'Arakun v0.17 vs T3 Code vs Orca: startup, 10 terminals, flood and browser tabs on Linux',
+      'Arakun v0.18.1 vs T3 Code vs Orca: startup, 10 terminals, flood and browser tabs on Linux',
     description:
-      'Native Wayland and hardware GPU benchmark of Arakun v0.17.0, T3 Code v0.1.11 and Orca v1.4.269: launch, 10 terminals, 14.8 MB PTY flood and 3 browser tabs.',
+      'Native Wayland and hardware GPU benchmark of Arakun v0.18.1, T3 Code v0.1.11 and Orca v1.4.269: launch, 10 terminals, 14.8 MB PTY flood and 3 browser tabs.',
     published: '2026-11-22',
     updated: '2026-11-22',
     author: 'Arakun team',
@@ -56,12 +56,12 @@ export const posts: BlogPost[] = [
         heading: 'The short answer',
         paragraphs: [
           'Coding agent workspaces stay open all day while several agents compile, run tests and stream megabytes of output in parallel. When the shell around those agents already eats nearly a gigabyte of RAM before you start a single agent, every extra worktree hurts.',
-          'We measured the official Linux x86_64 releases of Arakun v0.17.0 (Rust + GPUI), T3 Code v0.1.11 (Electron) and Orca v1.4.269 (Electron) on native Wayland with hardware GPU rendering (Hyprland on an AMD Radeon RX 9060 XT, visible 1920×1080 workspace). All three apps were pre-seeded with the same git repository open so none was measured on a welcome screen.',
+          'We measured the official Linux x86_64 releases of Arakun v0.18.1 (Rust + GPUI), T3 Code v0.1.11 (Electron) and Orca v1.4.269 (Electron) on native Wayland with hardware GPU rendering (Hyprland on an AMD Radeon RX 9060 XT, visible 1920×1080 workspace). All three apps were pre-seeded with the same git repository open so none was measured on a welcome screen.',
         ],
         table: {
           headers: [
             'Metric (native Wayland + GPU)',
-            'Arakun v0.17.0',
+            'Arakun v0.18.1',
             'T3 Code v0.1.11',
             'Orca v1.4.269',
           ],
@@ -69,52 +69,47 @@ export const posts: BlogPost[] = [
             ['Stack', 'Rust + GPUI', 'Electron + Web', 'Electron + Web'],
             [
               'Launch into open project (5 runs)',
-              '304.9 ms (302.4–314.2)',
+              '309.0 ms (307.1–315.8)',
               '778.5 ms (754.9–788.4)',
               '1,451.2 ms (1,420.9–1,546.7)',
             ],
             [
               'Project open, idle PSS (5 runs)',
-              '114.3 MiB (4 procs)',
+              '112.9 MiB (4 procs)',
               '854.4 MiB (12 procs)',
               '934.8 MiB (13 procs)',
             ],
-            ['Project open, idle RSS (5 runs)', '245.7 MiB', '1,438.2 MiB', '1,765.0 MiB'],
-            [
-              'Idle CPU, start view (10 s)',
-              '12.98% (bug — see below)',
-              '1.90%',
-              '0.50% (run 1: 57.69%)',
-            ],
+            ['Project open, idle RSS (5 runs)', '247.1 MiB', '1,438.2 MiB', '1,765.0 MiB'],
+            ['Idle CPU, start view (10 s)', '0.62% (0.51–0.72%)', '1.90%', '0.50% (run 1: 57.69%)'],
             [
               'Project + 10 live terminals (PSS)',
-              '138.2 MiB (123.6 app-only)',
+              '135.9 MiB (121.3 app-only)',
               '911.6 MiB (899.1 app-only)',
               '995.8 MiB (982.0 app-only)',
             ],
             [
               '14.8 MB PTY flood (median of 3)',
-              '493 ms (489–504 ms)',
+              '489 ms (489–497 ms)',
               'not tested (no CLI)',
               '1,764 ms (1,666–1,887 ms)',
             ],
-            ['CPU while flooding / PSS after', '138.1% / 188.4 MiB', '—', '235.9% / 1,258.2 MiB'],
+            ['CPU while flooding / PSS after', '138.1% / 185.9 MiB', '—', '235.9% / 1,258.2 MiB'],
             [
               '+ 1 built-in browser tab (PSS)',
-              '528.7 MiB (CEF loaded)',
+              '523.9 MiB (CEF loaded)',
               'no built-in browser',
               '1,210.3 MiB',
             ],
             [
               '+ 3 built-in browser tabs (PSS)',
-              '567.5 MiB',
+              '556.7 MiB',
               'no built-in browser',
               '962.9 MiB (1,210.3 at 1)',
             ],
-            ['Idle CPU with 3 browser tabs (10 s)', '3.09%', '—', '7.85%'],
+            ['Idle CPU with 3 browser tabs (10 s)', '0.90%', '—', '7.85%'],
             [
               'Download / extracted on disk',
-              '165.4 / 377 MiB',
+              '165.6 / 377 MiB',
               '242.5 / 656 MiB',
               '267.0 / 833 MiB',
             ],
@@ -131,9 +126,9 @@ export const posts: BlogPost[] = [
           subtitle: 'Median of 5 runs into the same open repo · milliseconds',
           max: 1550,
           rows: [
-            { label: 'Arakun v0.17.0', value: 304.9, valueLabel: '305 ms', highlight: true },
-            { label: 'T3 Code v0.1.11', value: 778.5, valueLabel: '779 ms (2.6×)' },
-            { label: 'Orca v1.4.269', value: 1451.2, valueLabel: '1,451 ms (4.8×)' },
+            { label: 'Arakun v0.18.1', value: 309.0, valueLabel: '309 ms', highlight: true },
+            { label: 'T3 Code v0.1.11', value: 778.5, valueLabel: '779 ms (2.5×)' },
+            { label: 'Orca v1.4.269', value: 1451.2, valueLabel: '1,451 ms (4.7×)' },
           ],
         },
       },
@@ -141,7 +136,7 @@ export const posts: BlogPost[] = [
         heading: 'Memory with a project and 10 live terminals',
         paragraphs: [
           'For multi-process apps, summing RSS double-counts shared libraries across Electron helpers. We read Proportional Set Size (PSS) from /proc/<pid>/smaps_rollup across every process in each app tree, both idle with the project open and after opening 1, 5 and 10 interactive shells.',
-          'Going from an open project (114.3 MiB total, 111.0 MiB app-only excluding the default dock shell) to 10 live terminals adds 23.9 MiB total and only 12.6 MiB of app memory in Arakun (138.2 MiB total, 123.6 MiB app-only). T3 Code sits at 911.6 MiB (899.1 MiB app-only) and Orca reaches 995.8 MiB (982.0 MiB app-only).',
+          'Going from an open project (112.9 MiB total, 109.6 MiB app-only excluding the default dock shell) to 10 live terminals adds 23.0 MiB total and only 11.7 MiB of app memory in Arakun (135.9 MiB total, 121.3 MiB app-only). T3 Code sits at 911.6 MiB (899.1 MiB app-only) and Orca reaches 995.8 MiB (982.0 MiB app-only).',
         ],
         chart: {
           title: 'Total PSS memory with project open + 10 terminals (lower is better)',
@@ -149,22 +144,22 @@ export const posts: BlogPost[] = [
           max: 1050,
           rows: [
             {
-              label: 'Arakun v0.17.0',
-              value: 138.2,
-              valueLabel: '138 MiB',
-              note: '124 MiB app-only',
+              label: 'Arakun v0.18.1',
+              value: 135.9,
+              valueLabel: '136 MiB',
+              note: '121 MiB app-only',
               highlight: true,
             },
             {
               label: 'T3 Code v0.1.11',
               value: 911.6,
-              valueLabel: '912 MiB (6.6×)',
+              valueLabel: '912 MiB (6.7×)',
               note: '899 MiB app-only',
             },
             {
               label: 'Orca v1.4.269',
               value: 995.8,
-              valueLabel: '996 MiB (7.2×)',
+              valueLabel: '996 MiB (7.3×)',
               note: '982 MiB app-only',
             },
           ],
@@ -174,7 +169,7 @@ export const posts: BlogPost[] = [
         heading: 'Terminal flood throughput (14.8 MB of output)',
         paragraphs: [
           'Coding agents stream huge test logs, compiler errors and diffs. To measure real PTY backpressure, we ran seq 1 2000000 (~14.8 MB of text) three times in a visible terminal inside the open repository and timed how long the command took to exit.',
-          'Because kernel PTY buffers are small, seq cannot finish until the terminal emulator drains its output. Arakun drained 14.8 MB in 493 ms median (~30.0 MB/s) at 138% CPU and finished all three floods at 188.4 MiB PSS (opening a new dock terminal per flood, so all three stayed in scrollback). Orca took 1,764 ms median (~8.4 MB/s — 3.6× slower) at 236% CPU and ended at 1,258.2 MiB PSS. T3 Code has no CLI to send commands into its terminal drawer, so we left it out of the flood comparison rather than testing a different path.',
+          'Because kernel PTY buffers are small, seq cannot finish until the terminal emulator drains its output. Arakun drained 14.8 MB in 489 ms median (~30.3 MB/s) at 138% CPU and finished all three floods at 185.9 MiB PSS (opening a new dock terminal per flood, so all three stayed in scrollback). Orca took 1,764 ms median (~8.4 MB/s — 3.6× slower) at 236% CPU and ended at 1,258.2 MiB PSS. T3 Code has no CLI to send commands into its terminal drawer, so we left it out of the flood comparison rather than testing a different path.',
         ],
         chart: {
           title: 'Time to drain seq 1 2000000 (~14.8 MB) in a terminal (lower is better)',
@@ -182,9 +177,9 @@ export const posts: BlogPost[] = [
           max: 1950,
           rows: [
             {
-              label: 'Arakun v0.17.0',
-              value: 493,
-              valueLabel: '493 ms (~30.0 MB/s)',
+              label: 'Arakun v0.18.1',
+              value: 489,
+              valueLabel: '489 ms (~30.3 MB/s)',
               highlight: true,
             },
             {
@@ -207,10 +202,10 @@ export const posts: BlogPost[] = [
           max: 1260,
           rows: [
             {
-              label: 'Arakun v0.17.0 (with CEF)',
-              value: 567.5,
-              valueLabel: '568 MiB',
-              note: '3.09% idle CPU',
+              label: 'Arakun v0.18.1 (with CEF)',
+              value: 556.7,
+              valueLabel: '557 MiB',
+              note: '0.90% idle CPU',
               highlight: true,
             },
             {
@@ -223,11 +218,11 @@ export const posts: BlogPost[] = [
         },
       },
       {
-        heading: 'Where Arakun lost — and other nuances',
-        paragraphs: ['Benchmarks only help if you report the rows you lose too:'],
+        heading: 'What the benchmark caught (and other nuances)',
+        paragraphs: ['Running this benchmark in the open immediately paid off:'],
         bullets: [
-          'Arakun idle CPU on the project start view (12.98%): Arakun lost this row to Orca (0.50% on runs 2–5) and T3 Code (1.90%). The start screen and Dynamic Island kept repainting while idle; once a browser tab covered the start view, Arakun idle CPU dropped to 3.09% (beating Orca at 7.85%). We are treating that idle repaint as a bug to fix.',
-          'T3 Code background codex process: on startup, T3 Code auto-spawned 1 codex process (78.4 MiB) alongside 7 t3code Electron processes (761.9 MiB) and 1 node process (10.2 MiB). Excluding codex, T3 Code still uses ~776 MiB idle (6.8× Arakun).',
+          'Idle CPU bug caught and fixed in v0.18.1: our first pass on Arakun v0.17.0 burned 12.98% idle CPU on the project start view (and 3.09% with 3 browser tabs) because the start-screen ASCII face and idle/sleeping mascots kept requesting frames forever. Fixing those animation timers in v0.18.1 cut idle CPU 21× to 0.62% on the start view (essentially tied with Orca at 0.50% and 3× below T3 Code at 1.90%) and 0.90% with 3 browser tabs (8.7× below Orca at 7.85%).',
+          'T3 Code background codex process: on startup, T3 Code auto-spawned 1 codex process (78.4 MiB) alongside 7 t3code Electron processes (761.9 MiB) and 1 node process (10.2 MiB). Excluding codex, T3 Code still uses ~776 MiB idle (6.9× Arakun).',
           'Orca run 1 spike and GC dip: Orca hit 1,084.2 MiB PSS and 57.69% CPU on run 1 during CLI discovery before settling to 932–940 MiB and 0.40–0.50% CPU on runs 2–5. During the browser test, Orca peaked at 1,210.3 MiB on tab 1 before Chromium GC brought it to 932.9–962.9 MiB on tabs 2–3.',
           'Active agent CLIs: these numbers measure the workspace apps themselves. Running Claude Code, Codex or Devin sessions adds each CLI process on top of whichever app hosts it.',
         ],
@@ -235,9 +230,9 @@ export const posts: BlogPost[] = [
       {
         heading: 'Hardware, environment and releases tested',
         paragraphs: [
-          'All measurements ran on November 22, 2026 using unmodified official Linux x86_64 releases on AMD Ryzen 9 5900X (12 cores / 24 threads), 46 GiB RAM, AMD Radeon RX 9060 XT, Linux 7.3.4-zen2-2-zen, Hyprland Wayland (DP-2, 1920×1080 visible workspace, cursor parked at 500,500). Electron apps ran with --no-sandbox --ozone-platform=wayland from extracted AppImages.',
+          'All measurements ran on November 22, 2026 using unmodified official Linux x86_64 releases on AMD Ryzen 9 5900X (12 cores / 24 threads), 46 GiB RAM, AMD Radeon RX 9060 XT, Linux 7.3.4-zen2-2-zen, Hyprland Wayland (DP-2, 1920×1080 visible workspace, cursor parked at 500,500). Electron apps ran with --no-sandbox --ozone-platform=wayland from extracted AppImages. Conductor was not included because it is macOS-only.',
         ],
-        code: `Arakun:  ${site.releasesUrl}/tag/v0.17.0
+        code: `Arakun:  ${site.releasesUrl}/tag/v0.18.1
 T3 Code: https://github.com/pingdotgg/t3code/releases/tag/v0.1.11
 Orca:    https://github.com/StablyAI/orca/releases/tag/v1.4.269`,
       },
