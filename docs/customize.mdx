@@ -1,0 +1,80 @@
+---
+title: Make it yours
+description: "Change Arakun's colors, shape and sidebar in the Customize panel, share a look as one line, and calm the motion."
+---
+
+## Open Customize
+
+The Customize panel opens at the right of the window, where the workspace panel is, so the work stays in view while you change it. Open it with any of these:
+
+- `Customize` in the palette,
+- View › Customize…,
+- Settings › Appearance › Open Customize.
+
+It opens without a project too.
+
+## Colors
+
+- **Mode** draws the color scheme on black, or on white with dark text.
+- **Color schemes:** Arakun Black (the default), Calma, Arakun Night, Graphite, Midnight, Forest and Rosé. Duplicate one to change its tint, background and accent. Arakun warns when text or the accent gets hard to read.
+- **Grays** sets how bright secondary text and borders are.
+- **Diff colors** sets how added and removed lines look, with a few lines of a diff to see the choice.
+- **Contrast** follows the system's high contrast setting, or is Standard or High. High raises secondary text to 7:1 and borders to 3:1, and turns Glass off.
+
+**Reset colors** goes back to Arakun Black, dark, and keeps your own color schemes.
+
+## Shape
+
+| Setting | Range | Presets |
+| --- | --- | --- |
+| Corners | 0 to 200% | Sharp, Default, Round |
+| Spacing | 60 to 160% | Compact, Default, Roomy |
+| Window gap | 0 to 20 px | None, Default, Wide |
+
+Text size and Glass are here too. **Reset shape** goes back to the defaults.
+
+## Sidebar
+
+Start from a preset: Switcher, Focused, Developer, Notion, Icons or Everything. It lays out the pieces and keeps the style you chose. Style (Card, Flush, Floating), Rows, Width, Side, what <kbd>Ctrl+B</kbd> does, Counters and Shortcuts change the whole sidebar.
+
+While this tab is open, you arrange the sidebar:
+
+- A click on a piece or a title selects it. The tab then shows its options.
+- Chips add a group, a link, a command, a title, a separator, a spacer or a view the sidebar doesn't hold yet.
+- Drag pieces and segment titles into another order on the sidebar itself.
+- The panel's header has undo and redo.
+
+**Done** closes the panel. **Customize sidebar…** in the sidebar's right-click menu opens this tab. **Reset sidebar** goes back to the default layout and width.
+
+<Tip>
+A segment with a title folds with a click on it. Folded, it says how many pieces it holds, with a dot when one of them wants you. Right-click a title for Ungroup.
+</Tip>
+
+## Share a look
+
+**Export…** at the foot of the panel copies the colors, the shape or the sidebar, the ones you tick, as one line that starts with `arakun:look/v1:`.
+
+**Import** reads a look line and asks which parts to use. The sidebar is off until you tick it, since it replaces the whole layout. A sidebar layout comes without its commands: add those with Command…, where you can read what they run.
+
+## Reduce motion
+
+Settings › Appearance › Reduce motion holds the mascot, spinners and the island still, and shows menus and dialogs without sliding them in.
+
+**System**, the default, follows the system's setting: Reduce motion on macOS, Animations on GNOME, Animation effects on Windows. **On** and **Off** ignore the system.
+
+## Zoom
+
+<kbd>Ctrl+=</kbd>, <kbd>Ctrl+-</kbd> and <kbd>Ctrl+0</kbd> zoom the whole interface. Settings › Appearance › Zoom does it too.
+
+<Note>
+Colors and shape are kept in `palettes.json`, the sidebar layout in `sidebar.json`, next to the state.
+</Note>
+
+<Columns cols={2}>
+  <Card title="Arrange sessions and tabs" href="/arrange-sessions-and-tabs" icon="panels-top-left">
+    Where sessions and tabs show.
+  </Card>
+  <Card title="Hide private details" href="/redacted-mode" icon="eye-off">
+    Redacted mode for streams and demos.
+  </Card>
+</Columns>

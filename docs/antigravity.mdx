@@ -1,0 +1,65 @@
+---
+title: Antigravity
+description: Use Google's Antigravity CLI as an agent in Arakun. Install agy, sign in with Google or a Gemini API key, and pick a mode and a model.
+---
+
+Arakun runs Antigravity through Google's `agy` CLI. It starts `agy acp`, the CLI's own agent protocol server, so there is no adapter to install.
+
+## What you need
+
+The [Antigravity CLI](https://antigravity.google/docs/install?tab=cli), version 1.5 or later. Arakun looks for `agy` on your `PATH` and in `~/.local/bin`, and on Windows also in `%LOCALAPPDATA%\agy\bin`. Arakun does not install it: Google's installer also sets up its updates.
+
+- `ARAKUN_AGY_BIN` picks another `agy`.
+- `ARAKUN_ANTIGRAVITY_ACP` runs another command instead of `agy acp`.
+
+## Sign in
+
+Antigravity runs on one of these:
+
+- **Your Google account.** Open Settings › Antigravity and click **Sign in**, or press <kbd>Ctrl+K</kbd> and pick **Sign in to Antigravity**. A terminal runs `agy acp --login`; paste the code from the browser. It works without a browser on the same computer.
+- **A Gemini API key.** Set `GEMINI_API_KEY` and pick the Gemini API in agy. Settings › Antigravity then names the variable.
+
+Arakun has no account of its own. It only checks that agy's sign-in file is there, `~/.gemini/antigravity-cli/antigravity-oauth-token`, and never reads it.
+
+<Note>
+agy keeps its sign-in in the system keyring when there is one, and Arakun doesn't read the keyring. So Settings › Antigravity may say "No sign-in found" while agy is signed in. Start a session to find out.
+</Note>
+
+There is no **Sign out** button. agy signs out with `/logout` in its own session.
+
+## Pick a mode and a model
+
+The menu next to the composer lists the models agy offers and their thinking levels. The chip next to it switches between agy's modes. What each mode may do without asking is agy's own setting. The environment remembers your picks for its next session.
+
+Arakun reads the options once agy is installed and signed in, with a session that never gets a prompt, so it costs no tokens.
+
+## Good to know
+
+- Antigravity reads the project's `AGENTS.md` itself. Arakun can't add its note about the [`arakun` command](/the-arakun-command) to Antigravity's prompt.
+- With **Sandbox agents** on in Settings › Project, Antigravity runs in a sandbox.
+- A [server](/server) runs Antigravity too, with the sign-in on that machine.
+- Removing a session from Arakun leaves Antigravity's own copy of it.
+
+## What does not work yet
+
+- The Usage tab shows no tokens, cost or plan limits for Antigravity. When your plan runs out, agy says so in the session.
+- Antigravity can't name new branches. It can't write commit messages or pull request descriptions either: in an environment whose session runs Antigravity, the dialogs say it isn't set up, and no other agent is asked.
+- Arakun doesn't read or change agy's MCP servers.
+
+## Common errors
+
+<AccordionGroup>
+
+<Accordion title="agy was not found on PATH or in ~/.local/bin">
+
+Install the [Antigravity CLI](https://antigravity.google/docs/install?tab=cli), or point `ARAKUN_AGY_BIN` at the binary.
+
+</Accordion>
+
+<Accordion title="Antigravity is not signed in">
+
+Click **Sign in in a terminal** under the error, or run `agy acp --login` in a terminal and sign in with Google. Or set `GEMINI_API_KEY` and pick the Gemini API in agy. Then retry.
+
+</Accordion>
+
+</AccordionGroup>

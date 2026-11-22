@@ -1,0 +1,90 @@
+---
+title: Headless agents
+description: Run an agent in its own process that keeps going with the Arakun window closed, inside a sandbox, with a policy for what needs your approval.
+---
+
+```sh
+arakun agent run <prompt>
+```
+
+This starts an agent in its own process, in the current folder. It keeps going with the app, the terminal and the island closed. It prints the run's id.
+
+<Warning>
+**Limits**
+
+Linux and macOS only. On Linux it needs `bwrap`. Headless runs use Workers AI models for now.
+</Warning>
+
+## The sandbox
+
+Its tools run inside a sandbox: bubblewrap on Linux, Seatbelt (`sandbox-exec`) on macOS. The workspace is writable and the rest of the machine is read-only. There are no credentials, and no network unless you allow it.
+
+`--allow` grants more, as a comma-separated list:
+
+| Value | What it grants |
+| --- | --- |
+| `net` | The network, still without credentials |
+| `modal` | The network, and `~/.modal.toml` read-only |
+| `mail-read` | A tool that reads your mail. Arakun reads it for the agent. |
+
+`--read <path>` lets the sandbox see one more path, read-only. Repeat it for more paths.
+
+The model's API calls run outside the sandbox, in the agent's own process. So does what the agent can't do from inside, such as sending mail or pushing: Arakun does it for the agent, and only after you approve it.
+
+<Danger>
+`--no-sandbox` runs the tools on your machine, without a sandbox. Arakun waits for you to confirm it first; `--yes` confirms it at once.
+</Danger>
+
+## The policy
+
+`--policy` decides which tool calls need your approval:
+
+| Policy | Runs without asking |
+| --- | --- |
+| `readonly` | Reads and read-only commands |
+| `workspace` (the default) | Changes inside the workspace. Changes outside it, or beyond this machine, ask. |
+| `full` | Everything but a list of actions that always ask, such as mail, `git push`, publishing and system changes |
+
+The policy only saves you from answering for harmless calls. The sandbox is what keeps the agent in. When the policy can't tell what a command does, it asks.
+
+A call that asks waits for your answer:
+
+```sh
+arakun agent pending                     # calls waiting for you, with the commands to answer them
+arakun agent approve <id> <req_id>
+arakun agent deny <id> <req_id> [reason]
+```
+
+A call nobody answers within 24 hours is denied.
+
+## Follow and manage runs
+
+```sh
+arakun agent ls                 # the runs
+arakun agent status <id>        # working, needs_input, idle or error
+arakun agent log <id>           # what it did
+arakun agent wait <id>          # until it stops working
+arakun agent send <id> <text>   # a follow-up
+arakun agent stop <id>          # stop its turn
+arakun agent rm <id>            # delete a run that has stopped
+```
+
+The runs also show in the sidebar, under the project that holds their folder. One opens read-only. A message you send to it goes to its own process, which starts again if it had finished, so it stays in its sandbox.
+
+## More options
+
+| Option | What it does |
+| --- | --- |
+| `--dir <path>` | Work in another folder |
+| `--model <id>` | Pick a Workers AI model. A name it doesn't know prints the list. |
+| `--effort <level>` | The reasoning level, for a model that has one |
+| `--title <title>` | Name the run |
+| `--resume <id>` | Continue a run with a new prompt |
+| `--append-system-prompt <file>` | Add the file's text to the end of the system prompt |
+| `--wait` | Block until the turn ends, then print a summary as JSON |
+| `--timeout <secs>` | With `--wait`: stop the turn after this many seconds |
+| `--result <file>` | With `--wait`: also write the summary to this file |
+
+With `--wait`, nobody is there to answer, so calls that would ask are declined. `--wait` exits with 0 when the turn ended on its own, 1 on an error, 124 on the timeout and 130 on a signal. `--wait --no-sandbox` needs `--yes`.
+
+A headless run uses [memory](/memory) like any other session. Its sandbox only sees the project's skills, not those in your home folder.

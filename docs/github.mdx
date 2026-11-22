@@ -1,0 +1,122 @@
+---
+title: Work with pull requests
+description: "Open pull requests, follow CI, answer reviews and hand conflicts, comments and failed checks to an agent from the GitHub tab."
+---
+
+The GitHub tab reads GitHub through the `gh` CLI. Install `gh` and sign in first.
+
+## Open a pull request
+
+The pull request chip of the Changes panel opens the branch's pull request. When there is none, it opens a dialog that creates one:
+
+- **Title:** from the first commit.
+- **Base:** the remote's default branch. Type another for a stack.
+- **Description:** the repository's pull request template, else the commit messages.
+
+It opens as a draft unless you turn that off. It pushes the branch first when it has commits GitHub doesn't, then shows the new pull request in the GitHub tab. **Open GitHub's form** opens the page in your browser instead.
+
+### Let an agent write it
+
+**Write with &lt;agent&gt;** writes the title and the description from the branch's commits, its diff and the template. The button names the agent, so you see where the diff goes before you click.
+
+Only the agent of the environment's latest session gets the diff. When that agent isn't set up, no other agent is asked, and the dialog says why. It answers once, in an empty folder, with as little reach as its CLI allows. Nothing goes to GitHub until you create the pull request.
+
+## Work the queue
+
+The GitHub tab opens on one line that says how many things need you. Below it, pull requests are grouped by where they stand: Needs you, Stuck, Waiting on CI, Waiting on others and Ready to merge. Stacked pull requests sit under their base, and what was merged today folds at the bottom.
+
+The queue holds:
+
+- pull requests whose review is asked of you,
+- mentions and assignments,
+- your own open pull requests,
+- the open issues assigned to you,
+- what is ready to merge, and what was done today.
+
+It opens before you add a project too.
+
+### Filter and alerts
+
+Click the repository line above the verdict to show only some organizations or repositories. The rest doesn't show, count or alert. **Mark all read** marks only what that choice shows.
+
+A pending review request alerts once per pull request. New activity in the thread doesn't ask for the same review again.
+
+## Read a pull request
+
+A row opens a sheet on the right: where the pull request stands, who has it, what comes next, the checks and the stack. Tabs below show the conversation, checks and files.
+
+- The box at the bottom comments. <kbd>Enter</kbd> sends, and <kbd>/</kbd> lists the actions.
+- Approve, request changes and merge ask a second time.
+- An approval or a merge stops if new commits came after you looked.
+
+On a window under 1000 pixels tall, the details fold to one line. **All details** (<kbd>D</kbd>) unfolds them.
+
+## Hand work to an agent
+
+<AccordionGroup>
+<Accordion title="Fix conflicts">
+
+When a pull request conflicts with its base branch, **Fix conflicts** starts a session. The agent merges the base in (no rebase), settles the conflicts, runs the tests and commits the merge. In the box, `/conflicts` does the same.
+
+</Accordion>
+<Accordion title="Address review comments">
+
+When a pull request has open review threads, **Address N comments** starts a session with those threads, CodeRabbit's too. The agent fixes each one or says why not, and lists a reply per thread for you to post. In the box, `/comments` does the same.
+
+</Accordion>
+<Accordion title="Fix failed checks">
+
+The Checks tab says how many checks failed. A failed GitHub Actions job opens the end of its failing step's log under its row.
+
+- **Re-run failed** starts the failed jobs again, once their run has finished.
+- **Fix with agent** starts a session with the failed checks and the logs you opened. The agent fixes it in the checkout.
+
+</Accordion>
+<Accordion title="Work on an issue">
+
+An issue's sheet has **Work on it with agent**: a session that makes the change in the open project and leaves git and GitHub to you. **Close issue** and **Reopen issue** ask a second time. In the box, `/work`, `/close` and `/reopen` do the same.
+
+</Accordion>
+</AccordionGroup>
+
+<Note>
+None of these push, reply or resolve anything on GitHub. That stays with you.
+</Note>
+
+## Review the files
+
+In the Files tab, open threads show under their lines.
+
+- Under each thread, **Reply** answers it and **Resolve** (or **Reopen**) marks it.
+- Click a line to write a comment on it. Comments are kept as pending until you quit.
+- **Submit review** posts the pending comments together as one review. **Discard** drops them.
+
+After new commits, submit or discard the pending comments before you comment on the new diff.
+
+An agent can also review a pull request for you and leave a draft. See [Leave a review draft](/leave-a-review-draft).
+
+## Keys
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>J</kbd>, <kbd>K</kbd> | Next and previous item |
+| <kbd>Enter</kbd>, <kbd>Esc</kbd> | Open and close the sheet |
+| <kbd>A</kbd> | Approve |
+| <kbd>C</kbd> | Comment |
+| <kbd>R</kbd> | Review with an agent |
+| <kbd>U</kbd> | Catch me up |
+| <kbd>S</kbd> | Summarize |
+| <kbd>D</kbd> | All or fewer details |
+| <kbd>O</kbd> | Open on GitHub |
+
+## Links open here
+
+A link to a pull request or issue on the host `gh` is signed in to opens in the GitHub tab. That works from a chat, a terminal, the palette and a session card's pull request chip. Its **Open on GitHub** opens the page.
+
+<Accordion title="When the tab reads GitHub, and what it stores">
+
+Arakun reads GitHub in the background only after you open the tab once. It stops while `gh` is missing or signed out.
+
+Next to its state it keeps `github.json` (the watch list, the filter, the comment order and whether you opened the tab), drafts in `github/drafts/`, and profile pictures in `github/avatars/`.
+
+</Accordion>

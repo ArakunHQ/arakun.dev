@@ -1,0 +1,103 @@
+---
+title: Turn on more tabs
+description: "Add tabs for usage and plan limits, PostHog, Cloudflare, Doop, the Marketplace, Isometric scenes and automations."
+---
+
+## Turn tabs on
+
+Open Arakun › Extensions, or Settings › General › Sidebar. Besides Inbox, Runs, Branches and Marketplace, you can turn on:
+
+GitHub, Notes, Memory, Usage, Cloudflare, PostHog, Doop, Isometric, Phone, Servers and Automations.
+
+The palette and Customize › Sidebar list only the tabs that are on. A new install starts with none on, except what you set up on first launch: GitHub once the GitHub CLI is signed in, and Phone if you paired one. The choice is kept in `extensions.json` next to the state.
+
+<Columns cols={2}>
+  <Card title="Work with pull requests" href="/github" icon="git-pull-request">
+    The GitHub tab.
+  </Card>
+  <Card title="Memory" href="/memory" icon="brain">
+    What agents remember about a project.
+  </Card>
+</Columns>
+
+## Usage
+
+Token use and estimated API cost, from Claude Code's and Droid's own logs and Devin's local session history. Sessions run outside Arakun count too. Models without a known API price show as unpriced, not as free.
+
+It also shows the plan limits of Claude Code, Droid, OpenCode and Devin. Arakun has no account of its own. It reads the limits with the sign-in each CLI already has, and **Sign in** runs the CLI's own login. It sends that sign-in only to the provider's own host, over https.
+
+<Accordion title="Claude Code on CLIProxyAPI">
+
+Add the proxy's management key in the tab to see the 5-hour and weekly limits of every Claude and Codex account behind it, and which ones the proxy holds back. For a proxy Claude Code does not run on, use **Add CLIProxyAPI** and type its address. The key is only sent to the proxy it was added for, over https or to this machine.
+
+</Accordion>
+
+## Claude seats
+
+With several Claude subscriptions, give each Claude Code session a seat of its own, so parallel sessions don't drain one.
+
+<Steps>
+<Step title="Get a long-lived token">
+
+Run `claude setup-token` for each subscription.
+
+</Step>
+<Step title="Save it as a seat">
+
+```sh
+arakun seat add work < token.txt
+```
+
+The token is read from stdin and checked with one small call. It is kept in `~/.local/share/arakun/seats/work`, readable only by you.
+
+</Step>
+</Steps>
+
+Each new Claude Code session then starts on the seat with the most room in its 5-hour window that is not near its 5-hour or weekly limit, and keeps that seat for its whole life. The composer shows the session's seat, and the Usage tab every seat's windows.
+
+```sh
+arakun seat ls        # the seats and their 5-hour and weekly usage
+arakun seat rm work   # forget a seat
+```
+
+<Warning>
+Seats can't work while `~/.claude/settings.json` sets `CLAUDE_CODE_OAUTH_TOKEN` in its `env` block, or while Claude Code runs on an API key, a gateway or a cloud provider. Sessions in the sandbox don't use seats either.
+</Warning>
+
+## PostHog
+
+Add a personal API key. The tab matches your projects by their `phc_` keys and has Overview, Events, People, Flags, Experiments, Errors and Ask.
+
+- **Fix with agent** on an error, and **Set up with agent**, put a prompt in the composer without sending it.
+- **Ask** sends a question to PostHog AI, not to your coding agent, and shows the answer and the SQL behind it.
+- Changing a flag or an experiment always asks you to type the flag key first.
+
+The key needs `user:read`, `organization:read`, `project:read`, `query:read`, `feature_flag:read`, `experiment:read` and `error_tracking:read`. A view whose scope is missing says which one.
+
+## Cloudflare
+
+Uses the `cf` CLI's sign-in.
+
+## Doop
+
+The canvases of a [Doop](https://doop.design) instance and the frames of the one you pick, page by page. A click opens the frame on the canvas in a browser tab. Sign in with the browser, or paste an agent key.
+
+Accounts › Agents adds Doop's MCP server to Claude Code or Droid, so sessions can read and draw on the same canvases.
+
+## Marketplace
+
+Plugins, MCP servers and skills to add, and what the agents load now. Discover › Skills searches [skills.sh](https://skills.sh). **Install** copies the skill into `~/.claude/skills`, where Claude Code and Workers AI find it. Skills install on this computer only, not on a paired server.
+
+## Isometric
+
+Animated isometric scenes: the project's `iso/*.rhai` scripts, then the starters that ship with Arakun.
+
+- **New scene** asks what to draw and starts a session that writes it in `iso/`.
+- **Change** starts a session that edits the scene on screen.
+- **Export PNG**, **Export SVG** and **Export animated SVG** save the scene.
+
+Agents read the guide with `arakun iso docs`.
+
+## Automations
+
+Scheduled shell commands or agent prompts, per project. You can also make one from a sentence in the [palette](/the-palette).

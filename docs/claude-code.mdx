@@ -1,0 +1,115 @@
+---
+title: Claude Code
+description: Use Claude Code as an agent in Arakun. Install Node.js, sign in with your claude.ai plan or an API key, pick a model, and spread sessions over several plans.
+---
+
+Arakun runs Claude Code through the ACP adapter `@agentclientprotocol/claude-agent-acp`. The adapter brings its own Claude Code, so you don't have to install the `claude` CLI.
+
+## What you need
+
+Node.js with `npm`, from [nodejs.org](https://nodejs.org). Arakun uses it once, to install the adapter.
+
+The first Claude Code session asks before it installs the adapter. It shows the package, the folder and the npm command. Click **Install**, or run the command yourself and click **Retry**. The adapter goes in `~/.local/share/arakun/agents`, or `%LOCALAPPDATA%\arakun\agents` on Windows. After that, Arakun updates it to the version it was built with, without asking.
+
+The adapter runs the Claude Code binary that comes with it, so its version can differ from the `claude` in your terminal. It uses the `claude` on your `PATH` only when its own is missing. `CLAUDE_CODE_EXECUTABLE` picks another binary.
+
+## Sign in
+
+Claude Code runs on one of these:
+
+- **Your claude.ai plan.** Open Settings › Claude Code and click **Sign in**, or press <kbd>Ctrl+K</kbd> and pick **Sign in to Claude Code**. A terminal runs `claude /login`; approve the sign-in in the browser. If you already signed in to `claude` in a terminal, Arakun finds it in `~/.claude` and you're done. You don't need a project open to sign in.
+- **An API key or another endpoint.** Set `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN` or `ANTHROPIC_BASE_URL` in `~/.claude/settings.json` or the environment. That covers a gateway or CLIProxyAPI too. Amazon Bedrock, Google Vertex AI and Microsoft Foundry work through Claude Code's own settings.
+
+Settings › Claude Code shows which one is in use, and your plan's limits. **Sign out** there signs Claude Code out. Arakun has no account of its own. It reads what Claude Code saves, sends it only to api.anthropic.com, and never changes it.
+
+## Your settings carry over
+
+The adapter loads your user, project and local settings. Your skills, hooks, plugins, MCP servers, `CLAUDE.md` and permission rules work as they do in the terminal. Skills you install from the Marketplace go in `~/.claude/skills`.
+
+A new session starts in the permission mode set in `permissions.defaultMode`. Without one, it starts in **Auto** when Claude Code offers it.
+
+## Pick a model
+
+The menu next to the composer lists the models Claude Code offers, a row of reasoning levels and a **Fast mode** switch. **Default (recommended)** shows which model it stands for. Arakun also adds Fable 5.2, which Claude Code can run but doesn't list yet. The environment remembers your pick for its next session.
+
+The chip next to it sets the permission mode, Plan mode among them. In Plan mode you approve the plan before Claude Code starts.
+
+## Usage
+
+The Usage tab reads token use and cost from Claude Code's own logs, so sessions you run in a terminal count too. Signed in with a plan, it shows the 5-hour and weekly limits with their reset times. The session footer shows a limit as it fills up, and Arakun sends a desktop notification at 80% and when it is used up.
+
+When Claude Code runs on CLIProxyAPI, add the proxy's management key in the Usage tab. It then shows the 5-hour and weekly limits of every Claude and Codex account behind the proxy, and which ones the proxy holds back. The key goes only to that proxy, over https or on this machine.
+
+## Spread sessions over several plans
+
+With several Claude subscriptions, give each Claude Code session a seat of its own, so parallel sessions don't drain one plan.
+
+<Steps>
+<Step title="Make a token per subscription">
+
+Run `claude setup-token` while signed in to that subscription. It prints a long-lived token.
+
+</Step>
+<Step title="Save it as a seat">
+
+```sh
+arakun seat add work < token.txt
+```
+
+Arakun reads the token from stdin, checks it with one small call and keeps it in `~/.local/share/arakun/seats/work`, readable only by you.
+
+</Step>
+</Steps>
+
+From then on, each new Claude Code session starts on the seat with the most room in its 5-hour window that is not near its 5-hour or weekly limit. Your own sign-in counts as a seat too. A session keeps its seat for its whole life, also when it is resumed. The composer shows the session's seat, and the Usage tab every seat's windows.
+
+- `arakun seat ls` lists the seats and their usage. `arakun seat rm work` forgets one.
+- Starting a session on a seat checks its token first, so a dead token shows up at the start. A seat whose token is refused is skipped, and the session says so.
+- Seats don't work while Claude Code runs on an API key, a gateway or a cloud provider, or while `~/.claude/settings.json` sets `CLAUDE_CODE_OAUTH_TOKEN` in its `env` block. Sandboxed sessions don't use seats either.
+
+## Good to know
+
+- With **Sandbox agents** on in Settings › Project, Claude Code runs in a sandbox. On Linux it then keeps its settings in `~/.claude/.claude.json`, a copy of `~/.claude.json` at first.
+- `arakun agent new --model claude/<model> <prompt>` starts a Claude Code session from a terminal. It shows in the app and asks for permissions there.
+- Claude Code (with `haiku`) can name new branches after the task. See [Start a session](/start-a-session).
+
+## What does not work yet
+
+- Commands that only make sense in the terminal app are left out: `/clear`, `/cost`, `/keybindings-help`, `/login`, `/logout`, `/output-style:new`, `/release-notes`, `/todos` and others.
+- The status line and keybindings from your settings don't apply in Arakun.
+- With an API key or another endpoint there are no plan limits to show.
+- [Headless agents](/headless-agents) can't run Claude Code yet.
+
+## Common errors
+
+<AccordionGroup>
+
+<Accordion title="npm was not found">
+
+Install Node.js, which includes npm, then click **Retry**.
+
+</Accordion>
+
+<Accordion title="Claude Code is not signed in">
+
+Click **Sign in in a terminal** under the error, or run `claude` in a terminal and sign in with `/login`. Then click **Retry**.
+
+</Accordion>
+
+<Accordion title="Claude Code's own binary is missing">
+
+An antivirus may have removed it. Allow the folder `~/.local/share/arakun/agents` (on Windows `%LOCALAPPDATA%\arakun\agents`) and restart Arakun. Or set `CLAUDE_CODE_EXECUTABLE` to a `claude` binary. The error names the log with the details.
+
+</Accordion>
+
+<Accordion title="Claude Code's 5-hour limit is used up">
+
+The composer says when it resets, and offers to switch a new session to Droid. Or sign in with a plan that has room, add a [seat](#spread-sessions-over-several-plans), or use an API key.
+
+</Accordion>
+
+</AccordionGroup>
+
+## Use another adapter
+
+`ARAKUN_CLAUDE_ACP` runs another adapter command instead of the one Arakun installs, and skips the install.

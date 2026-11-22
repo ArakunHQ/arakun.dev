@@ -1,0 +1,73 @@
+---
+title: OpenCode
+description: Use the opencode CLI as an agent in Arakun. Install it, sign in to OpenCode Go or another provider, and pick a model.
+---
+
+Arakun runs OpenCode through the `opencode` CLI. It starts `opencode acp`, OpenCode's own agent protocol server, so there is no adapter to install.
+
+## What you need
+
+The `opencode` CLI, from [opencode.ai](https://opencode.ai). Arakun looks for it on your `PATH`, then in `~/.local/bin`, `/usr/local/bin` and `/usr/bin`. Set `ARAKUN_OPENCODE_BIN` to use another binary, or `ARAKUN_OPENCODE_ACP` to run another command instead of `opencode acp`.
+
+## Sign in
+
+OpenCode signs in to providers, and Arakun uses the keys it saves. Open Settings › OpenCode:
+
+- **OpenCode Go:** click **Get API key** to open the OpenCode console and copy your key. Then click **Connect**. A terminal runs `opencode auth login -p opencode-go` and asks only for the key.
+- **Another provider:** click **Sign in**, or **Add provider** once one is signed in. A terminal runs `opencode auth login`; pick a provider and paste its API key.
+
+You can also press <kbd>Ctrl+K</kbd> and pick **Sign in to OpenCode**, or run `opencode auth login` in any terminal. You don't need a project open. **Sign out** runs `opencode auth logout`.
+
+Arakun has no account of its own. It reads only which providers are in OpenCode's `auth.json`, never changes the keys, and sends the Go key only to opencode.ai.
+
+## Pick a model
+
+The composer's model menu lists what OpenCode offers. For now Arakun limits it to four models:
+
+- `opencode-go/gemini-4-argon`, the default
+- `opencode-go/kimi-k3.1-pro`
+- `cloudflare-workers-ai/@cf/deepseek-ai/deepseek-v4.1-flash-1017`
+- `cloudflare-workers-ai/@cf/zai-org/glm-5.3`
+
+Start Arakun with `ARAKUN_OPENCODE_ALL_MODELS=1` to see every model of every provider you signed in to. A model you set in your own OpenCode config wins over the default.
+
+The model you pick carries over to the next session. The reasoning levels come from OpenCode and depend on the model. The chip next to the composer switches between OpenCode's **Build** and **Plan** modes; what Build may do without asking is set in OpenCode's config.
+
+## Usage
+
+With an OpenCode Go key, the Usage tab shows Go's 5-hour, weekly and monthly limits, and the sidebar card can show them too. Arakun sends a desktop notification when one passes 80% and when it is full. A full Go plan doesn't block you: another provider can still take the prompt.
+
+## Good to know
+
+- `arakun agent new <prompt>` starts an OpenCode session from a terminal, in the background. You can watch it in the sidebar.
+- With **Sandbox agents** on in Settings › Project, OpenCode runs in a sandbox.
+
+## What does not work yet
+
+- The Usage tab shows no tokens or cost for OpenCode. OpenCode keeps its history in a database Arakun does not read.
+- Subagents show as a Task call, not as sessions of their own.
+- Removing a session from Arakun leaves OpenCode's own copy of the conversation.
+
+## Common errors
+
+<AccordionGroup>
+
+<Accordion title="opencode was not found on PATH or in ~/.local/bin">
+
+Install OpenCode from [opencode.ai](https://opencode.ai), or point `ARAKUN_OPENCODE_BIN` at the binary.
+
+</Accordion>
+
+<Accordion title="OpenCode is not signed in">
+
+Click **Sign in in a terminal** under the error, or run `opencode auth login`. Pick OpenCode Go or another provider, paste its API key, then click **Retry**.
+
+</Accordion>
+
+<Accordion title="OpenCode stopped responding">
+
+The `opencode` process ended. The error box shows the path of `opencode.log`; read it for the reason, then retry.
+
+</Accordion>
+
+</AccordionGroup>

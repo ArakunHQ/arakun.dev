@@ -1,0 +1,134 @@
+---
+title: Keyboard shortcuts
+description: "Every keyboard shortcut in Arakun: the keys for sessions, tabs, panes, the composer, the palette and the GitHub tab."
+---
+
+<Note>
+**On macOS**
+
+<kbd>Cmd</kbd> takes the place of <kbd>Ctrl</kbd> in the shortcuts below, except for the ones with <kbd>Tab</kbd>, <kbd>PageUp</kbd>, <kbd>PageDown</kbd> or <kbd>{"`"}</kbd>. The menu bar lists them. <kbd>Ctrl+Cmd+F</kbd> toggles full screen, and <kbd>Cmd+H</kbd>, <kbd>Cmd+M</kbd> and <kbd>Cmd+Q</kbd> hide, minimize and quit.
+</Note>
+
+On Linux and Windows, most of these keys go to the shell while a terminal has the focus, since a shell needs them.
+
+## Sessions and environments
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>Ctrl+T</kbd> | New session. It gets a new worktree when you send the first prompt, unless the open environment is a worktree without a session. |
+| <kbd>Ctrl+Shift+N</kbd> | New session in a new worktree, at once, on a random branch |
+| <kbd>Ctrl+Alt+N</kbd> | New environment: asks for the branch and options first |
+| <kbd>Ctrl+O</kbd> | Add a project |
+| <kbd>Alt+Up</kbd> and <kbd>Alt+Down</kbd> | Switch environments |
+| <kbd>Ctrl+F</kbd> | Search the session |
+| <kbd>Ctrl+Shift+H</kbd> | Turn redacted mode on or off |
+| <kbd>Ctrl+,</kbd> | Open Settings |
+
+## Window and panels
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>Ctrl+J</kbd> or <kbd>{"Ctrl+`"}</kbd> | Toggle the terminal dock |
+| <kbd>Ctrl+Shift+T</kbd> or <kbd>{"Ctrl+Shift+`"}</kbd> | New terminal |
+| <kbd>Ctrl+Shift+B</kbd> | New browser tab |
+| <kbd>Ctrl+B</kbd> | Toggle the sidebar |
+| <kbd>Ctrl+Alt+B</kbd> | Toggle the workspace panel |
+| <kbd>Ctrl+Alt+S</kbd> | Switch the workspace panel to its Session tab (the session's pull request and subagents) and back |
+| <kbd>Ctrl+=</kbd>, <kbd>Ctrl+-</kbd> and <kbd>Ctrl+0</kbd> | Zoom the whole interface. In a browser tab, they zoom the page. |
+| <kbd>Tab</kbd> and <kbd>Shift+Tab</kbd> | Move between buttons, switches and menu rows. <kbd>Enter</kbd> or <kbd>Space</kbd> presses the one with the ring. |
+
+Terminals, web pages, fields and the composer keep <kbd>Tab</kbd> for themselves. Settings › Appearance › Zoom changes the zoom too.
+
+## Tabs and panes
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>Ctrl+Tab</kbd> and <kbd>Ctrl+Shift+Tab</kbd> | Next and previous tab, across environments |
+| <kbd>Ctrl+PageDown</kbd> and <kbd>Ctrl+PageUp</kbd> | Next and previous tab |
+| <kbd>Ctrl+1…8</kbd>, <kbd>Ctrl+9</kbd> | Go to that tab, or to the last one |
+| <kbd>Alt+Left</kbd> and <kbd>Alt+Right</kbd> | Back and forward through the tabs you opened (<kbd>Cmd+[</kbd> and <kbd>Cmd+]</kbd> on macOS) |
+| <kbd>Ctrl+W</kbd> | Close the tab |
+| <kbd>Ctrl+Alt+T</kbd> | Reopen the last closed tab where it was |
+| <kbd>Ctrl+Shift+PageUp</kbd> and <kbd>Ctrl+Shift+PageDown</kbd> | Move the tab left or right |
+| <kbd>Alt+P</kbd> | Pin or unpin a session |
+| <kbd>Ctrl+D</kbd>, <kbd>Ctrl+Shift+D</kbd> | Split right, split down |
+| <kbd>Ctrl+Alt+arrows</kbd> | Move between panes |
+| <kbd>Ctrl+Alt+Shift+arrows</kbd> | Swap the two panes |
+
+A middle click closes a tab. Drag a tab left or right to move it; the order stays after a restart. A tab's right-click menu also opens a new session, or closes the other tabs of its environment or those to its right.
+
+<Tip>
+GNOME, Ubuntu and some KDE setups keep <kbd>Ctrl+Alt+T</kbd> to open their own terminal. There, use Reopen closed tab in the File menu or in a tab's right-click menu.
+</Tip>
+
+## The composer
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>Enter</kbd> | Send. While the agent works, queue the message. |
+| <kbd>Shift+Enter</kbd> | New line |
+| <kbd>Ctrl+Enter</kbd> | While the agent works: stop the turn and send the message now |
+| <kbd>Esc</kbd> | While the agent works: stop the turn |
+| <kbd>Up</kbd> | On an empty composer, recall earlier prompts |
+
+Paste or drop images to attach them. A queued message has a button to send it now too.
+
+### The agent and model menu
+
+The strip of agent icons at the bottom of the menu shows each agent's models and reasoning. A dot marks the agent in use.
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>↑</kbd> and <kbd>↓</kbd> | Move through the models and the rows below them |
+| <kbd>←</kbd> and <kbd>→</kbd> | Move between agents. On the Reasoning row, step the level. |
+| <kbd>Enter</kbd> | Pick |
+| <kbd>Esc</kbd> | Close |
+
+Picking a model of the agent in use, or a reasoning level, keeps the menu open, so you can set the reasoning next. Picking a different model clears the reasoning level kept for that agent.
+
+## The palette
+
+<kbd>Ctrl+K</kbd> or <kbd>Ctrl+P</kbd> opens the palette. One search covers sessions of every project, GitHub, runs, files and symbols, views, commands, settings and memory.
+
+| Start with | To search |
+| --- | --- |
+| `>` | commands |
+| `/` | files |
+| `:` | settings |
+| `@` | people |
+| `#` | pull requests |
+
+`#` lists every open pull request of your projects' repositories, not only yours. `#86` finds that one even when it is closed or merged. A first word that names a repository or project narrows the search to it, as in `#arakun 86`.
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>→</kbd> | Open a row's actions, or go into it (a project, a person, Branches) |
+| <kbd>←</kbd> | Go back |
+| <kbd>Space</kbd> | After the arrows: mark rows for the bar at the bottom |
+| <kbd>Ctrl+P</kbd> | Pin a row to the top of the palette and the sidebar |
+| <kbd>Ctrl+1…9</kbd> | Open a pin. <kbd>Ctrl+Alt+1…9</kbd> does it from anywhere. |
+| <kbd>Alt+Up</kbd> and <kbd>Alt+Down</kbd> | Reorder the pins |
+| <kbd>Ctrl+Enter</kbd> | Ask an agent |
+
+On a cloud task card (`cloud: <task>`), <kbd>Enter</kbd> sends it and <kbd>Esc</kbd> cancels. When there is an open pull request, <kbd>Tab</kbd> switches between it and a new branch.
+
+To open the palette from any app, bind `arakun palette` to a global key in your desktop. On Hyprland, for example: `bind = SUPER, K, exec, arakun palette`.
+
+## The GitHub tab
+
+| Keys | What they do |
+| --- | --- |
+| <kbd>J</kbd> and <kbd>K</kbd> (or <kbd>↓</kbd> and <kbd>↑</kbd>) | Next and previous item |
+| <kbd>Enter</kbd> | Open the selected item's sheet |
+| <kbd>Esc</kbd> | Close the sheet |
+| <kbd>A</kbd> | Approve a pull request that is not yours |
+| <kbd>C</kbd> | Comment |
+| <kbd>R</kbd> | Review a pull request with an agent |
+| <kbd>U</kbd> | Catch me up |
+| <kbd>S</kbd> | Summarize |
+| <kbd>D</kbd> | In the sheet: all or fewer details |
+| <kbd>O</kbd> | Open on GitHub |
+
+While the sheet is closed, <kbd>J</kbd> and <kbd>K</kbd> only move through the list. While it is open, they open the next item. In the comment box, <kbd>Enter</kbd> sends the comment and <kbd>/</kbd> lists the actions.
+
+On an arakun-pilot card you clicked, <kbd>1</kbd> to <kbd>4</kbd> send its ready answers, <kbd>E</kbd> opens "Other answer…" and <kbd>Y</kbd> marks a fixed or failed card as dealt with. The buttons show their keys. After an answer, the next question is picked.

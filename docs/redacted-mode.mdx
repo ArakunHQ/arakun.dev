@@ -1,0 +1,51 @@
+---
+title: Hide private details
+description: "Turn on redacted mode before a stream, a demo or a screen share, so Arakun hides emails, tokens, addresses and names."
+---
+
+## Turn it on
+
+Press <kbd>Ctrl+Shift+H</kbd>, or use the palette or Settings › Privacy. A **Redacted** pill in the title bar shows it is on. Click the pill to turn it off.
+
+It stays on after a restart. To turn it on for one run only:
+
+```sh
+ARAKUN_REDACTED=1 arakun
+```
+
+## What it hides
+
+<AccordionGroup>
+<Accordion title="Accounts">
+
+- The Cloudflare, PostHog and Doop accounts.
+- The claude.ai accounts behind CLIProxyAPI.
+- Your git name and email in the sidebar.
+- Cloudflare's audit log.
+
+</Accordion>
+<Accordion title="Phone and servers">
+
+- The phone's pairing QR code and code, its addresses and the names of paired phones. **Copy link** still copies the real link.
+- The host Claude Code runs on, a server's pairing link, and IP addresses.
+
+</Accordion>
+<Accordion title="Text on screen">
+
+In terminals, agent replies, tool output, tab titles, notifications and the Inbox:
+
+- emails,
+- values shaped like keys or tokens, such as `sk-…` or `ghp_…`, and long random words. They keep their first four characters.
+- the value after a name such as `API_KEY=` or `token:`,
+- the word after `Bearer`,
+- IPv4 addresses other than `127.0.0.1`,
+- your user name and the computer's name, as a shell prompt shows them (`you@laptop`).
+
+</Accordion>
+</AccordionGroup>
+
+<Warning>
+It hides only what it can recognize. A secret that looks like a plain word still shows. Check a view before you share it.
+</Warning>
+
+The choice is kept in a `redacted` file in Arakun's data folder.

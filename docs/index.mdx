@@ -1,0 +1,69 @@
+---
+title: Arakun docs
+sidebarTitle: Overview
+description: One native window for your coding agents. Each works on its own git worktree, and you review what they did before it ships.
+mode: frame
+---
+
+<div className="ak-home">
+
+<div className="ak-hero">
+  <img className="ak-mascot block dark:hidden" src="/images/raccoon-light.svg" alt="" />
+  <img className="ak-mascot hidden dark:block" src="/images/raccoon-dark.svg" alt="" />
+  <h1>Arakun docs</h1>
+  <p className="ak-lead">Claude Code, Codex, Cursor, Devin and four more coding agents in one native window. Each task gets its own git worktree, and you read what changed before it ships.</p>
+</div>
+
+<CodeGroup>
+
+```sh macOS and Linux
+curl -fsSL {{installUrl}} | sh
+```
+
+```powershell Windows
+irm {{installUrl}}.ps1 | iex
+```
+
+</CodeGroup>
+
+<p className="ak-version">These docs are for v{{version}}. See what changed in the <a href="https://arakun.dev/changelog">changelog</a>.</p>
+
+<Frame>
+  <img className="block dark:hidden" src="/images/app-light.webp" alt="The Arakun window: projects on the left, an agent session in the middle, its changes on the right." />
+  <img className="hidden dark:block" src="/images/app-dark.webp" alt="The Arakun window: projects on the left, an agent session in the middle, its changes on the right." />
+</Frame>
+
+<div className="ak-index">
+  <div className="ak-group">
+    <p className="ak-label">Get started</p>
+    <a className="ak-row" href="/install"><strong>Install Arakun</strong><span>One line in a terminal, on macOS, Linux or Windows.</span></a>
+    <a className="ak-row" href="/start-a-session"><strong>Start a session</strong><span>Add a project, pick an agent and write the task.</span></a>
+    <a className="ak-row" href="/review-the-work"><strong>Review the work</strong><span>Read each turn's diff, then commit and open a pull request.</span></a>
+    <a className="ak-row" href="/github"><strong>Work with pull requests</strong><span>The queue, the checks, and handing fixes back to an agent.</span></a>
+  </div>
+  <div className="ak-group">
+    <p className="ak-label">Agents</p>
+    <a className="ak-row" href="/claude-code"><strong>Claude Code</strong><span>Runs through the ACP adapter. No claude CLI needed.</span></a>
+    <a className="ak-row" href="/codex"><strong>Codex</strong><span>With your ChatGPT plan or an API key.</span></a>
+    <a className="ak-row" href="/cursor"><strong>Cursor</strong><span>The cursor-agent CLI, with its Agent, Plan and Ask modes.</span></a>
+        <a className="ak-row" href="/workers-ai"><strong>Workers AI</strong><span>Cloudflare's models, with nothing to install.</span></a>
+  </div>
+  <div className="ak-group">
+    <p className="ak-label">The arakun command</p>
+    <a className="ak-row" href="/the-arakun-command"><strong>How the command works</strong><span>What an agent can do with the window it runs in.</span></a>
+    <a className="ak-row" href="/open-pages-and-files"><strong>Open pages and files</strong><span>Show a dev server or a file beside the chat.</span></a>
+    <a className="ak-row" href="/read-a-terminal"><strong>Read a terminal</strong><span>Start a server, wait until it is up, read its errors.</span></a>
+    <a className="ak-row" href="/run-the-project-check"><strong>Run the project check</strong><span>One command after each turn that edits files.</span></a>
+  </div>
+  <div className="ak-group">
+    <p className="ak-label">Away from the desk</p>
+    <a className="ak-row" href="/dynamic-island"><strong>Dynamic island</strong><span>See which agent needs you without switching windows.</span></a>
+    <a className="ak-row" href="/phone-remote"><strong>Phone remote</strong><span>Answer an agent from your phone.</span></a>
+    <a className="ak-row" href="/headless-agents"><strong>Headless agents</strong><span>Agents that run in a sandbox with no window.</span></a>
+    <a className="ak-row" href="/server"><strong>Server</strong><span>Run agents on another machine and drive them from here.</span></a>
+  </div>
+</div>
+
+<p className="ak-help">Something wrong or missing here? <a href="https://github.com/ArakunHQ/arakun/issues">Open an issue on GitHub</a>.</p>
+
+</div>

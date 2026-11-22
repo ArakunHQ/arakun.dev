@@ -1,0 +1,63 @@
+---
+title: Cursor
+description: Use the Cursor CLI as an agent in Arakun. Install cursor-agent, sign in or use a Cursor API key, and pick a mode and a model.
+---
+
+Arakun runs Cursor through the Cursor CLI, `cursor-agent`. It starts `cursor-agent acp`, the CLI's own agent protocol server, so there is no adapter to install.
+
+## What you need
+
+The [Cursor CLI](https://cursor.com/docs/cli/installation). Arakun looks for `cursor-agent` on your `PATH` and in `~/.local/bin`. The installer also links it as `agent`, but Arakun doesn't look for that name. Arakun does not install the CLI: Cursor's installer keeps it up to date.
+
+- `ARAKUN_CURSOR_BIN` picks another `cursor-agent`.
+- `ARAKUN_CURSOR_ACP` runs another command instead of `cursor-agent acp`.
+
+## Sign in
+
+Cursor runs on one of these:
+
+- **Your Cursor account.** Open Settings › Cursor and click **Sign in**, or press <kbd>Ctrl+K</kbd> and pick **Sign in to Cursor**. A terminal runs `cursor-agent login`; approve the sign-in in the browser. If you signed in to `cursor-agent` in a terminal before, you're done.
+- **A Cursor API key.** Set `CURSOR_API_KEY` in the environment Arakun starts in. Settings › Cursor then names the variable.
+
+**Sign out** in Settings › Cursor runs `cursor-agent logout`.
+
+Arakun has no account of its own. It only checks that Cursor has a sign-in, and never reads the tokens.
+
+## Pick a mode and a model
+
+The menu next to the composer lists the models Cursor offers. The chip next to it sets Cursor's mode: Agent, Plan or Ask. None of them skips asking. The environment remembers your picks for its next session.
+
+Arakun reads the options once Cursor is signed in, with a session that never gets a prompt, so it costs no tokens.
+
+## Your MCP servers
+
+Cursor sessions use the MCP servers in `~/.cursor/mcp.json` and in the project's `.cursor/mcp.json`. Arakun doesn't change them.
+
+## Good to know
+
+- Cursor reads the project's `AGENTS.md` itself. Arakun can't add its note about the [`arakun` command](/the-arakun-command) to Cursor's prompt.
+- With **Sandbox agents** on in Settings › Project, Cursor runs in a sandbox.
+- Cursor can write commit messages and pull request descriptions. It runs in ask mode for that, so it only reads.
+- Removing a session from Arakun leaves Cursor's own copy of it.
+
+## What does not work yet
+
+- The Usage tab shows no tokens, cost or plan limits for Cursor. When your plan runs out, Cursor says so in the session.
+
+## Common errors
+
+<AccordionGroup>
+
+<Accordion title="cursor-agent was not found on PATH or in ~/.local/bin">
+
+Install the [Cursor CLI](https://cursor.com/docs/cli/installation), or point `ARAKUN_CURSOR_BIN` at the binary.
+
+</Accordion>
+
+<Accordion title="Cursor is not signed in">
+
+Click **Sign in in a terminal** under the error, or run `cursor-agent login` in a terminal and sign in in the browser. Or set `CURSOR_API_KEY`. Then retry.
+
+</Accordion>
+
+</AccordionGroup>
