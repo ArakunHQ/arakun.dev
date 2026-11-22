@@ -111,6 +111,16 @@ function attributes(node: JsxNode, file: string): Attrs {
   return out
 }
 
+interface FlowStep {
+  label: string
+  note?: string
+}
+
+interface LayerRow {
+  items: string[]
+  label: string
+}
+
 interface ChartRow {
   label: string
   note?: string
@@ -138,6 +148,20 @@ const asMarkdown: Record<string, (attrs: Attrs, children: string) => string> = {
     `> **${a.title ?? (a.tone === 'warning' ? 'Warning' : 'Note')}:** ${children.replaceAll('\n', '\n> ')}`,
   DataTable: (_a, children) => children,
   Figure: (a) => `![${a.alt}](${a.src})${a.caption ? `\n\n*${a.caption}*` : ''}`,
+  Flow: (a) =>
+    [
+      `**${a.title}**${a.caption ? ` (${a.caption})` : ''}`,
+      '',
+      ...(a.steps as FlowStep[]).map(
+        (step, index) => `${index + 1}. ${step.label}${step.note ? `: ${step.note}` : ''}`
+      ),
+    ].join('\n'),
+  Layers: (a) =>
+    [
+      `**${a.title}**${a.caption ? ` (${a.caption})` : ''}`,
+      '',
+      ...(a.rows as LayerRow[]).map((row) => `- ${row.label}: ${row.items.join(', ')}`),
+    ].join('\n'),
   Release: (a) => `[${site.name} ${a.version}](${site.releasesUrl}/tag/${a.version})`,
   Stat: (a) => `- **${a.value}** ${a.label}${a.note ? ` (${a.note})` : ''}`,
   StatGrid: (_a, children) => children.replaceAll('\n\n', '\n'),

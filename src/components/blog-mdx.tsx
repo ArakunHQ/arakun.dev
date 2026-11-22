@@ -128,6 +128,110 @@ export function Figure({
   )
 }
 
+export interface FlowStep {
+  /** Draw this step in the accent color: the one the text is about. */
+  highlight?: boolean
+  label: string
+  /** A short line under the label, such as "one JSON line each way". */
+  note?: string
+}
+
+/** The arrow between two steps. It points right, and down when the steps stack. */
+function FlowArrow() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="flow-arrow"
+      fill="none"
+      height="12"
+      viewBox="0 0 20 12"
+      width="20"
+    >
+      <path
+        d="M0 6h18M13 1l5 5-5 5"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+    </svg>
+  )
+}
+
+/** Steps that follow each other, joined by arrows: `<Flow title="…" steps={[{ label: "…" }]} />`. */
+export function Flow({
+  title,
+  caption,
+  steps,
+}: {
+  caption?: string
+  steps: FlowStep[]
+  title: string
+}) {
+  return (
+    <figure className="diagram">
+      <figcaption>
+        <span className="diagram-title">{title}</span>
+        {caption ? <span className="diagram-caption">{caption}</span> : null}
+      </figcaption>
+      <ol className="flow-steps">
+        {steps.map((step, index) => (
+          <li className="flow-step" key={step.label}>
+            {index > 0 ? <FlowArrow /> : null}
+            <div className="flow-box" data-highlight={step.highlight ? 'true' : undefined}>
+              <span className="flow-label">{step.label}</span>
+              {step.note ? <span className="flow-note">{step.note}</span> : null}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </figure>
+  )
+}
+
+export interface LayerRow {
+  /** Draw this layer in the accent color: the one the text is about. */
+  highlight?: boolean
+  items: string[]
+  label: string
+}
+
+/** Layers stacked top to bottom, each with the parts it holds: `<Layers title="…" rows={[…]} />`. */
+export function Layers({
+  title,
+  caption,
+  rows,
+}: {
+  caption?: string
+  rows: LayerRow[]
+  title: string
+}) {
+  return (
+    <figure className="diagram">
+      <figcaption>
+        <span className="diagram-title">{title}</span>
+        {caption ? <span className="diagram-caption">{caption}</span> : null}
+      </figcaption>
+      <div className="layers">
+        {rows.map((row) => (
+          <div
+            className="layer"
+            data-highlight={row.highlight ? 'true' : undefined}
+            key={row.label}
+          >
+            <span className="layer-label mono-label">{row.label}</span>
+            <ul className="layer-items">
+              {row.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </figure>
+  )
+}
+
 /**
  * Wraps a Markdown table. `highlight={2}` marks the second column as the result
  * the table is about. Leave a blank line after the opening tag and before the closing one.
@@ -223,6 +327,8 @@ export const mdxComponents: MDXComponents = {
   Callout,
   DataTable,
   Figure,
+  Flow,
+  Layers,
   Release,
   Stat,
   StatGrid,
