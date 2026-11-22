@@ -46,7 +46,11 @@ export const authors = {
     role: 'Arakun Core Maintainer',
     bio: 'Software engineer from the Netherlands, building Arakun.',
     avatar: '/blog/authors/rik-visser.jpg',
-    links: [{ label: 'GitHub', url: 'https://github.com/rikvisser-dev' }],
+    links: [
+      { label: 'Website', url: 'https://rikvisser.dev' },
+      { label: 'X', url: 'https://x.com/rikvisser' },
+      { label: 'GitHub', url: 'https://github.com/rikvisser-dev' },
+    ],
   },
 } satisfies Record<string, Author>
 
