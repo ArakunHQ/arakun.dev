@@ -393,7 +393,8 @@ svg {
   opacity: 1;
   transform: scale(1);
 }
-.sn .tt {
+.sn .tt,
+.sn .gh {
   display: grid;
   flex: none;
   place-items: center;
@@ -407,11 +408,23 @@ svg {
     background 0.2s,
     transform 0.12s ease;
 }
-.sn .tt:hover {
+.sn .ctas {
+  display: flex;
+  flex: none;
+  gap: var(--spacing-2);
+}
+.sn .gh {
+  margin-right: 0;
+  /* Sits close to Download, like the theme toggle on its other side. */
+  margin-left: calc(var(--spacing-4) - clamp(16px, 4vw, 48px));
+}
+.sn .tt:hover,
+.sn .gh:hover {
   color: var(--color-text);
   background: var(--color-line);
 }
-.sn .tt:active {
+.sn .tt:active,
+.sn .gh:active {
   transform: scale(0.92);
 }
 .sn .tt svg {
@@ -427,8 +440,13 @@ svg {
   .sn nav {
     gap: var(--spacing-1);
   }
-  .sn nav .gh {
-    display: none;
+  .sn .gh {
+    margin-left: 0;
+  }
+  .sn .ctas .btn {
+    height: 32px;
+    padding-inline: var(--spacing-3);
+    font-size: var(--text-md);
   }
   .sn .dl {
     display: none;
