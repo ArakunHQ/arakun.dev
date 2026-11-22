@@ -1,0 +1,140 @@
+name: Human approval
+
+# Sets the "Human approval" commit status, which the main ruleset requires.
+# It stays pending on a pull request from outside the team until someone on
+# the team approves its head commit, and passes at once for the team. The
+# Reviewers workflow dismisses CodeRabbit's approval of such a pull request,
+# but only after the approval, so it can't stop a merge in between; this
+# status does.
+#
+# It is its own workflow, not a job in Reviewers, because a pull_request_target
+# run shows on the pull request: a skipped "Request reviewers" job there looks
+# like a check that didn't run.
+#
+# When it runs:
+# - pull_request_target: a new head commit needs its status. The old head, or
+#   the head of a closed pull request, may be shared with another open pull
+#   request, so its status is worked out again.
+# - workflow_run: the "Review submitted" workflow ran, so a review was
+#   submitted or dismissed and the status may change.
+# - workflow_dispatch: by hand, for a pull request whose status is missing.
+#
+# These events run this file from the default branch with a write token, even
+# for pull requests from forks. That is safe only because no job checks out or
+# runs code from the pull request: the reviews come from the API. Keep it that
+# way. A change to this file takes effect once it is on main.
+#
+# The same workflow runs in ArakunHQ/arakun; keep the two in step.
+
+on:
+  # Safe as the comment above says; zizmor can't see that no job checks out.
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
+    types: [opened, reopened, synchronize, closed]
+  workflow_run: # zizmor: ignore[dangerous-triggers]
+    workflows: [Review submitted]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number
+        required: true
+
+permissions: {}
+
+env:
+  # The members of the ArakunHQ/maintainers team. The workflow's token can't
+  # read team membership, so keep this in step by hand, here, in
+  # reviewers.yml and in the workflows of ArakunHQ/arakun.
+  TEAM: KarloAldrete rikvisser-dev daniektj
+
+jobs:
+  approval:
+    name: Human approval status
+    # No concurrency group: a cancelled or replaced run would skip the heads
+    # it was given, such as the old head after two quick pushes. Every run
+    # reads the reviews just before it writes, so overlapping runs agree.
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read
+      statuses: write
+    steps:
+      - name: Set the Human approval status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          # The commits whose status may change: on workflow_run, the head of
+          # the pull request that was reviewed; on pull_request_target, the
+          # head and, after a push, the head before it.
+          SHAS: >-
+            ${{ github.event.workflow_run.head_sha }}
+            ${{ github.event.pull_request.head.sha }}
+            ${{ github.event.before }}
+          PR: ${{ inputs.pr }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          in_team() { grep -qxF "$1" <<<"${TEAM// /$'\n'}"; }
+
+          # A status belongs to a commit, not a pull request, so it must hold
+          # for every open pull request with this head.
+          update() {
+            export HEAD=$1
+            # The workflow_run event lists no pull request when the branch is
+            # on a fork, so find them by their head commit.
+            local prs
+            prs=$(gh api "repos/$GH_REPO/pulls?state=open&per_page=100" --paginate \
+              --jq '.[] | select(.head.sha == env.HEAD) | "\(.number) \(.user.login)"')
+            if [ -z "$prs" ]; then
+              echo "No open pull request has $HEAD as its head."
+              return
+            fi
+
+            local state=success description="" pr author approvers approver user
+            while read -r pr author; do
+              if in_team "$author"; then
+                echo "#$pr: the author is on the team."
+                continue
+              fi
+              # Each reviewer's last verdict on the head commit. A dismissed
+              # review counts as the last verdict, so it clears an earlier
+              # approval from the same person.
+              approvers=$(gh api "repos/$GH_REPO/pulls/$pr/reviews" --paginate --jq \
+                '.[] | select(.commit_id == env.HEAD and (.state == "APPROVED" or .state == "CHANGES_REQUESTED" or .state == "DISMISSED")) | "\(.user.login) \(.state)"' |
+                awk '{ last[$1] = $2 } END { for (user in last) if (last[user] == "APPROVED") print user }')
+              approver=""
+              for user in $approvers; do
+                if in_team "$user"; then
+                  approver=$user
+                  break
+                fi
+              done
+              if [ -n "$approver" ]; then
+                echo "#$pr: approved by $approver."
+                description=${description:-"Approved by $approver."}
+              else
+                echo "#$pr: waiting for a maintainer."
+                state=pending
+              fi
+            done <<<"$prs"
+
+            if [ "$state" = pending ]; then
+              description="Waiting for a maintainer to approve: the author is outside the team."
+            fi
+            description=${description:-"Not needed: the author is on the team."}
+            gh api -X POST "repos/$GH_REPO/statuses/$HEAD" --silent -f state="$state" \
+              -f context="Human approval" -f description="$description" -f target_url="$RUN_URL"
+            echo "$HEAD: $state, $description"
+          }
+
+          if [ "$EVENT" = workflow_dispatch ]; then
+            if ! [[ "$PR" =~ ^[0-9]+$ ]]; then
+              echo "::error::Not a pull request number: $PR"
+              exit 1
+            fi
+            SHAS=$(gh api "repos/$GH_REPO/pulls/$PR" --jq .head.sha)
+          fi
+          for sha in $(tr ' ' '\n' <<<"$SHAS" | grep -xE '[0-9a-f]{40}' | grep -vx 0000000000000000000000000000000000000000 | sort -u); do
+            update "$sha"
+          done

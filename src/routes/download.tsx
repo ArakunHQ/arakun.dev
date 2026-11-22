@@ -1,46 +1,56 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { DownloadButton, InstallLine, PageHeader, Principle, StatusPill } from '#/components/ui'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import type { Tone } from '#/components/ui'
-import { pageMeta } from '#/seo'
-import { pages, site } from '#/site'
+import {
+  DownloadButton,
+  InstallLine,
+  PageHeader,
+  Principle,
+  StatusPill,
+  useLatest,
+} from '#/components/ui'
+import { innerPageHead, softwareApplication } from '#/seo'
 import type { Platform } from '#/site'
+import { pages, site } from '#/site'
 
 const page = pages.download
 
 export const Route = createFileRoute('/download')({
-  head: () => ({
-    meta: [
-      { title: `Download · ${site.name}` },
-      ...pageMeta({ path: page.path, title: page.title, description: page.lead }),
-    ],
-  }),
+  head: () => innerPageHead(page, [softwareApplication]),
   component: Download,
 })
 
-const platforms: { name: string; download?: Platform; status: string; tone: Tone; note: string }[] = [
+const platforms: {
+  name: string
+  downloads: Platform[]
+  status: string
+  tone: Tone
+  note: string
+}[] = [
   {
     name: 'Linux',
-    download: 'Linux',
+    downloads: ['Linux', 'Linux arm64'],
     status: 'Supported',
     tone: 'success',
-    note: 'The main platform. x86_64, on Wayland and X11.',
+    note: 'The main platform. x86_64 and arm64, on Wayland and X11.',
   },
   {
     name: 'Windows',
-    download: 'Windows',
+    downloads: ['Windows'],
     status: 'Beta',
     tone: 'attention',
     note: 'Windows 10 and 11, x86_64. No Dynamic Island yet.',
   },
   {
     name: 'macOS',
-    status: 'Experimental',
-    tone: 'draft',
-    note: `Apple silicon. Little tested. Release v${site.version} has no macOS build.`,
+    downloads: ['macOS'],
+    status: 'Beta',
+    tone: 'attention',
+    note: 'Apple silicon. Signed and notarized by Apple. No browser in release builds yet.',
   },
 ]
 
 function Download() {
+  const latest = useLatest()
   return (
     <>
       <PageHeader {...page} />
@@ -56,43 +66,86 @@ function Download() {
         </div>
       </section>
 
-      <section className="wrap grid-3" style={{ paddingTop: 'var(--spacing-16)', gap: 'var(--spacing-6)' }}>
+      <section
+        className="wrap grid-3"
+        style={{ paddingTop: 'var(--spacing-16)', gap: 'var(--spacing-6)' }}
+      >
         {platforms.map((platform) => (
           <article className="pc" key={platform.name}>
             <div className="h">
-              <h3>{platform.name}</h3>
-              <StatusPill tone={platform.tone} label={platform.status} />
+              <h2>{platform.name}</h2>
+              <StatusPill label={platform.status} tone={platform.tone} />
             </div>
             <p>{platform.note}</p>
-            <div className="a">
-              {platform.download ? (
-                // One amber primary per view: only the supported platform gets it.
-                <DownloadButton platform={platform.download} tone={platform.name === 'Linux' ? 'primary' : 'secondary'} />
-              ) : (
-                <a className="btn" data-tone="secondary" href={site.sourceUrl}>
-                  Build from source
-                </a>
-              )}
+            <div
+              className="a"
+              style={{ display: 'flex', gap: 'var(--spacing-3)', flexWrap: 'wrap' }}
+            >
+              {platform.downloads.map((download) => (
+                // One amber primary per view: only the main Linux build gets it.
+                <DownloadButton
+                  key={download}
+                  platform={download}
+                  tone={download === 'Linux' ? 'primary' : 'secondary'}
+                />
+              ))}
             </div>
           </article>
         ))}
       </section>
 
+      <section className="wrap" style={{ paddingTop: 'var(--spacing-6)' }}>
+        <article className="pc">
+          <div className="h">
+            <h2>Server</h2>
+            <StatusPill label="Linux x86_64 · arm64" tone="draft" />
+          </div>
+          <p>
+            Arakun without a window, for a VPS or a build box with no display. Pair your devices and
+            follow its sessions from anywhere.
+          </p>
+          {/* As in the install lines above: as wide as the command, not the card. */}
+          <div style={{ alignSelf: 'flex-start', maxWidth: '100%' }}>
+            <InstallLine shell="server" />
+          </div>
+          <div className="a" style={{ display: 'flex', gap: 'var(--spacing-3)', flexWrap: 'wrap' }}>
+            <Link
+              className="btn"
+              data-tone="secondary"
+              params={{ slug: 'server' }}
+              to="/docs/$slug"
+            >
+              Set up the server
+            </Link>
+            {latest.server.x86_64 ? (
+              <a className="btn" data-tone="ghost" href={latest.server.x86_64}>
+                Download arakun-server
+              </a>
+            ) : null}
+            {latest.server.arm64 ? (
+              <a className="btn" data-tone="ghost" href={latest.server.arm64}>
+                Download arakun-server for arm64
+              </a>
+            ) : null}
+          </div>
+        </article>
+      </section>
+
       <section className="wrap section grid-3" data-reveal="">
         <Principle
+          body="The source is on GitHub. Read it, build it, change it."
           num="Open"
           title={`Free under ${site.license}`}
-          body="The source is on GitHub. Read it, build it, change it."
         />
         <Principle
+          body="Arakun is rendered on the GPU. It opens fast and stays fast with many sessions running."
           num="Native"
           title="A Rust app, not a web view"
-          body="Arakun is rendered on the GPU. It opens fast and stays fast with many sessions running."
         />
         <Principle
+          body="Arakun does not bundle Claude Code, Droid, OpenCode or Codex. Install the ones you want to use."
           num="Agents"
           title="Bring your own agents"
-          body="Arakun does not bundle Claude Code, Droid or OpenCode. Install the ones you want to use."
         />
       </section>
     </>

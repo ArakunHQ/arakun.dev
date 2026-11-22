@@ -1,0 +1,68 @@
+---
+title: Install Arakun
+description: Install Arakun on macOS, Linux or Windows with one line in a terminal, pick a version, and see what Linux needs.
+---
+
+## Run the installer
+
+```sh tab="macOS and Linux"
+curl -fsSL {site.installUrl} | sh
+```
+
+```powershell tab="Windows"
+irm {site.installUrl}.ps1 | iex
+```
+
+On macOS and Linux, run it in a terminal. It works on macOS with Apple silicon and on Linux x86_64 and arm64. It picks the build for your machine. On Windows, run it in PowerShell.
+
+## What the script does
+
+It downloads the latest release, checks it against `SHA256SUMS` and installs it for your user.
+
+| Platform | Installs to | To uninstall |
+| --- | --- | --- |
+| macOS | `~/Applications/Arakun.app`, linked as `~/.local/bin/arakun` | `rm -rf ~/Applications/Arakun.app ~/.local/bin/arakun` |
+| Linux | `~/.local/bin/arakun` | `rm ~/.local/bin/arakun` |
+| Windows | `%LOCALAPPDATA%\Programs\Arakun`, added to your user `PATH`, with a Start menu shortcut | Delete that folder and the shortcut, and remove it from `PATH` |
+
+## A given version
+
+```sh
+curl -fsSL {site.installUrl} | sh -s -- --version v{site.version}
+```
+
+Or set `ARAKUN_VERSION=v{site.version}`.
+
+Linux arm64 builds start at v0.5.0. On an arm64 machine, an older version does not install.
+
+<Callout type="warn">
+  There is no build for Intel Macs yet. [Build from source]({site.sourceUrl}) there.
+</Callout>
+
+## Only the server
+
+On a Linux machine with no display (x86_64 or arm64), such as a VPS, install `arakun-server` alone. It needs glibc 2.35 or newer and none of the desktop libraries. See [Server](/docs/server). On other architectures, [build it from source]({site.sourceUrl}).
+
+```sh
+curl -fsSL {site.installServerUrl} | sh
+```
+
+## What Linux needs
+
+glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+), a Vulkan driver and the usual desktop libraries: libxkbcommon, Wayland or X11, fontconfig and freetype.
+
+## Agents come separately
+
+Arakun does not bundle the agents. Install the ones you want to use. Each agent's page in these docs says what it needs.
+
+<Cards>
+  <Card title="Claude Code" href="/docs/claude-code" description="Runs through the ACP adapter." />
+  <Card title="Codex" href="/docs/codex" description="OpenAI's Codex, signed in with your ChatGPT plan or an API key." />
+  <Card title="Droid" href="/docs/droid" description="Runs Factory's droid CLI." />
+  <Card title="OpenCode" href="/docs/opencode" description="Runs the opencode CLI." />
+  <Card title="Workers AI" href="/docs/workers-ai" description="A tool loop Arakun runs against the Workers AI API." />
+</Cards>
+
+<Callout title="Optional tools">
+  `git` for Changes, worktrees and branches, `gh` for CI and the GitHub tab, `bwrap` for headless agents, `tailscale` for the phone over Tailscale.
+</Callout>

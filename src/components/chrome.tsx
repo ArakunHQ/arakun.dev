@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { reopenConsent, useAnalytics } from '#/analytics'
 import { site } from '#/site'
-import { ButtonLink } from './ui'
+import { ButtonLink, useLatest } from './ui'
+
+/** The hero raccoon sends this with `true` while it is on screen, and `false` once it is not. */
+export const HERO_EVENT = 'arakun:hero-in-view'
 
 /**
  * Sticky top bar with the raccoon in the brand.
@@ -16,26 +19,20 @@ export function SiteNav() {
   // The home page loads with its hero in view, so start hidden there: no flash before hydration.
   const [heroInView, setHeroInView] = useState(pathname === '/')
 
+  // The hero reports itself. After a client-side navigation the new page can render after
+  // the URL changes, so a lookup on the URL change would miss it.
   useEffect(() => {
-    const raccoon = document.querySelector('.hero .rk')
-    if (!raccoon) {
-      setHeroInView(false)
-      return
-    }
-    const seen = new IntersectionObserver(([entry]) => setHeroInView(entry.isIntersecting), {
-      // Count the hero raccoon as gone once it is behind the bar.
-      rootMargin: '-72px 0px 0px 0px',
-    })
-    seen.observe(raccoon)
-    return () => seen.disconnect()
-  }, [pathname])
+    const seen = (e: Event) => setHeroInView((e as CustomEvent<boolean>).detail)
+    addEventListener(HERO_EVENT, seen)
+    return () => removeEventListener(HERO_EVENT, seen)
+  }, [])
 
   return (
     <header className="sn" data-hero={heroInView}>
       <div className="wrap">
-        <Link to="/" className="brand">
+        <Link className="brand" to="/">
           <span className="mark">
-            <img src="/brand/app-icon.svg" alt="" width={28} height={28} />
+            <img alt="" height={28} src="/brand/app-icon.svg" width={28} />
           </span>
           <span>{site.name}</span>
         </Link>
@@ -83,19 +80,49 @@ function ThemeToggle() {
     }
   }
   return (
-    <button type="button" className="tt" onClick={toggle} aria-label="Switch between dark and light mode">
-      <svg className="only-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <button
+      aria-label="Switch between dark and light mode"
+      className="tt"
+      onClick={toggle}
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        className="only-dark"
+        fill="none"
+        height="18"
+        viewBox="0 0 24 24"
+        width="18"
+      >
         <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.75" />
-        <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+        <path
+          d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeWidth="1.75"
+        />
       </svg>
-      <svg className="only-light" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5Z" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round" />
+      <svg
+        aria-hidden="true"
+        className="only-light"
+        fill="none"
+        height="18"
+        viewBox="0 0 24 24"
+        width="18"
+      >
+        <path
+          d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5Z"
+          stroke="currentColor"
+          strokeLinejoin="round"
+          strokeWidth="1.75"
+        />
       </svg>
     </button>
   )
 }
 
 export function SiteFooter() {
+  const latest = useLatest()
   return (
     <footer className="sf">
       <div className="wrap">
@@ -113,10 +140,10 @@ export function SiteFooter() {
           <div className="col">
             <span>Learn</span>
             <Link to="/docs">Docs</Link>
-            <Link to="/docs" hash="the-arakun-command">
+            <Link hash="the-arakun-command" to="/docs">
               The arakun command
             </Link>
-            <Link to="/docs/$slug" params={{ slug: 'keyboard-shortcuts' }}>
+            <Link params={{ slug: 'keyboard-shortcuts' }} to="/docs/$slug">
               Keyboard shortcuts
             </Link>
           </div>
@@ -133,7 +160,7 @@ export function SiteFooter() {
             <Link to="/privacy">Privacy</Link>
             <CookieSettings />
             <span>
-              {site.license} · v{site.version}
+              {site.license} · v{latest.version}
             </span>
           </span>
         </div>
@@ -147,17 +174,22 @@ export function SiteFooter() {
  * the fold are hidden, so nothing visible on load ever flashes.
  */
 export function useReveal(key: string) {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a new key means a new page, whose sections need observing.
   useEffect(() => {
-    if (!('IntersectionObserver' in window)) return
+    if (!('IntersectionObserver' in window)) {
+      return
+    }
     const seen = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue
+          if (!entry.isIntersecting) {
+            continue
+          }
           entry.target.setAttribute('data-reveal', '')
           seen.unobserve(entry.target)
         }
       },
-      { threshold: 0.12 },
+      { threshold: 0.12 }
     )
     for (const el of document.querySelectorAll('[data-reveal]')) {
       if (el.getBoundingClientRect().top > innerHeight) {
@@ -172,9 +204,11 @@ export function useReveal(key: string) {
 // Shown once PostHog is configured, so a visitor can change their answer to the banner.
 function CookieSettings() {
   const { available } = useAnalytics()
-  if (!available) return null
+  if (!available) {
+    return null
+  }
   return (
-    <button type="button" onClick={reopenConsent}>
+    <button onClick={reopenConsent} type="button">
       Cookies
     </button>
   )

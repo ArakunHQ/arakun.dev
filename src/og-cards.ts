@@ -9,7 +9,12 @@ export { ogImagePath } from '#/seo'
  * ogImagePath(path) at build time, and on request in dev. Routes point their
  * og:image at it with pageMeta (src/seo.ts). Only the plugin imports this file.
  */
-export type OgCard = { path: string; label: string; title: string; line: string }
+export interface OgCard {
+  label: string
+  line: string
+  path: string
+  title: string
+}
 
 const section = (...parts: string[]) => [new URL(site.url).host, ...parts].join(' · ')
 

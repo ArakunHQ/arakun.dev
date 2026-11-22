@@ -1,22 +1,33 @@
 import { execFileSync } from 'node:child_process'
-import { defineConfig } from 'vite'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react'
 import { cloudflare } from '@cloudflare/vite-plugin'
 import { deployWatch } from '@rivi-software/deploy-watch/vite'
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import viteReact from '@vitejs/plugin-react'
+import mdx from 'fumadocs-mdx/vite'
+import { defineConfig } from 'vite'
+import * as docsConfig from './source.config.ts'
 import { ogCards } from './vite/og.ts'
 
 // deploy-watch reads the commit from these CI variables itself.
-const CI_COMMIT_VARS = ['WORKERS_CI_COMMIT_SHA', 'CF_PAGES_COMMIT_SHA', 'GITHUB_SHA', 'CI_COMMIT_SHA']
+const CI_COMMIT_VARS = [
+  'WORKERS_CI_COMMIT_SHA',
+  'CF_PAGES_COMMIT_SHA',
+  'GITHUB_SHA',
+  'CI_COMMIT_SHA',
+]
 
-// `pnpm deploy` runs by hand, where no CI variable names the commit. Without an id the
+// `pnpm run deploy` runs by hand, where no CI variable names the commit. Without an id the
 // watch stays off, so name the build after the commit. A build of uncommitted changes
 // gets a time on the end, so it never shares an id with another build.
 function localBuildId(): string | undefined {
-  if (CI_COMMIT_VARS.some((name) => process.env[name])) return undefined
+  if (CI_COMMIT_VARS.some((name) => process.env[name])) {
+    return undefined
+  }
   // One build loads this config more than once. Keep the first id, or the page and
   // /build.json would disagree and every tab would think a new build is live.
-  if (process.env.ARAKUN_BUILD_ID) return process.env.ARAKUN_BUILD_ID
+  if (process.env.ARAKUN_BUILD_ID) {
+    return process.env.ARAKUN_BUILD_ID
+  }
   try {
     const git = (...args: string[]) => execFileSync('git', args, { encoding: 'utf8' }).trim()
     const commit = git('rev-parse', 'HEAD')
@@ -31,7 +42,15 @@ function localBuildId(): string | undefined {
 export default defineConfig(({ command }) => ({
   resolve: { tsconfigPaths: true },
   plugins: [
-    cloudflare({ viteEnvironment: { name: 'ssr' } }),
+    // Compiles content/docs/*.mdx; see source.config.ts.
+    mdx(docsConfig),
+    cloudflare({
+      viteEnvironment: { name: 'ssr' },
+      // Workers AI only runs on Cloudflare, and reaching it needs a Cloudflare login.
+      // Off by default, so anyone can run the site; the changelog then shows the
+      // GitHub notes. `CHANGELOG_AI=1 pnpm dev` turns it on.
+      remoteBindings: process.env.CHANGELOG_AI === '1',
+    }),
     tanstackStart(),
     viteReact(),
     ogCards(),

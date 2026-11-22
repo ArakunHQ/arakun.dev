@@ -9,7 +9,8 @@ where each part of the site lives.
 
 ## Setting up
 
-Node 24 or newer and pnpm (the version in `packageManager` in `package.json`):
+Node 24.15 or newer (Ultracite needs it) and pnpm (the version in `packageManager` in
+`package.json`):
 
 ```sh
 pnpm install
@@ -51,8 +52,11 @@ Every commit message and pull request title follows
   Markdown it prints. Name each file; don't use a glob. The images are public: no real
   accounts, tokens, email addresses or home-directory paths in them.
 - Always open a pull request as a draft: `gh pr create --draft --body-file -`. Run the
-  checks below, wait for CI to pass, then mark it ready with `gh pr ready`. Merging is
-  a person's job, not yours.
+  checks below, wait for CI to pass, then mark it ready with `gh pr ready`. Marking it
+  ready starts CodeRabbit's review; a workflow then asks a maintainer to review unless
+  CodeRabbit approved. Merging is a person's job, not yours.
+- Answer every CodeRabbit comment: fix it and push, or reply with the reason. Never
+  resolve its threads yourself; that dismisses its approval.
 
 ## Before you commit
 
@@ -61,6 +65,7 @@ Run what CI runs, and fix every error:
 ```sh
 pnpm install --frozen-lockfile
 pnpm typecheck
+pnpm check       # lint and format; `pnpm fix` fixes most findings
 pnpm build
 pnpm exec wrangler deploy --dry-run
 # wrangler.jsonc changed: regenerate the Worker types and commit them
@@ -71,7 +76,8 @@ zizmor .github
 
 If you add or update a dependency, commit `pnpm-lock.yaml` too. Keep dependencies few;
 they must run on Cloudflare Workers, and GPL, LGPL and AGPL packages can't be used.
-`lefthook install` runs the typecheck and the commit message check as Git hooks.
+`lefthook install` runs the typecheck, the lint and the commit message check as Git
+hooks.
 
 ## Code
 
@@ -80,8 +86,9 @@ they must run on Cloudflare Workers, and GPL, LGPL and AGPL packages can't be us
 - Styles use the CSS variables in `src/styles.css` (colors, fonts, text sizes, radii),
   never hand-written values. Check both themes: dark is the default, light is
   `data-theme="light"` on `<html>`.
-- Docs pages in `src/docs.tsx` follow the README of ArakunHQ/arakun. Keep them in step
-  when the app changes.
+- Docs pages are MDX in `content/docs/` and follow the README of ArakunHQ/arakun. Keep
+  them in step when the app changes. Write `{site.version}` and the like for facts from
+  `src/site.ts`; "Writing docs" in the README lists the components.
 - Comments say why, not what. Comments and text on the site use plain, short sentences.
 - Never commit a token. `GITHUB_TOKEN` is a Wrangler secret (`wrangler secret put`),
   and `.dev.vars` is ignored by git.

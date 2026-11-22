@@ -1,0 +1,23 @@
+---
+title: Inbox
+description: Find every notice Arakun has shown, on the island or as a desktop notification, in the sidebar's Inbox, grouped by day.
+---
+
+A card on the [Dynamic Island](/docs/dynamic-island) or a desktop notification goes away after a few seconds. The Inbox keeps it, so a notice you missed while away from the computer is still there when you come back.
+
+## Open it
+
+The Inbox is the button at the end of the search box when the search box sits next to Search in the sidebar, as in every preset. Anywhere else in the sidebar it is a row of its own. It sits under the sessions waiting on you, and lists notices newest first, grouped by day.
+
+- Click a notice to open what it is about, such as the session it came from.
+- The badge counts the unread ones, up to 9+. They count as read when you close the Inbox.
+- Arakun keeps the last 300.
+
+## From a terminal
+
+```sh
+arakun notices            # every notice, newest first
+arakun notices --unseen   # only the ones you haven't read
+```
+
+Notices are kept in `notices.json`, next to Arakun's state file.

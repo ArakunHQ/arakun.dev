@@ -1,30 +1,35 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
 import { useLocation } from '@tanstack/react-router'
-import { SessionRow } from './ui'
+import type { ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { Celebrate } from './celebrate-context'
+import { CelebrateContext } from './celebrate-context'
 import type { Tone } from './ui'
+import { SessionRow } from './ui'
 
 /** A mood the hero raccoon can be asked to show from anywhere on the page. */
 export const MOOD_EVENT = 'arakun:mood'
 
-type Toast = { text: string; label: string; tone: Tone; left: number; top: number; on: boolean }
-
-type Celebrate = (anchor: HTMLElement, toast: { text: string; label: string; tone: Tone }, bits: number) => void
-
-const CelebrateContext = createContext<Celebrate>(() => {})
-
-export const useCelebrate = () => useContext(CelebrateContext)
+interface Toast {
+  label: string
+  left: number
+  on: boolean
+  text: string
+  tone: Tone
+  top: number
+}
 
 const CHARS = '*#%+=:-'
 const COLORS = ['--color-accent-ink', '--color-text', '--color-text-faint', '--color-text']
 
 /** A burst of the characters the app draws its ASCII raccoon with. */
 function burst(anchor: HTMLElement, count: number) {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return
+  }
   const box = anchor.getBoundingClientRect()
   const cx = box.left + scrollX + box.width / 2
   const cy = box.top + scrollY + box.height / 2
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count; i += 1) {
     const bit = document.createElement('span')
     bit.className = 'bit'
     bit.textContent = CHARS[i % CHARS.length]
@@ -41,10 +46,17 @@ function burst(anchor: HTMLElement, count: number) {
     bit.animate(
       [
         { transform: 'translate(-50%, -50%)', opacity: 1 },
-        { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${spin * 0.6}deg)`, opacity: 1, offset: 0.55 },
-        { transform: `translate(calc(-50% + ${x * 1.25}px), calc(-50% + ${y + 150}px)) rotate(${spin}deg)`, opacity: 0 },
+        {
+          transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${spin * 0.6}deg)`,
+          opacity: 1,
+          offset: 0.55,
+        },
+        {
+          transform: `translate(calc(-50% + ${x * 1.25}px), calc(-50% + ${y + 150}px)) rotate(${spin}deg)`,
+          opacity: 0,
+        },
       ],
-      { duration: 1100 + Math.random() * 700, easing: 'cubic-bezier(.15,.7,.3,1)' },
+      { duration: 1100 + Math.random() * 700, easing: 'cubic-bezier(.15,.7,.3,1)' }
     ).onfinish = () => bit.remove()
   }
 }
@@ -56,18 +68,25 @@ export function CelebrateProvider({ children }: { children: ReactNode }) {
   // The toast and the burst are placed at the clicked control's spot on the page.
   // That spot means nothing on the next page, so a route change clears them at once.
   const pathname = useLocation({ select: (l) => l.pathname })
-  useEffect(() => {
-    return () => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname is the trigger, not an input.
+  useEffect(
+    () => () => {
       clearTimeout(timer.current)
       setToast(null)
-      for (const bit of document.querySelectorAll('.bit')) bit.remove()
-    }
-  }, [pathname])
+      for (const bit of document.querySelectorAll('.bit')) {
+        bit.remove()
+      }
+    },
+    [pathname]
+  )
 
   const celebrate = useCallback<Celebrate>((anchor, message, bits) => {
     const box = anchor.getBoundingClientRect()
     const width = Math.min(400, innerWidth - 32)
-    const left = Math.max(16, Math.min(innerWidth - width - 16, box.left + box.width / 2 - width / 2))
+    const left = Math.max(
+      16,
+      Math.min(innerWidth - width - 16, box.left + box.width / 2 - width / 2)
+    )
     setToast({ ...message, left: left + scrollX, top: box.bottom + scrollY + 12, on: true })
     clearTimeout(timer.current)
     timer.current = setTimeout(() => setToast((t) => (t ? { ...t, on: false } : t)), 2600)
@@ -78,11 +97,16 @@ export function CelebrateProvider({ children }: { children: ReactNode }) {
   return (
     <CelebrateContext.Provider value={celebrate}>
       {children}
-      {toast && (
-        <div className="toast" role="status" data-on={toast.on} style={{ left: toast.left, top: toast.top }}>
-          <SessionRow text={toast.text} time="now" tone={toast.tone} label={toast.label} />
+      {toast ? (
+        <div
+          className="toast"
+          data-on={toast.on}
+          role="status"
+          style={{ left: toast.left, top: toast.top }}
+        >
+          <SessionRow label={toast.label} text={toast.text} time="now" tone={toast.tone} />
         </div>
-      )}
+      ) : null}
     </CelebrateContext.Provider>
   )
 }

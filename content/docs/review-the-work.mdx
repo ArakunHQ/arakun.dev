@@ -1,0 +1,28 @@
+---
+title: Review the work
+description: "Check what an agent did in Arakun: read the diff of each turn, let the project check run, and open the pull request."
+---
+
+## See what each turn changed
+
+A session's transcript shows markdown, diffs, tool calls and images. Per-turn diffs show what each turn changed, including changes made by shell commands. Sessions can be resumed.
+
+The Workspace panel has three tabs: Sessions, an Explorer and the uncommitted Changes.
+
+## Let the project check run
+
+Set a check command for the project, such as `cargo test` or `npm test`. It runs after each turn that edits files.
+
+<Cards>
+  <Card title="Run the project check" href="/docs/run-the-project-check" description="One command that runs after each turn that edits files." />
+</Cards>
+
+## Finish on GitHub
+
+The GitHub tab is a queue of what waits on you: pull requests whose review is asked of you, mentions and assignments, your own open pull requests, and what is ready to merge.
+
+Pick an item to see its state, checks, what blocks the merge, its timeline, files and commits. You can comment, approve, request changes or merge from there. A comment posts at once. Approve, request changes and merge ask a second time.
+
+<Callout>
+  It reads GitHub through the `gh` CLI, so install `gh` and sign in first.
+</Callout>

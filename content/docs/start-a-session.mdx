@@ -1,0 +1,50 @@
+---
+title: Start a session
+description: "Start your first agent session in Arakun: add a project, pick an agent, write the task and let Arakun name the branch."
+---
+
+## Your first session
+
+<Steps>
+<Step>
+
+### Add a project
+
+In the project's folder, run:
+
+```sh
+arakun .
+```
+
+This adds the project, or switches to it. It starts Arakun if it is not running.
+
+</Step>
+<Step>
+
+### Pick an environment
+
+The rail on the left lists your projects. Each project has environments: the main checkout plus git worktrees. Every environment has its own tabs, sessions, terminals and draft prompt.
+
+<Callout type="tip">
+  Give each task its own worktree, so the agents don't step on each other.
+</Callout>
+
+</Step>
+<Step>
+
+### Write the task
+
+Press <kbd>Ctrl+T</kbd> for a new session. Pick the agent and the model in the composer, then write what you want done.
+
+- <kbd>Enter</kbd> sends. <kbd>Shift+Enter</kbd> adds a line.
+- <kbd>Up</kbd> on an empty composer recalls earlier prompts.
+- Paste or drop images to attach them.
+
+</Step>
+</Steps>
+
+## Branch names from the task
+
+A new environment starts on a random branch name, such as `env/brave-otter`. After the first prompt, a small model names the branch after the task, such as `fix/terminal-tab-name`, and Arakun renames it. The folder keeps its name.
+
+By default the agent you sent the prompt to names it, when that agent is Claude Code or Droid. Other agents leave the name alone. Settings › General can pick one agent for every environment, or turn naming off.

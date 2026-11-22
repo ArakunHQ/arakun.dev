@@ -14,9 +14,12 @@ import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as InstallRouteImport } from './routes/install'
+import { Route as InstallServerRouteImport } from './routes/install-server'
 import { Route as InstallDotps1RouteImport } from './routes/install[.]ps1'
 import { Route as InstallDotshRouteImport } from './routes/install[.]sh'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as DocsIndexRouteImport } from './routes/docs.index'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 
@@ -45,6 +48,11 @@ const InstallRoute = InstallRouteImport.update({
   path: '/install',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InstallServerRoute = InstallServerRouteImport.update({
+  id: '/install-server',
+  path: '/install-server',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InstallDotps1Route = InstallDotps1RouteImport.update({
   id: '/install.ps1',
   path: '/install.ps1',
@@ -58,6 +66,16 @@ const InstallDotshRoute = InstallDotshRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
@@ -77,9 +95,12 @@ export interface FileRoutesByFullPath {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/install': typeof InstallRoute
+  '/install-server': typeof InstallServerRoute
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
 }
@@ -89,9 +110,12 @@ export interface FileRoutesByTo {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/install': typeof InstallRoute
+  '/install-server': typeof InstallServerRoute
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs': typeof DocsIndexRoute
 }
@@ -102,9 +126,12 @@ export interface FileRoutesById {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/install': typeof InstallRoute
+  '/install-server': typeof InstallServerRoute
   '/install.ps1': typeof InstallDotps1Route
   '/install.sh': typeof InstallDotshRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
 }
@@ -116,9 +143,12 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/install'
+    | '/install-server'
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/docs/$slug'
     | '/docs/'
   fileRoutesByTo: FileRoutesByTo
@@ -128,9 +158,12 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/install'
+    | '/install-server'
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/docs/$slug'
     | '/docs'
   id:
@@ -140,9 +173,12 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/install'
+    | '/install-server'
     | '/install.ps1'
     | '/install.sh'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/docs/$slug'
     | '/docs/'
   fileRoutesById: FileRoutesById
@@ -153,9 +189,12 @@ export interface RootRouteChildren {
   DownloadRoute: typeof DownloadRoute
   FeaturesRoute: typeof FeaturesRoute
   InstallRoute: typeof InstallRoute
+  InstallServerRoute: typeof InstallServerRoute
   InstallDotps1Route: typeof InstallDotps1Route
   InstallDotshRoute: typeof InstallDotshRoute
   PrivacyRoute: typeof PrivacyRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   DocsSlugRoute: typeof DocsSlugRoute
   DocsIndexRoute: typeof DocsIndexRoute
 }
@@ -197,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InstallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/install-server': {
+      id: '/install-server'
+      path: '/install-server'
+      fullPath: '/install-server'
+      preLoaderRoute: typeof InstallServerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/install.ps1': {
       id: '/install.ps1'
       path: '/install.ps1'
@@ -216,6 +262,20 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/': {
@@ -241,9 +301,12 @@ const rootRouteChildren: RootRouteChildren = {
   DownloadRoute: DownloadRoute,
   FeaturesRoute: FeaturesRoute,
   InstallRoute: InstallRoute,
+  InstallServerRoute: InstallServerRoute,
   InstallDotps1Route: InstallDotps1Route,
   InstallDotshRoute: InstallDotshRoute,
   PrivacyRoute: PrivacyRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   DocsSlugRoute: DocsSlugRoute,
   DocsIndexRoute: DocsIndexRoute,
 }

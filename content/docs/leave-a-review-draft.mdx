@@ -1,0 +1,20 @@
+---
+title: Leave a review draft
+description: Let an agent review a pull request and save its review as a draft in Arakun's GitHub tab. Nothing is posted until you post it.
+---
+
+An agent can review a pull request for you and leave a draft. The draft sends nothing. You post it, edit it or discard it in the GitHub tab.
+
+```sh
+arakun github draft o/r#12 --verdict approve --head <sha> \
+  --body-file - --agent Claude < review.md
+```
+
+- `--body-file` takes a file, or `-` for stdin.
+- `--head` is the commit the agent read. An approval needs it.
+
+## Safety
+
+<Callout type="success">
+  Posting a draft asks a second time. An approval goes out only for the commit the agent read. After new commits, the draft can only be posted as a comment.
+</Callout>

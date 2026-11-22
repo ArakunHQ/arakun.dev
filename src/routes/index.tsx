@@ -1,11 +1,36 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { HeroRaccoon } from '#/components/HeroRaccoon'
-import { AppShot, DownloadButton, Eyebrow, InstallBand, InstallLine, Principle, SessionRow, Words, step } from '#/components/ui'
+import {
+  AppShot,
+  DownloadButton,
+  Eyebrow,
+  InstallBand,
+  InstallLine,
+  Principle,
+  SessionRow,
+  step,
+  useLatest,
+  useVisitorPlatform,
+  Words,
+} from '#/components/ui'
+import { pageHead, softwareApplication, website } from '#/seo'
 import { pillars, sessions, site } from '#/site'
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/')({
+  head: () =>
+    pageHead({
+      path: '/',
+      tabTitle: `${site.name} · ${site.line}`,
+      title: site.name,
+      description: site.description,
+      jsonLd: [softwareApplication, website],
+    }),
+  component: Home,
+})
 
 function Home() {
+  const platform = useVisitorPlatform()
+  const latest = useLatest()
   return (
     <>
       <section className="hero">
@@ -17,15 +42,15 @@ function Home() {
             <Words text={site.line} />
           </h1>
           <p className="sub rise" style={step(0, 480)}>
-            Claude Code, Droid, OpenCode and Workers AI work side by side. Each task gets its own git worktree, so agents
-            don't step on each other.
+            Claude Code, Droid, OpenCode, Codex and Workers AI work side by side. Each task gets its
+            own git worktree, so agents don't step on each other.
           </p>
           <div className="cta rise" style={step(1, 480)}>
-            <DownloadButton platform="Linux" />
+            <DownloadButton platform={platform} />
             <InstallLine />
           </div>
           <span className="meta rise" style={step(2, 480)}>
-            v{site.version} · {site.license} · Windows in beta, macOS experimental
+            v{latest.version} · {site.license} · Windows and macOS in beta
           </span>
         </div>
         <div className="peek">
@@ -35,11 +60,11 @@ function Home() {
 
       <section className="wrap section" data-reveal="">
         <div className="stack" style={{ maxWidth: 720 }}>
-          <Eyebrow num="01" label="The app" />
+          <Eyebrow label="The app" num="01" />
           <h2 className="h2">Many agents. One calm window.</h2>
           <p className="lead">
-            Pick an agent and a model, write the task, and start. Arakun makes the worktree, runs the session and keeps
-            the diff ready for review.
+            Pick an agent and a model, write the task, and start. Arakun makes the worktree, runs
+            the session and keeps the diff ready for review.
           </p>
         </div>
         <div style={{ marginTop: 'var(--spacing-12)' }}>
@@ -55,11 +80,11 @@ function Home() {
 
       <section className="wrap section split" data-reveal="">
         <div className="stack">
-          <Eyebrow num="02" label="While you are away" />
+          <Eyebrow label="While you are away" num="02" />
           <h2 className="h2">It tells you what happened. Then it stops.</h2>
           <p className="lead" style={{ maxWidth: 480 }}>
-            Every message names the agent, the place and the result. You get it in the Dynamic Island, in the Inbox and
-            on your phone.
+            Every message names the agent, the place and the result. You get it in the Dynamic
+            Island, in the Inbox and on your phone.
           </p>
         </div>
         <div className="feed">
@@ -69,7 +94,7 @@ function Home() {
         </div>
       </section>
 
-      <InstallBand note="Linux supported · Windows in beta · macOS experimental" />
+      <InstallBand note="Linux supported · Windows and macOS in beta" />
     </>
   )
 }

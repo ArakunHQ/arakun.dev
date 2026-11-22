@@ -8,6 +8,8 @@ dist-ssr
 .tanstack
 .wrangler
 .output
+# Generated from content/docs by fumadocs-mdx (pnpm install, pnpm dev, pnpm build)
+.source
 .vinxi
 __unconfig*
 todos.json

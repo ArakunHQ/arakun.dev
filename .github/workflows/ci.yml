@@ -1,8 +1,8 @@
 name: CI
 
-# Typechecks and builds the site, and checks that the Worker bundles the way
-# `wrangler deploy` would, without uploading anything. Deploys are not done
-# here: `pnpm deploy` runs by hand (see README.md).
+# Typechecks, lints and builds the site, and checks that the Worker bundles
+# the way `wrangler deploy` would, without uploading anything. A push to main
+# that passes those checks then deploys to arakun.dev (see "Deploys" in README.md).
 
 on:
   push:
@@ -41,6 +41,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
+      # Ultracite (Biome): lint and format. `pnpm fix` fixes most of what it finds.
+      - run: pnpm check
       - run: pnpm build
 
       # Bundles the Worker and lists its bindings and assets. No account or
@@ -56,3 +58,71 @@ jobs:
             echo "::error::Generated files are out of date. Run 'pnpm cf-typegen' and 'pnpm build', then commit the result."
             exit 1
           fi
+
+  deploy:
+    name: Deploy to arakun.dev
+    needs: build
+    # Only commits on main go live. Pull requests never get the token.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    # The token is an environment secret, so only jobs that name this
+    # environment can read it, and the environment can be limited to main.
+    environment:
+      name: production
+      url: https://arakun.dev
+    # One deploy at a time, never cancelled halfway. By default a job waiting
+    # here is dropped when another arrives, and the arrival may be an older
+    # commit that the check below then skips, so nothing deploys. `queue: max`
+    # keeps every waiting job instead.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+      queue: max
+    steps:
+      # Pushes to main build in parallel, so an older commit can reach this
+      # job after a newer one has deployed. It must not put the old build
+      # back. The newer commit's run deploys main instead.
+      - name: Skip if main has moved on
+        id: latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          if [ "$head" = "$GITHUB_SHA" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::main is at $head now, so $GITHUB_SHA is not deployed."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.latest.outputs.deploy == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - if: steps.latest.outputs.deploy == 'true'
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      # No dependency cache: the job that holds the deploy token installs from
+      # the registry, never from a cache another run wrote.
+      - if: steps.latest.outputs.deploy == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - if: steps.latest.outputs.deploy == 'true'
+        run: pnpm install --frozen-lockfile
+
+      # deploy-watch names the build after GITHUB_SHA, so open tabs move to it.
+      - if: steps.latest.outputs.deploy == 'true'
+        run: pnpm build
+
+      - name: Deploy
+        if: steps.latest.outputs.deploy == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec wrangler deploy --message "$GITHUB_SHA"

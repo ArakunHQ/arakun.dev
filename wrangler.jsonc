@@ -3,41 +3,51 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "arakun-website",
-	"compatibility_date": "2026-11-13",
-	"compatibility_flags": ["nodejs_compat"],
-	"main": "@tanstack/react-start/server-entry",
-	"observability": {
-		"enabled": true,
-		"head_sampling_rate": 0.1
-	},
-	"upload_source_maps": true,
-	// The site's domains. Deploying without them detaches them from this Worker,
-	// which takes arakun.dev down. times.arakun.dev is the Arakun Times (another
-	// Worker), and *.arakun.dev/* is the phone relay.
-	"routes": [
-		{ "pattern": "arakun.dev", "custom_domain": true },
-		{ "pattern": "www.arakun.dev", "custom_domain": true }
-	],
-	// PostHog project 736741 (US Cloud), for analytics and error reports. The token is
-	// public: posthog-js sends it from every browser. Empty turns PostHog off, in the
-	// browser and the Worker.
-	//
-	// Why US Cloud and not EU Cloud (https://eu.i.posthog.com, data in Frankfurt):
-	// - The site is run by a US company (CoderLabs, Inc. for now; see operator in
-	//   src/site.ts), so the data it controls is in the US either way.
-	// - EU Cloud still has PostHog, Inc. as the processor, and its DPA says it may process
-	//   data in the US too (clause 10.2).
-	// - EU Cloud is a separate instance. Moving means a new project and token, and the
-	//   history stays behind.
-	// For EU visitors, the cookie banner (src/analytics.ts) asks consent first, and a DPA
-	// with PostHog makes it our processor (GDPR Art. 28). The DPA is self-serve at
-	// https://us.posthog.com/legal, on any plan. Where data counts as a transfer, the DPA
-	// covers it with PostHog's Data Privacy Framework certification, and with the EU
-	// Standard Contractual Clauses (module 2) as the fallback.
-	"vars": {
-		"POSTHOG_PROJECT_TOKEN": "phc_kXKrLfaWumKa3mfXcFVBCRpyKa6DZiUv7hCkQW2epLQZ",
-		"POSTHOG_HOST": "https://us.i.posthog.com"
-	}
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "arakun-website",
+  "compatibility_date": "2026-11-13",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  // Only the domains below serve the site; no workers.dev address.
+  "workers_dev": false,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1
+  },
+  "upload_source_maps": true,
+  // The site's domains. Deploying without them detaches them from this Worker,
+  // which takes arakun.dev down. times.arakun.dev is the Arakun Times (another
+  // Worker), and *.arakun.dev/* is the phone relay.
+  "routes": [
+    { "pattern": "arakun.dev", "custom_domain": true },
+    { "pattern": "www.arakun.dev", "custom_domain": true }
+  ],
+  // The changelog rewrites a release's GitHub notes with Workers AI and keeps the
+  // result in KV, so each release is written once (src/releases.ts). There is no id:
+  // the first deploy creates the namespace in the Worker's account and keeps it linked.
+  "ai": { "binding": "AI", "remote": true },
+  "kv_namespaces": [{ "binding": "RELEASE_NOTES" }],
+  // PostHog project 736741 (US Cloud), for analytics and error reports. The token is
+  // public: posthog-js sends it from every browser. Empty turns PostHog off, in the
+  // browser and the Worker.
+  //
+  // Why US Cloud and not EU Cloud (https://eu.i.posthog.com, data in Frankfurt):
+  // - The site is run by a US company (CoderLabs, Inc. for now; see operator in
+  //   src/site.ts), so the data it controls is in the US either way.
+  // - EU Cloud still has PostHog, Inc. as the processor, and its DPA says it may process
+  //   data in the US too (clause 10.2).
+  // - EU Cloud is a separate instance. Moving means a new project and token, and the
+  //   history stays behind.
+  // For EU visitors, the cookie banner (src/analytics.ts) asks consent first, and a DPA
+  // with PostHog makes it our processor (GDPR Art. 28). The DPA is self-serve at
+  // https://us.posthog.com/legal, on any plan. Where data counts as a transfer, the DPA
+  // covers it with PostHog's Data Privacy Framework certification, and with the EU
+  // Standard Contractual Clauses (module 2) as the fallback.
+  //
+  // POSTHOG_HOST is PostHog's managed reverse proxy, a CNAME to PostHog's US Cloud.
+  // Ad blockers drop requests to *.posthog.com, and miss a host on our own domain.
+  "vars": {
+    "POSTHOG_PROJECT_TOKEN": "phc_kXKrLfaWumKa3mfXcFVBCRpyKa6DZiUv7hCkQW2epLQZ",
+    "POSTHOG_HOST": "https://events.arakun.dev"
+  }
 }

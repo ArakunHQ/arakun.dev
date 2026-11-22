@@ -1,0 +1,26 @@
+---
+title: Read a terminal
+description: Start a dev server or watcher in a terminal you can see with arakun run, and read or wait for its output with arakun logs.
+---
+
+Each environment has a dock of terminals. They are numbered, so agents and scripts can read them.
+
+## Start a command and wait for it
+
+```sh
+arakun run --port 5173 npm run dev
+```
+
+This opens a new terminal, runs the command and waits until the port answers.
+
+## Wait for output
+
+```sh
+arakun logs 2 --until compiled
+```
+
+This waits until terminal 2 prints "compiled".
+
+## Options
+
+`arakun run` and `arakun logs` take `--ready <text>`, `--port <n>` and `--timeout <s>` before the command. They fail with the tail of the output if the command exits or times out first.

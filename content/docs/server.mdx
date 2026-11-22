@@ -1,0 +1,116 @@
+---
+title: Server
+description: Run Arakun without a window on a build box, an office workstation or a VPS, and follow its agent sessions from your other devices.
+---
+
+`arakun server serve` is Arakun without a window: for a build box, the workstation at the office or a VPS. It runs sessions of any agent signed in on that machine and keeps them going while nothing is connected.
+
+`arakun-server` is the same server as a program of its own. It needs no display library.
+
+<Callout type="tip">
+  Sign in to each agent on that machine first. The server uses its logins and its permission settings.
+</Callout>
+
+## Set it up
+
+<Steps>
+<Step>
+
+### Install it
+
+On Linux (x86_64 or arm64), install `arakun-server` alone:
+
+```sh
+curl -fsSL {site.installServerUrl} | sh
+```
+
+It puts the binary in `~/.local/bin`. It checks the release's checksums, and their signature when minisign or OpenSSL 3 is installed. On a Mac or Windows, [install the app](/docs/install) and use `arakun server` in place of `arakun-server`.
+
+</Step>
+<Step>
+
+### Start it
+
+```sh
+arakun-server serve   # runs until Ctrl+C
+```
+
+</Step>
+<Step>
+
+### Pair a device
+
+In another terminal:
+
+```sh
+arakun-server pair    # a link and its QR code
+```
+
+The link is good for two minutes and pairs one device. Use it in one of two ways:
+
+- In the app: open the Servers tab and paste the link.
+- On a phone, or in any browser: open the link.
+
+</Step>
+<Step>
+
+### Work with sessions
+
+```sh
+arakun-server add ~/code/app                 # a folder sessions can start in
+arakun-server new --agent claude "fix the failing test"
+arakun-server ls                             # folders and sessions
+arakun-server wait <id>                      # until it stops working
+arakun-server send <id> <text>               # a follow-up
+arakun-server approve <id>                   # or deny
+```
+
+</Step>
+</Steps>
+
+## Keep it running
+
+```sh
+arakun-server service install   # systemd on Linux: starts now, after a crash and at boot
+arakun-server service status
+```
+
+On Linux it keeps running after you log out, so you can set it up over SSH. On a Mac, `arakun server service install` sets it up with launchd and starts it at login.
+
+On Windows there is no `service` command yet. To keep the server running, start `arakun server serve` from Task Scheduler, with the trigger "At log on".
+
+### Update it
+
+Run the install line again, then restart the service on the new binary:
+
+```sh
+systemctl --user restart arakun-server
+```
+
+- Installed as root: the service is a system unit, so leave out `--user`.
+- A server in another folder (`ARAKUN_SERVER_DIR`): its unit is `arakun-server-<folder>`.
+- The service runs the binary it was installed from. If that is not `~/.local/bin/arakun-server`, copy the new one there first.
+
+## How devices reach it
+
+<Tabs items={['relay', 'tailscale', 'lan']}>
+<Tab value="relay">
+
+`--reach relay` is the default. The server dials out, so it works behind a firewall, and everything between the device and the server is end-to-end encrypted.
+
+</Tab>
+<Tab value="tailscale">
+
+`--reach tailscale` serves it at the machine's tailnet name over HTTPS.
+
+</Tab>
+<Tab value="lan">
+
+`--reach lan` listens over plain HTTP.
+
+<Callout type="error">
+  Nothing is encrypted. Use it only on a network you trust.
+</Callout>
+
+</Tab>
+</Tabs>
