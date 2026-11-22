@@ -1,0 +1,19 @@
+src/blog-data.ts
+  s_0cdcf463a753fe::t_144a4f0e4441d4 47,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "88752cb856279abd49fb87bb84307964c20aa5ea",
+  "prompts": {},
+  "sessions": {
+    "s_0cdcf463a753fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03891fbf-0233-4103-93ee-f0210c81d108",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Rik Visser <rik@rivi.software>"
+    }
+  }
+}
