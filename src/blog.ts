@@ -141,7 +141,7 @@ export const posts: BlogPost[] = [
         heading: 'Memory with a project and 10 live terminals',
         paragraphs: [
           'For multi-process apps, summing RSS double-counts shared libraries across Electron helpers. We read Proportional Set Size (PSS) from /proc/<pid>/smaps_rollup across every process in each app tree, both idle with the project open and after opening 1, 5 and 10 interactive shells.',
-          'Going from an open project (114.3 MiB, which includes the Dynamic Island helper and default dock shell) to 10 live terminals adds only 13.5 MiB of app memory in Arakun (123.6 MiB excluding shells). T3 Code sits at 911.6 MiB (899.1 MiB app-only) and Orca reaches 995.8 MiB (982.0 MiB app-only).',
+          'Going from an open project (114.3 MiB total, 111.0 MiB app-only excluding the default dock shell) to 10 live terminals adds 23.9 MiB total and only 12.6 MiB of app memory in Arakun (138.2 MiB total, 123.6 MiB app-only). T3 Code sits at 911.6 MiB (899.1 MiB app-only) and Orca reaches 995.8 MiB (982.0 MiB app-only).',
         ],
         chart: {
           title: 'Total PSS memory with project open + 10 terminals (lower is better)',
@@ -290,5 +290,5 @@ export function postToMarkdown(post: BlogPost): string {
       parts.push('', '```', section.code, '```')
     }
   }
-  return `${parts.join('\\n')}\\n`
+  return `${parts.join('\n')}\n`
 }
