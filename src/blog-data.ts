@@ -39,6 +39,18 @@ export const authors = {
     avatar: '/brand/icon-512.png',
     links: [{ label: 'GitHub', url: site.githubOrgUrl }],
   },
+  'rik-visser': {
+    id: 'rik-visser',
+    type: 'Person',
+    name: 'Rik Visser',
+    role: 'Builds Arakun',
+    bio: 'Software engineer from the Netherlands. Rik builds Arakun, and tools for radio stations at RIVI Software.',
+    avatar: '/blog/authors/rik-visser.jpg',
+    links: [
+      { label: 'GitHub', url: 'https://github.com/rikvisser-dev' },
+      { label: 'Website', url: 'https://rivi.software' },
+    ],
+  },
 } satisfies Record<string, Author>
 
 export const categories = {
