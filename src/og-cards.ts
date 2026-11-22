@@ -29,7 +29,7 @@ export const ogCards: OgCard[] = [
   ...posts.map((post) => ({
     path: postPath(post.slug),
     label: section(pages.blog.label, post.published),
-    title: post.title,
+    title: post.cardTitle ?? post.title,
     line: post.description,
   })),
 ]

@@ -40,7 +40,9 @@ export function SiteNav() {
           <Link to="/features">Features</Link>
           <a href={site.docsUrl}>Docs</a>
           <Link to="/blog">Blog</Link>
-          <Link to="/changelog">Changelog</Link>
+          <Link className="cl" to="/changelog">
+            Changelog
+          </Link>
           <a className="gh" href={site.githubUrl}>
             GitHub
           </a>

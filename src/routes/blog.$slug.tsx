@@ -24,6 +24,7 @@ export const Route = createFileRoute('/blog/$slug')({
       tabTitle: `${loaderData.title} · ${site.name}`,
       title: loaderData.title,
       description: loaderData.description,
+      ogType: 'article',
       trail: [
         { name: pages.blog.label, path: pages.blog.path },
         { name: loaderData.title, path: postPath(loaderData.slug) },

@@ -143,6 +143,7 @@ export function pageHead({
   tabTitle,
   title,
   description,
+  ogType,
   trail = [],
   jsonLd = [],
 }: {
@@ -152,6 +153,7 @@ export function pageHead({
   /** The page's own title, for the preview card. */
   title: string
   description: string
+  ogType?: 'website' | 'article'
   /** The breadcrumb steps between the home page and this page, this page last. */
   trail?: { name: string; path: string }[]
   jsonLd?: JsonLd[]
@@ -161,6 +163,7 @@ export function pageHead({
     meta: [
       { title: tabTitle },
       { name: 'description', content: description },
+      ...(ogType ? [{ property: 'og:type', content: ogType }] : []),
       ...pageMeta({ path, title, description }),
     ],
     links: [{ rel: 'canonical', href: pageUrl(path) }],

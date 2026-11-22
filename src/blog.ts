@@ -1,3 +1,5 @@
+import { site } from '#/site'
+
 export interface BenchBar {
   highlight?: boolean
   label: string
@@ -27,6 +29,7 @@ export interface BlogSection {
 
 export interface BlogPost {
   author: string
+  cardTitle?: string
   description: string
   published: string
   readingMinutes: number
@@ -39,6 +42,7 @@ export interface BlogPost {
 export const posts: BlogPost[] = [
   {
     slug: 'arakun-vs-t3code-vs-orca-benchmark',
+    cardTitle: 'Arakun vs T3 Code vs Orca',
     title:
       'Arakun v0.17 vs T3 Code vs Orca: startup, 10 terminals, flood and browser tabs on Linux',
     description:
@@ -229,7 +233,7 @@ export const posts: BlogPost[] = [
         paragraphs: [
           'All measurements used unmodified official Linux x86_64 releases downloaded on November 22, 2026:',
         ],
-        code: `Arakun:  https://github.com/ArakunHQ/arakun/releases/tag/v0.17.0
+        code: `Arakun:  ${site.releasesUrl}/tag/v0.17.0
 T3 Code: https://github.com/pingdotgg/t3code/releases/tag/v0.1.11
 Orca:    https://github.com/StablyAI/orca/releases/tag/v1.4.269`,
       },
