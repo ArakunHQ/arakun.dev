@@ -13,6 +13,7 @@ import type { Plugin } from 'vite'
 import { parse as parseYaml } from 'yaml'
 import { authors, categories, slugify } from '../src/blog-data'
 import { site } from '../src/site'
+import { artNames } from './og-art'
 
 /**
  * The blog's build step. Posts are MDX files in content/blog/<slug>.mdx:
@@ -43,6 +44,7 @@ interface Frontmatter {
   authors: string[]
   cardTitle?: string
   categories: string[]
+  cover?: string
   description: string
   draft?: boolean
   featured?: boolean
@@ -210,6 +212,15 @@ function isDate(value: string) {
   return DATE.test(value) && new Date(`${value}T00:00:00Z`).toISOString().startsWith(value)
 }
 
+/** A cover names art in vite/og-art.ts, so a typo fails the build instead of showing the raccoon. */
+function checkCover(cover: string | undefined, file: string) {
+  if (cover !== undefined && !artNames.includes(cover)) {
+    throw new Error(
+      `${file}: unknown cover "${cover}". Use one of: ${artNames.join(', ')} (vite/og-art.ts)`
+    )
+  }
+}
+
 function check(fm: Partial<Frontmatter>, file: string): Frontmatter {
   const fail = (message: string): never => {
     throw new Error(`${file}: ${message}`)
@@ -240,6 +251,7 @@ function check(fm: Partial<Frontmatter>, file: string): Frontmatter {
       fail(`unknown category "${id}". Add it to categories in src/blog-data.ts`)
     }
   }
+  checkCover(fm.cover, file)
   return fm as Frontmatter
 }
 
@@ -268,6 +280,7 @@ async function readPost(root: string, name: string) {
       slug,
       title: fm.title,
       cardTitle: fm.cardTitle,
+      cover: fm.cover,
       description: fm.description,
       published: fm.published,
       updated: fm.updated ?? fm.published,
