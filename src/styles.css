@@ -904,9 +904,6 @@ svg {
   align-self: flex-start;
   margin-top: var(--spacing-2);
 }
-.re .by {
-  font-size: var(--text-xs);
-}
 .re .more {
   align-self: flex-start;
   font-size: var(--text-xs);

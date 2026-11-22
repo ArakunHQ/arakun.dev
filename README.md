@@ -25,7 +25,7 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 - `src/docs.ts`, `src/components/mdx.tsx`, `source.config.ts`: how the docs load, the components pages can use, and the MDX build.
 - `src/styles.css`: the Brandbook tokens and every component's styles. Dark is the default; light is `data-theme="light"` on `<html>`.
 - `src/routes/`: one file per page (`index`, `features`, `download`, `changelog`, `docs.index`, `docs.$slug`).
-- `src/releases.ts`, `src/release-rewrite.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the GitHub sync of the changelog, the version and the downloads, and the changelog's Workers AI rewrite (see below).
+- `src/releases.ts`, `src/release-entry.ts`, `src/release-notes.ts`, `src/components/Markdown.tsx`: the GitHub sync of the changelog, the version and the downloads, and each release's changelog entry (see below).
 - `src/components/ui.tsx`: buttons, the install line, cards and other shared pieces.
 - `src/components/chrome.tsx`: the sticky header, the theme switch and the footer.
 - `src/router.tsx`, `vite.config.ts`: [deploy-watch](https://github.com/rivi-software/tools/tree/main/packages/deploy-watch#readme) moves a tab left open across a deploy onto the new build at its next page change. A build in CI is named after its commit; `pnpm run deploy` by hand names it after `HEAD`.
@@ -90,20 +90,22 @@ release there and it shows on the site within ten minutes. No deploy is needed.
   after that the releases in `src/release-notes.ts`.
 - The page shows the notes written on the GitHub release. Drafts are never shown;
   pre-releases get a "Pre-release" label.
-- GitHub's notes are often a list of pull requests, written for developers. Workers AI
-  rewrites them into a short entry per area for people who use the app
-  (`src/release-rewrite.ts`). It drops what users would not notice, such as CI,
-  tests and dependency bumps. Each release is rewritten once and kept in the
-  `RELEASE_NOTES` KV namespace; new notes on GitHub are rewritten again. Until the
-  entry is ready, a few seconds after the first visit, the page shows the GitHub notes.
-- `src/release-notes.ts` holds hand-written entries per tag. They win over both:
-  write one when the rewrite gets something wrong. v0.1.0, v0.2.1 and v0.3.0 have one.
-- The model is `MODEL` in `src/release-rewrite.ts`. To have every release
-  rewritten, such as after a prompt change, bump `REWRITE_VERSION` there.
-  Without a bump, kept entries stay and only new releases use the change.
-- `pnpm dev` leaves Workers AI off, since it needs a Cloudflare login, and shows
-  the GitHub notes. `CHANGELOG_AI=1 pnpm dev` turns it on; the model runs on
-  Cloudflare and is billed to your account.
+- GitHub's generated notes are a list of pull requests, written for developers. So
+  the version bump pull request in ArakunHQ/arakun adds `release-notes/<version>.md`,
+  an entry for people who use the app, and the release workflow puts it at the top of
+  the release's notes. `src/release-entry.ts` reads it from there:
+
+  ```md
+  ## Smoother drawing and a session tree
+
+  - **Sessions:** Every session is in a tree in the sidebar.
+  - **Fixes:** A long subagent list scrolls.
+  ```
+
+  The page shows the entry instead of the notes. A release without one, or one that
+  doesn't follow this shape, shows its GitHub notes.
+- `src/release-notes.ts` holds hand-written entries per tag, and they win. Correct a
+  published entry there, or by editing the notes of its release on GitHub.
 - Optional: `wrangler secret put GITHUB_TOKEN` raises GitHub's limit from 60 to
   5000 requests an hour. A token with no scopes is enough for a public repository.
 - The shared cache only works on a custom domain. On a `workers.dev` address each
@@ -152,9 +154,7 @@ Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
   moved on, it skips, and the newer commit's run deploys.
 - The job runs in the `production` environment of the GitHub repository. It needs:
   - `CLOUDFLARE_API_TOKEN`, an environment secret: a Cloudflare API token with
-    "Edit Cloudflare Workers" on the account and zone that hold arakun.dev. That
-    template includes Workers KV Storage, which the first deploy needs to create the
-    changelog's `RELEASE_NOTES` namespace.
+    "Edit Cloudflare Workers" on the account and zone that hold arakun.dev.
   - `CLOUDFLARE_ACCOUNT_ID`, an environment variable: the ID of that account.
 - Limit the environment to `main` (Settings > Environments > production >
   Deployment branches), so no other branch can read the token.

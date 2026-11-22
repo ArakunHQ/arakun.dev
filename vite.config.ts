@@ -46,10 +46,6 @@ export default defineConfig(({ command }) => ({
     mdx(docsConfig),
     cloudflare({
       viteEnvironment: { name: 'ssr' },
-      // Workers AI only runs on Cloudflare, and reaching it needs a Cloudflare login.
-      // Off by default, so anyone can run the site; the changelog then shows the
-      // GitHub notes. `CHANGELOG_AI=1 pnpm dev` turns it on.
-      remoteBindings: process.env.CHANGELOG_AI === '1',
     }),
     tanstackStart(),
     viteReact(),

@@ -37,7 +37,7 @@ function ReleaseNotes({ release }: { release: Release }) {
     return (
       <ul className="areas">
         {note.changes.map(([area, change], i) => (
-          // Workers AI may name an area twice.
+          // An entry may name an area twice.
           // biome-ignore lint/suspicious/noArrayIndexKey: the list never changes order.
           <li key={`${i}-${area}`}>
             <b>{area}</b>
@@ -72,9 +72,6 @@ function ReleaseEntry({ release }: { release: Release }) {
       <div className="c">
         <h2>{title}</h2>
         <ReleaseNotes release={release} />
-        {release.rewritten ? (
-          <p className="by mono-label">Summarized by Workers AI from the GitHub notes</p>
-        ) : null}
         <a className="more mono-label" href={release.url}>
           {release.tag} on GitHub
         </a>
