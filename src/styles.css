@@ -946,7 +946,8 @@ svg {
   font-weight: 500;
   color: var(--color-text);
 }
-.md a {
+.md a,
+.lead a {
   color: var(--color-text);
   overflow-wrap: anywhere;
   text-decoration: underline;
@@ -954,7 +955,8 @@ svg {
   text-underline-offset: 3px;
   transition: text-decoration-color 0.2s;
 }
-.md a:hover {
+.md a:hover,
+.lead a:hover {
   text-decoration-color: var(--color-accent-ink);
 }
 .md code {

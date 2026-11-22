@@ -126,6 +126,33 @@ function Download() {
         </article>
       </section>
 
+      <section className="wrap section" data-reveal="">
+        <div className="stack" style={{ maxWidth: 720 }}>
+          <h2 className="h2">After the install line</h2>
+          <p className="lead">
+            Versions, nightlies, uninstalling and the server are in the{' '}
+            <a href={`${site.docsUrl}/install`}>install guide</a>.
+          </p>
+        </div>
+        <div className="grid-3" style={{ marginTop: 'var(--spacing-12)' }}>
+          <Principle
+            body="The installer downloads the latest release, checks it against SHA256SUMS and installs it for your user. With minisign or OpenSSL 3 it also checks the release signature."
+            num="Checked"
+            title="Verified before it installs"
+          />
+          <Principle
+            body="Every 6 hours a release asks GitHub for a newer one and installs it when you quit. Turn it off in Settings › General › Updates."
+            num="Updates"
+            title="Keeps itself up to date"
+          />
+          <Principle
+            body="glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+), a Vulkan driver, and Wayland or X11. Without a GPU, Mesa's software Vulkan driver works, only slower."
+            num="Linux"
+            title="What Linux needs"
+          />
+        </div>
+      </section>
+
       <section className="wrap section grid-3" data-reveal="">
         <Principle
           body="The source is on GitHub. Read it, build it, change it."
