@@ -3,27 +3,36 @@ import {
   posthogRequestErrors,
 } from '@rivi-software/posthog-tanstack-start/start'
 import { createMiddleware, createStart } from '@tanstack/react-start'
-import { pageMarkdown, prefersMarkdown } from '#/markdown'
+import { hasMarkdownPage, pageMarkdown, prefersMarkdown } from '#/markdown'
+
+function hasVaryToken(header: string | null, token: string): boolean {
+  if (!header) {
+    return false
+  }
+  const target = token.toLowerCase()
+  return header.split(',').some((value) => value.trim().toLowerCase() === target)
+}
 
 // Serve Markdown directly when an agent sends `Accept: text/markdown` so TanStack
 // Start does not reject it with HTTP 406.
 const markdownForAgents = createMiddleware().server(async ({ next, pathname, request }) => {
-  const body = request.method === 'GET' || request.method === 'HEAD' ? pageMarkdown(pathname) : null
-  if (body !== null && prefersMarkdown(request.headers.get('accept'))) {
-    return new Response(request.method === 'HEAD' ? null : body, {
-      headers: {
-        'cache-control': 'public, max-age=3600',
-        'content-type': 'text/markdown; charset=utf-8',
-        vary: 'Accept',
-      },
-    })
+  const isPage =
+    (request.method === 'GET' || request.method === 'HEAD') && hasMarkdownPage(pathname)
+  if (isPage && prefersMarkdown(request.headers.get('accept'))) {
+    const body = await pageMarkdown(pathname)
+    if (body !== null) {
+      return new Response(request.method === 'HEAD' ? null : body, {
+        headers: {
+          'cache-control': 'public, max-age=3600',
+          'content-type': 'text/markdown; charset=utf-8',
+          vary: 'Accept',
+        },
+      })
+    }
   }
   const result = await next()
-  if (body !== null) {
-    const vary = result.response.headers.get('vary')
-    if (!vary?.toLowerCase().includes('accept')) {
-      result.response.headers.append('vary', 'Accept')
-    }
+  if (isPage && !hasVaryToken(result.response.headers.get('vary'), 'accept')) {
+    result.response.headers.append('vary', 'Accept')
   }
   return result
 })
