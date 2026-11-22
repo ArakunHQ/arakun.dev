@@ -4,16 +4,30 @@ const repo = `${org}/arakun`
 const version = '0.5.0'
 const release = `${repo}/releases/download/v${version}`
 
+/** Supported coding agents and their Mintlify doc slugs under docs.arakun.dev. */
+export const agents = [
+  { name: 'Claude Code', slug: 'claude-code' },
+  { name: 'Codex', slug: 'codex' },
+  { name: 'Devin', slug: 'devin' },
+  { name: 'Cursor', slug: 'cursor' },
+  { name: 'Droid', slug: 'droid' },
+  { name: 'OpenCode', slug: 'opencode' },
+  { name: 'Antigravity', slug: 'antigravity' },
+  { name: 'Workers AI', slug: 'workers-ai' },
+] as const
+
+export const agentList =
+  'Claude Code, Codex, Devin, Cursor, Droid, OpenCode, Antigravity and Workers AI'
+
 export const site = {
   name: 'Arakun',
   line: 'One native window for your coding agents.',
   /** The home page's description in search results, and the app's in its structured data. */
-  description:
-    'Arakun is a native app where Claude Code, Droid, OpenCode, Codex and Workers AI work side by side, each on its own git worktree.',
+  description: `Arakun is a native app where ${agentList} work side by side, each on its own git worktree.`,
   /** Absolute origin, for links that leave the site: og:image, canonical URLs. */
   url: 'https://arakun.dev',
   /** The day the home page last changed in substance, for the sitemap. */
-  updated: '2026-11-17',
+  updated: '2026-11-22',
   /**
    * The fallback release, for when GitHub cannot be reached. Pages show the newest
    * release from GitHub instead (useLatest in src/components/ui.tsx).
@@ -62,7 +76,7 @@ export type Platform = keyof typeof site.downloads
 export const pages = {
   features: {
     path: '/features',
-    updated: '2026-11-17',
+    updated: '2026-11-22',
     num: '01',
     label: 'Features',
     tab: 'Features: many coding agents in one window · Arakun',
@@ -88,7 +102,7 @@ export const pages = {
     title: 'What changed',
     lead: 'Every release, newest first.',
     description:
-      'Every Arakun release, newest first: new features, fixes and changes to the native app for Claude Code, Codex and other coding agents.',
+      'Every Arakun release, newest first: new features, fixes and changes to the native app for Claude Code, Codex, Devin, Cursor and other coding agents.',
   },
   privacy: {
     path: '/privacy',
@@ -112,7 +126,7 @@ export const installCommands = {
 export const pillars = [
   {
     title: 'Many agents, one place',
-    body: "Claude Code, Droid, OpenCode, Codex and Workers AI side by side. Each task gets its own worktree, so agents don't step on each other.",
+    body: `${agentList} side by side. Each task gets its own worktree, so agents don't step on each other.`,
   },
   {
     title: 'Agents can use the app',

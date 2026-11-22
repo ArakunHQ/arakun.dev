@@ -47,6 +47,13 @@ const app: JsonLd = {
   operatingSystem: 'Linux, Windows, macOS',
   license: site.licenseUrl,
   downloadUrl: pageUrl('/download'),
+  featureList: [
+    'Parallel coding agents in isolated git worktrees (Claude Code, Codex, Devin, Cursor, Droid, OpenCode, Antigravity, Workers AI)',
+    'Native GPU-rendered Rust UI built with GPUI',
+    'Agent-controllable built-in browser, terminals, project checks and GitHub pull requests',
+    'Dynamic Island status, Inbox notices, phone remote control and headless arakun-server',
+    'Cross-session project and user memory',
+  ],
   offers: {
     '@type': 'Offer',
     price: '0',

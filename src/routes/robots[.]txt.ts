@@ -7,6 +7,7 @@ const body = `User-agent: *
 Allow: /
 
 Sitemap: ${site.url}/sitemap.xml
+Sitemap: ${site.docsUrl}/sitemap.xml
 `
 
 const headers = {

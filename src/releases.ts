@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:workers'
-import { createServerFn } from '@tanstack/react-start'
+import { createServerFn, createServerOnlyFn } from '@tanstack/react-start'
 import type { Entry } from '#/release-entry'
 import { entryFrom } from '#/release-entry'
 import { notes } from '#/release-notes'
@@ -198,10 +198,12 @@ function withHandNotes(release: Release): Release {
 }
 
 // Nightlies come out every day and say nothing a reader of the changelog needs.
-export const getReleases = createServerFn({ method: 'GET' }).handler(
+export const listReleases = createServerOnlyFn(
   async (): Promise<Release[]> =>
     (await readReleases()).filter((release) => !NIGHTLY.test(release.tag)).map(withHandNotes)
 )
+
+export const getReleases = createServerFn({ method: 'GET' }).handler(() => listReleases())
 
 /** The release the site offers for download: its version and a file per platform. */
 export interface Latest {

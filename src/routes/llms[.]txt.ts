@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { pageDescription, pageUrl } from '#/seo'
-import { installCommands, pages, site } from '#/site'
+import { agents, installCommands, pages, site } from '#/site'
 
 // An index for AI tools and coding agents that look for /llms.txt (llmstxt.org). Built
 // from src/site.ts, so it names the same pages, links and install lines as the site.
@@ -12,6 +12,11 @@ ${site.name} is free and open source under ${site.license}. It runs on Linux, Wi
 
 - macOS and Linux: \`${installCommands.sh}\`
 - Windows (PowerShell): \`${installCommands.powershell}\`
+- Headless Linux server (arakun-server): \`${installCommands.server}\`
+
+## Supported agents
+
+${agents.map((agent) => `- [${agent.name}](${site.docsUrl}/${agent.slug}.md)`).join('\n')}
 
 ## Pages
 
