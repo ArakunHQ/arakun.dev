@@ -1,0 +1,34 @@
+src/og-cards.ts
+  s_1db786a4f63833::t_8956f47095e332 13-14,36
+vite/og-art.ts
+  s_1db786a4f63833::t_9952fc98d9119d 105-109
+  s_1db786a4f63833::t_8956f47095e332 1-90,97-104,110-120,124-157
+  s_1db786a4f63833::t_3cb9404388de2e 91-96,121-123
+content/blog/how-arakun-works.mdx
+  s_1db786a4f63833::t_cf82de9891fe9b 4
+  s_1db786a4f63833::t_9952fc98d9119d 8
+vite/blog.ts
+  s_1db786a4f63833::t_9952fc98d9119d 16
+  s_1db786a4f63833::t_8956f47095e332 47,283
+  s_1db786a4f63833::t_42ce052da2b900 215-223,254
+src/blog.ts
+  s_1db786a4f63833::t_8956f47095e332 18-19
+vite/og.ts
+  s_1db786a4f63833::t_8956f47095e332 10,62-65,77-89,110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "889c95924259f17253f0dd3cc0cf934ffa005da7",
+  "prompts": {},
+  "sessions": {
+    "s_1db786a4f63833": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "40129169-e5d0-4e38-81e2-41279bc489f3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Rik Visser <rik@rivi.software>"
+    }
+  }
+}
