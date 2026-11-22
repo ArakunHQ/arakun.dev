@@ -43,7 +43,7 @@ export const authors = {
     id: 'rik-visser',
     type: 'Person',
     name: 'Rik Visser',
-    role: 'Builds Arakun',
+    role: 'Arakun Core Maintainer',
     bio: 'Software engineer from the Netherlands, building Arakun.',
     avatar: '/blog/authors/rik-visser.jpg',
     links: [{ label: 'GitHub', url: 'https://github.com/rikvisser-dev' }],
