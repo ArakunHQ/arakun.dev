@@ -219,9 +219,12 @@ export function SessionRow({
   )
 }
 
-/** Each capture also comes 720 and 1440 pixels wide (cwebp -resize), so phones get a small one. */
+/**
+ * Each capture also comes about 720 and 1440 pixels wide (cwebp -resize), so phones get a small one.
+ * The captures are cropped 2 pixels on each side (cwebp -crop 2 1 2876 1798): the capture tool leaves a black edge.
+ */
 const srcSet = (name: string) =>
-  `/img/${name}-720.webp 720w, /img/${name}-1440.webp 1440w, /img/${name}.webp 2880w`
+  `/img/${name}-720.webp 719w, /img/${name}-1440.webp 1438w, /img/${name}.webp 2876w`
 
 // As wide as .wrap's content at most: var(--page) less two gutters.
 const SHOT_SIZES = '(min-width: 1280px) 1152px, 100vw'
@@ -295,23 +298,23 @@ export function AppShot({
         alt={onDark.alt}
         className="only-dark"
         fetchPriority={fetchPriority}
-        height={1800}
+        height={1798}
         loading={loading}
         sizes={sizes}
         src={onDark.src}
         srcSet={onDark.srcSet}
-        width={2880}
+        width={2876}
       />
       <img
         alt={onLight.alt}
         className="only-light"
         fetchPriority={fetchPriority}
-        height={1800}
+        height={1798}
         loading={loading}
         sizes={sizes}
         src={onLight.src}
         srcSet={onLight.srcSet}
-        width={2880}
+        width={2876}
       />
     </div>
   )
