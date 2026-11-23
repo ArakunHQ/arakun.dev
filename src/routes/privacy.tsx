@@ -167,6 +167,12 @@ function Privacy() {
               links, email addresses and keys removed, the kind of report, the app's version and
               your operating system. It never holds your email address or your id.
             </p>
+            <p>
+              We handle support and feedback in PostHog. We may use AI, such as PostHog's AI
+              features, to sort, summarize and help answer what you send. The AI sees the answer and
+              what it carries, as described above. It makes no decision about you on its own: a
+              person reads the result.
+            </p>
           </Section>
 
           <Section title="Why we may do this">
@@ -227,7 +233,7 @@ function Privacy() {
             </ul>
           </Section>
 
-          <p className="updated">Last updated November 22, 2026.</p>
+          <p className="updated">Last updated November 23, 2026.</p>
         </article>
       </div>
     </>
