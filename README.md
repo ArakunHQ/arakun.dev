@@ -154,13 +154,16 @@ removes it (`.github/workflows/preview.yml`).
 
 - A pull request from the team, or from Dependabot, deploys once CI passes. One from
   anyone else deploys once a maintainer approves the pull request, the same approval the
-  "Human approval" status waits for, and again after each new push and approval. Read
-  the diff first: the preview serves that code from our Cloudflare account.
+  "Human approval" status waits for, and again after each new push and approval. A
+  push removes the preview until a maintainer approves the new commit. Read the diff
+  first: the preview serves that code from our Cloudflare account.
+- CI keeps each build for 30 days. If an approval comes later, the comment links to
+  the CI run; re-running it deploys the preview.
 - A preview is a Worker of its own, `arakun-website-pr-<number>`, with no route and no
   custom domain. It can't change arakun.dev.
 - Analytics are off in a preview, and it has no `GITHUB_TOKEN`, so it asks GitHub for
-  the releases without one. If GitHub refuses, it shows the releases in
-  `src/release-notes.ts`.
+  the releases without one. If GitHub refuses, it serves the last answer it has, as
+  arakun.dev does, and before it has one, the releases in `src/release-notes.ts`.
 - CI builds the pull request without a secret and keeps the build. The Preview
   workflow runs from `main` and only uploads that build. It never runs code from the
   pull request, and it writes the Wrangler config itself. Keep it that way: a change

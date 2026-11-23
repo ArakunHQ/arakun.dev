@@ -69,7 +69,8 @@ zizmor .github
 ```
 
 Once CI passes, a comment on the pull request links to a preview of the site with your
-change. If you are not on the team, the preview comes once a maintainer approves the pull request.
+change. If you are not on the team, the preview comes once a maintainer approves the pull request
+(Dependabot's pull requests are previewed at once).
 
 CI also fails when `worker-configuration.d.ts` is out of date. After you change
 `wrangler.jsonc`, run `pnpm cf-typegen` and commit the result.

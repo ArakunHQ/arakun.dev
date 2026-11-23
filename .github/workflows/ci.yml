@@ -74,7 +74,9 @@ jobs:
             !dist/**/*.map
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 7
+          # An outsider's preview waits for a maintainer's approval, which can
+          # take a while. preview.yml asks for a new CI run if this expires.
+          retention-days: 30
 
   deploy:
     name: Deploy to arakun.dev

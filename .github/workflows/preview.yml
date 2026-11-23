@@ -58,6 +58,7 @@ jobs:
     outputs:
       pr: ${{ steps.find.outputs.pr }}
       ci-run: ${{ steps.find.outputs.ci-run }}
+      remove: ${{ steps.find.outputs.remove }}
     steps:
       # The default branch, for the comment script. Never the pull request.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -72,6 +73,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TRIGGER: ${{ github.event.workflow_run.name }}
           TRIGGER_RUN: ${{ github.event.workflow_run.id }}
+          TRIGGER_URL: ${{ github.event.workflow_run.html_url }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
           HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
@@ -113,7 +115,12 @@ jobs:
               fi
             done
             if [ -z "$approver" ]; then
+              # A preview of an older, approved commit must not stay up: the
+              # address would keep serving code no one approved as the
+              # current one. The remove job deletes it.
               echo "#$pr is from $author, outside the team, and no maintainer has approved $HEAD_SHA."
+              echo "pr=$pr" >> "$GITHUB_OUTPUT"
+              echo "remove=true" >> "$GITHUB_OUTPUT"
               .github/scripts/preview-comment.sh "$pr" \
                 "**Preview:** waiting for a maintainer to approve \`${HEAD_SHA:0:7}\`. Approving the pull request deploys it."
               exit 0
@@ -133,13 +140,26 @@ jobs:
               exit 0
             fi
           fi
+
+          # CI keeps the build for 30 days. An approval after that finds it
+          # gone; running CI again builds it anew, and its completion deploys.
+          kept=$(gh api "repos/$GH_REPO/actions/runs/$run/artifacts" \
+            --jq '.artifacts[] | select(.name == "preview" and (.expired | not)) | .id' | head -n 1)
+          if [ -z "$kept" ]; then
+            ci_url=$(gh api "repos/$GH_REPO/actions/runs/$run" --jq .html_url)
+            echo "::notice::The build of $HEAD_SHA has expired."
+            .github/scripts/preview-comment.sh "$pr" \
+              "**Preview:** the build of \`${HEAD_SHA:0:7}\` has expired. A maintainer can [re-run CI]($ci_url) to deploy it."
+            exit 0
+          fi
+
           echo "pr=$pr" >> "$GITHUB_OUTPUT"
           echo "ci-run=$run" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy the preview
     needs: find
-    if: needs.find.outputs.pr != ''
+    if: needs.find.outputs.ci-run != ''
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -284,7 +304,12 @@ jobs:
 
   remove:
     name: Remove the preview
-    if: github.event_name == 'pull_request_target'
+    # When the pull request closes, or when an outsider's new head has no
+    # approval yet. always(): on close, find is skipped.
+    needs: find
+    if: >-
+      always() && (github.event_name == 'pull_request_target' ||
+        needs.find.outputs.remove == 'true')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions: {}
@@ -293,18 +318,22 @@ jobs:
     # The same group as the deploy, so a deploy that is running or waiting
     # stops, and can't put the preview back.
     concurrency:
-      group: preview-${{ github.event.pull_request.number }}
+      group: preview-${{ github.event.pull_request.number || needs.find.outputs.pr }}
       cancel-in-progress: true
     steps:
       # Straight to the API: no checkout and no install in a job that runs
-      # for every closed pull request.
+      # this often.
       - name: Delete the Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          PR: ${{ github.event.pull_request.number }}
+          PR: ${{ github.event.pull_request.number || needs.find.outputs.pr }}
         run: |
           set -euo pipefail
+          if ! [[ "$PR" =~ ^[0-9]+$ ]]; then
+            echo "::error::Not a pull request number: $PR"
+            exit 1
+          fi
           status=$(curl -sS -o response.json -w '%{http_code}' -X DELETE \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/arakun-website-pr-$PR?force=true")
