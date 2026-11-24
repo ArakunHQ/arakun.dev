@@ -1,45 +1,70 @@
 ---
 title: Phone remote
-description: Follow your Arakun sessions from a phone, send prompts and answer the agent, over your local network, Tailscale or an encrypted relay.
+description: Follow your Arakun sessions from a phone, send prompts and answer the agent, over your local network, Tailscale or an encrypted relay you sign in to.
 ---
 
-Arakun serves a web page that lets a paired phone follow sessions, read them live, send prompts, stop a turn and answer the agent.
+Arakun serves a web page that lets a phone follow sessions, read them live, send prompts, stop a turn and answer the agent.
 
-## Pair a phone
+Turn on **Phone** under Arakun › Extensions, or Settings › General › Sidebar. It is already on if you chose to pair a phone in the first-run setup. Then pick how the phone reaches this computer in the Phone tab.
+
+## How the phone reaches your computer
+
+- **Over the local network.** This is the default. You pair the phone with a code.
+- **Over Tailscale.** You pair the phone with a code.
+- **Through an end-to-end encrypted relay.** You sign in with GitHub on the computer and on the phone. There is no code.
+
+On the local network and over Tailscale, the page comes from the computer itself. It only opens while the computer is on and awake. The relay works from anywhere and says when the computer is offline; the Phone tab then offers **Use Relay**.
+
+## Reach it through the relay
+
+The relay lets a device in only when it is signed in to the same GitHub account as the computer.
 
 <Steps>
-<Step title="Turn on the Phone tab">
+<Step title="Sign in on the computer">
 
-Turn on **Phone** under Arakun › Extensions, or Settings › General › Sidebar. It is already on if you chose to pair a phone in the first-run setup.
-
-</Step>
-<Step title="Pick how the phone reaches this computer">
-
-**Same Wi-Fi**, **Tailscale** or the relay. See below.
+With Relay chosen, the Phone tab says "Sign in to reach this computer from anywhere". Press **Sign in with GitHub**. It is the same sign-in as the User row of the sidebar.
 
 </Step>
-<Step title="Press Pair a phone">
+<Step title="Open the page on the phone">
 
-Scan the code with the phone's camera. Or open the page on the phone and type the code, or send it the link.
+The Phone tab shows the address to open on the phone, `https://app.arakun.dev`, with its QR code.
+
+</Step>
+<Step title="Sign in on the phone and pick the computer">
+
+Sign in with GitHub as the same account, then pick the computer. With only one computer, the page opens it straight away.
 
 </Step>
 </Steps>
 
-The code or link works once. Each phone gets a key of its own, which you can revoke under **Paired phones**.
+The first time a device connects, a notice names it and says it connected for the first time.
 
-## How the phone reaches your computer
+Signed in, the Phone tab lists:
 
-- **Over the local network.** This is the default.
-- **Over Tailscale.**
-- **Through an end-to-end encrypted relay.**
+- **Signed-in devices:** every device signed in to the account, with its kind and when it was last used. **Sign out** signs one out.
+- **Your computers:** the account's computers that run the app, online or when last seen. **Remove** takes one off the account, after a question that names it. A computer still signed in comes back the next time it connects.
 
-On the local network and over Tailscale, the page comes from the computer itself. It only opens while the computer is on and awake. The relay works from anywhere and says when the computer is offline; the Phone tab then offers **Use Relay**.
+On the phone, each computer in the list has **Remove**, and the page's Phone tab lists the account's signed-in devices with **Sign out**. With several computers, push notifications come only from the computer you opened last.
 
-## The relay
+<Warning>
+Anyone who signs in to your GitHub account, or holds one of its sessions, can reach every computer of the account. Sign out the devices you do not know.
+</Warning>
 
-The relay defaults to the hosted one at `arakun.dev`. The relay can't hand your computer's address to anyone else: it comes from a key only your computer has.
+<Note>
+A phone paired through the relay with a link before v0.19.0 must sign in again. Pairing over the local network or Tailscale is unchanged.
+</Note>
 
-You can run your own relay: it is a Cloudflare Worker in the `relay/` folder of the repository. Point `relay_base` in `phone.json` at it.
+## Pair a phone on the network
+
+Over the local network or Tailscale, press **Pair a phone**. Scan the code with the phone's camera. Or open the page on the phone and type the code, or send it the link.
+
+The code or link works once. Each phone gets a key of its own, which you can revoke under **Paired phones**. That list shows only the phones paired with a code.
+
+## Run your own relay
+
+The relay defaults to the hosted one at `app.arakun.dev`. The relay can't hand your computer's address to anyone else: it comes from a key only your computer has.
+
+You can run your own: it is a Cloudflare Worker in the `cloud/` folder of the repository. Point `relay_base` in `phone.json` at it, and set `ARAKUN_TEAMS_URL` to the same server. Arakun sends your session only to the server that issued it, so when the two differ the relay stays signed out and the Phone tab names both addresses.
 
 ## Send prompts
 
@@ -61,7 +86,7 @@ Charts and diagrams in a reply (` ```chart ` and ` ```mermaid ` blocks) are draw
 
 ## Servers
 
-A phone paired with the app also sees and works in the sessions of your [servers](/server).
+A phone connected to the app also sees and works in the sessions of your [servers](/server).
 
 <Tip>
 In redacted mode, the Phone tab hides the pairing code, its addresses and the names of paired phones. **Copy link** still copies the real link.
