@@ -43,7 +43,7 @@ export const authors = {
     id: 'rik-visser',
     type: 'Person',
     name: 'Rik Visser',
-    role: 'Arakun Core Maintainer',
+    role: 'Co-founder',
     bio: 'Software engineer from the Netherlands, building Arakun.',
     avatar: '/blog/authors/rik-visser.jpg',
     links: [
@@ -56,8 +56,8 @@ export const authors = {
     id: 'karlo-aldrete',
     type: 'Person',
     name: 'Karlo Aldrete',
-    role: 'Co-founder',
-    bio: 'Co-founder of Arakun. Thinks software should work while you sleep. He has not tested this personally; he stays up to watch it.',
+    role: 'Founder',
+    bio: 'Founder of Arakun. Thinks software should work while you sleep. He has not tested this personally; he stays up to watch it.',
     avatar: '/blog/authors/karlo-aldrete.jpg',
     links: [
       { label: 'Website', url: 'https://karloaldrete.xyz' },
