@@ -173,6 +173,10 @@ function Privacy() {
               what it carries, as described above. It makes no decision about you on its own: a
               person reads the result.
             </p>
+            <p>
+              We may copy feedback into Linear, the tool we use to plan our work, so we can follow
+              it up. That copy holds your answer and, if you gave it, your email address.
+            </p>
           </Section>
 
           <Section title="Why we may do this">
@@ -194,13 +198,19 @@ function Privacy() {
               Reports that become a GitHub issue are public on GitHub, Inc.'s servers in the United
               States, and anyone can read them.
             </p>
+            <p>
+              Linear Orbit, Inc. stores the feedback we copy into Linear on its servers in the
+              United States, as our processor under a data processing agreement that relies on the
+              EU Standard Contractual Clauses.
+            </p>
           </Section>
 
           <Section title="How long we keep it">
             <p>
               We keep the site's analytics and error reports, and the app's reports, feedback and
-              survey answers, for one year. Then PostHog deletes them. A GitHub issue stays until we
-              delete it; ask us and we will. PostHog's cookie expires after a year.
+              survey answers, for one year. Then PostHog deletes them. A GitHub issue and feedback
+              in Linear stay until we delete them; ask us and we will. PostHog's cookie expires
+              after a year.
             </p>
           </Section>
 
@@ -233,7 +243,7 @@ function Privacy() {
             </ul>
           </Section>
 
-          <p className="updated">Last updated November 23, 2026.</p>
+          <p className="updated">Last updated November 25, 2026.</p>
         </article>
       </div>
     </>
