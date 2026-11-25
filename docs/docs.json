@@ -33,7 +33,7 @@
     "codeblocks": "dark"
   },
   "variables": {
-    "version": "0.21.2",
+    "version": "0.21.4",
     "installUrl": "https://arakun.dev/install",
     "installServerUrl": "https://arakun.dev/install-server",
     "privacyEmail": "privacy@arakun.dev"
