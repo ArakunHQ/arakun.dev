@@ -3,6 +3,7 @@ name: CI
 # Typechecks, lints and builds the site, and checks that the Worker bundles
 # the way `wrangler deploy` would, without uploading anything. A push to main
 # that passes those checks then deploys to arakun.dev (see "Deploys" in README.md).
+# A pull request's build is kept, and the Preview workflow deploys it as a preview.
 
 on:
   push:
@@ -59,10 +60,29 @@ jobs:
             exit 1
           fi
 
+      # preview.yml uploads this build as the pull request's preview. That
+      # workflow holds the Cloudflare token; this job has no secret. Hidden
+      # files are kept for dist/client/.assetsignore.
+      - name: Keep the build for the preview
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: preview
+          path: |
+            dist/client
+            dist/server
+            !dist/**/*.map
+          include-hidden-files: true
+          if-no-files-found: error
+          # An outsider's preview waits for a maintainer's approval, which can
+          # take a while. preview.yml asks for a new CI run if this expires.
+          retention-days: 30
+
   deploy:
     name: Deploy to arakun.dev
     needs: build
-    # Only commits on main go live. Pull requests never get the token.
+    # Only commits on main go live. Pull requests never get this token; their
+    # previews are another Worker (preview.yml).
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
