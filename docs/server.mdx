@@ -61,12 +61,12 @@ Through the relay without a sign-in, `serve` in a terminal stops and says to run
 
 Through the relay, there is no link. Devices signed in to the same GitHub account get in:
 
-- In the app: sign in with GitHub, then open the Servers tab. The server is listed under **Your servers**. Press **Connect**.
+- In the app: sign in with GitHub, then open the Computers tab. The server joins the list under **Your servers** by itself.
 - On a phone, or in any browser: open `https://app.arakun.dev`, sign in as the same account and pick the server. It is the page the [phone remote](/phone-remote) uses: it lists the sessions, reads them live, and notifies you when one finishes or needs you.
 
 `arakun-server pair` says the same.
 
-Over Tailscale or the local network, run `arakun-server pair` in another terminal. It prints a link and its QR code. The link is good for two minutes and pairs one device. Paste it in the app's Servers tab, or open it on a phone or in any browser.
+Over Tailscale or the local network, run `arakun-server pair` in another terminal. It prints a link and its QR code. The link is good for two minutes and pairs one device. In the app's Computers tab, press **Add a computer**, pick **By link** and paste it. Or open it on a phone or in any browser.
 
 </Step>
 <Step title="Work with sessions">
@@ -102,7 +102,7 @@ arakun-server forget <label>                 # remove one of them from the accou
 <Note>
 A server paired through the relay before v0.19.0 must sign in: run `arakun-server login` on it once. A device paired with a link through the relay must sign in too.
 
-In the Servers tab, such a server says it was paired by link before 0.19. Sign in in the app and run `arakun-server login` on the server with the same GitHub account, or pair it again over Tailscale.
+In the Computers tab, such a server says it was paired by link before 0.19. Sign in in the app and run `arakun-server login` on the server with the same GitHub account, or pair it again over Tailscale.
 </Note>
 
 ## Agents
@@ -125,22 +125,26 @@ Its sessions open in the same tabs, with the same composer, as sessions here. Se
 
 "New environment" makes a worktree on a server too: <kbd>Alt</kbd>+click the **+** and pick the machine, or right-click a server's environment. It goes in `~/arakun-workspaces/<project>/<branch>` there.
 
-To spread new environments across machines, turn on **Spread across machines** in the Servers tab. A new environment then goes to the least busy connected machine that has the project, this computer included. Set each machine to Prefer, Normal, Avoid or Off there. A preferred machine takes new environments before the others. An avoided one takes them only when no other can. One that is Off never takes them this way, but you can still pick it in the New environment dialog. When every machine is Off, a new environment goes to the open environment's machine.
+To spread new environments across machines, turn on **Spread new environments** at the foot of the Computers tab's list. A new environment then goes to the least busy connected machine that has the project, this computer included. Set each machine to Prefer, Normal, Avoid or Off under **New environments** in its settings there. A preferred machine takes new environments before the others. An avoided one takes them only when no other can. One that is Off never takes them this way, but you can still pick it in the New environment dialog. When every machine is Off, a new environment goes to the open environment's machine.
 
-To add a folder on a server, press the folder button on it in the Servers tab. Clone runs that machine's git, with its logins. In the Marketplace, "Install on" adds a plugin or MCP server for Claude Code on a paired server.
+To add a folder on a server, pick it in the Computers tab and press **Add a folder**. Clone runs that machine's git, with its logins. In the Marketplace, "Install on" adds a plugin or MCP server for Claude Code on a paired server.
 
 Every paired server also mirrors this computer. When it connects, and after each install here, it adds the plugins (and their marketplaces), the user MCP servers, the skills from skills.sh and the MCP sign-ins it lacks. A notice lists what was added. What you installed in a repo just for you goes to the server's folders with the same `origin`. What you shared with the repo goes with git. The mirror never removes anything.
 
 - Over plain http, only plugins and skills go.
 - A server on macOS doesn't take sign-ins, since Claude keeps them in the Keychain there.
 
-Signed in, the Servers tab lists the account's servers under **Your servers**, each with **Connect** and **Remove**. **Remove** takes the server off the account, after a question that names it. Signed out, the tab says "Sign in to see your servers".
-
-"Forget" on a server in the Servers tab removes it, and has the server forget the app. If the server can't be reached then, remove the app there with `arakun-server unpair <device>`.
-
 <Tip>
 Set `ARAKUN_GITHUB=readonly` on the server, before `service install`, to keep it from pushing or opening pull requests.
 </Tip>
+
+## The Computers tab
+
+The Computers tab lists this computer first, then your servers, each with its status as a dot and a word: Online, Connecting, Offline or Not connected. Pick one to see how it is reached, its environments and their sessions, its agents and their plan limits, and its settings. A session opens in its project.
+
+Signed in, a server on your account joins the list by itself. Signed out, the list says your account's servers show up once you sign in. **Add a computer** shows both ways to add one: **Your own server**, signed in with your GitHub account, or **By link**, for one on Tailscale or your network.
+
+**Remove**, in a server's settings or its ⋯ menu, asks once. Then the server forgets the app, and a server on your account leaves the account too. Its sessions stay on it. If the server can't be reached then, remove the app there with `arakun-server unpair <device>`.
 
 ## Keep it running
 
