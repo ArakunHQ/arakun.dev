@@ -44,7 +44,7 @@ Signed in, the Phone tab lists:
 - **Signed-in devices:** every device signed in to the account, with its kind and when it was last used. **Sign out** signs one out.
 - **Your computers:** the account's computers that run the app, online or when last seen. **Remove** takes one off the account, after a question that names it. A computer still signed in comes back the next time it connects.
 
-On the phone, each computer in the list has **Remove**, and the page's Phone tab lists the account's signed-in devices with **Sign out**. With several computers, push notifications come only from the computer you opened last.
+On the phone, each computer in the list has **Remove**, and the page's Settings tab lists the account's signed-in devices with **Sign out**. With several computers, push notifications on the page come only from the computer you opened last.
 
 <Warning>
 Anyone who signs in to your GitHub account, or holds one of its sessions, can reach every computer of the account. Sign out the devices you do not know.
@@ -60,11 +60,43 @@ Over the local network or Tailscale, press **Pair a phone**. Scan the code with 
 
 The code or link works once. Each phone gets a key of its own, which you can revoke under **Paired phones**. That list shows only the phones paired with a code.
 
+The hosted relay's free plan allows 10 computers per account. Each computer takes up to 5 phones at once and 100,000 frames a day (UTC).
+
+## Phone apps
+
+The iOS and Android apps reach your computers the same way, only by signing in with GitHub. They have no link or code for the relay.
+
+The apps are in beta. To ask for an invite, in the Phone tab, signed in:
+
+<Steps>
+<Step title="Type the email for the invite">
+
+Under **Phone app beta**, type your Apple ID for iOS or your Google account for Android. It starts as your GitHub email.
+
+</Step>
+<Step title="Join the beta">
+
+Press **Join the iOS beta** or **Join the Android beta**. Testers are added by hand, so the row says you signed up until the TestFlight or Google Play invite is on its way, then that you are in. **Change email** fixes the address while you wait.
+
+</Step>
+</Steps>
+
+The apps tell you when a turn finishes, when the agent needs a permission or an answer, and when something goes wrong. Pick which of the three you get: in Settings on iOS, under Account in the inbox's menu on Android. The Android app gets notifications from every computer it has opened while they are on.
+
 ## Run your own relay
 
 The relay defaults to the hosted one at `app.arakun.dev`. The relay can't hand your computer's address to anyone else: it comes from a key only your computer has.
 
 You can run your own: it is a Cloudflare Worker in the `cloud/` folder of the repository. Point `relay_base` in `phone.json` at it, and set `ARAKUN_TEAMS_URL` to the same server. Arakun sends your session only to the server that issued it, so when the two differ the relay stays signed out and the Phone tab names both addresses.
+
+## On a tablet or a computer
+
+On a wider screen, the page keeps the open screen in a pane and puts a column beside it:
+
+- **Tablet (768 px or more):** a rail with the tabs, **+**, a tile per live session and the computer.
+- **Desktop browser (1,200 px or more):** a sidebar that lists your sessions by state.
+
+The page is dark, and light when the device is set to a light appearance.
 
 ## Send prompts
 
