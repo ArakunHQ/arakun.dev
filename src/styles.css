@@ -343,42 +343,46 @@ svg {
 }
 .sn nav {
   display: flex;
-  gap: var(--spacing-8);
+  gap: var(--spacing-2);
+  align-items: center;
   margin-right: auto;
   font-size: var(--text-lg);
   color: var(--color-text-muted);
 }
+/* Each link is a pill. The active one fills in and makes room for its dot, so the
+   dot sits inside the pill instead of in the gap next to the previous link. */
 .sn nav a {
   position: relative;
-  transition: color 0.2s;
+  padding: var(--spacing-1) var(--spacing-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.2s,
+    padding 0.3s var(--ease);
 }
-.sn nav a::after {
-  position: absolute;
-  right: 100%;
-  bottom: -6px;
-  left: 0;
-  height: 1px;
-  content: '';
-  background: currentColor;
-  transition: right 0.25s var(--ease);
-}
-.sn nav a:hover,
-.sn nav a[data-status='active'] {
+.sn nav a:hover {
   color: var(--color-text);
+  background: var(--color-raised);
 }
-.sn nav a:hover::after {
-  right: 0;
+.sn nav a[data-status='active'] {
+  padding-left: calc(var(--spacing-3) + 6px + var(--spacing-2));
+  color: var(--color-text);
+  background: var(--color-raised);
+  border-color: var(--color-line-strong);
 }
 .sn nav a::before {
   position: absolute;
   top: 50%;
-  left: -12px;
-  width: 5px;
-  height: 5px;
-  margin-top: -2px;
+  left: var(--spacing-3);
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
   content: '';
   background: var(--color-accent);
   border-radius: var(--radius-full);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
   opacity: 0;
   transform: scale(0);
   transition:
@@ -389,7 +393,8 @@ svg {
   opacity: 1;
   transform: scale(1);
 }
-.sn .tt {
+.sn .tt,
+.sn .gh {
   display: grid;
   flex: none;
   place-items: center;
@@ -403,11 +408,23 @@ svg {
     background 0.2s,
     transform 0.12s ease;
 }
-.sn .tt:hover {
+.sn .ctas {
+  display: flex;
+  flex: none;
+  gap: var(--spacing-2);
+}
+.sn .gh {
+  margin-right: 0;
+  /* Sits close to Download, like the theme toggle on its other side. */
+  margin-left: calc(var(--spacing-4) - clamp(16px, 4vw, 48px));
+}
+.sn .tt:hover,
+.sn .gh:hover {
   color: var(--color-text);
   background: var(--color-line);
 }
-.sn .tt:active {
+.sn .tt:active,
+.sn .gh:active {
   transform: scale(0.92);
 }
 .sn .tt svg {
@@ -421,10 +438,15 @@ svg {
     margin-right: 0;
   }
   .sn nav {
-    gap: var(--spacing-4);
+    gap: var(--spacing-1);
   }
-  .sn nav .gh {
-    display: none;
+  .sn .gh {
+    margin-left: 0;
+  }
+  .sn .ctas .btn {
+    height: 32px;
+    padding-inline: var(--spacing-3);
+    font-size: var(--text-md);
   }
   .sn .dl {
     display: none;
@@ -435,8 +457,17 @@ svg {
     gap: var(--spacing-3);
   }
   .sn nav {
-    gap: var(--spacing-3);
+    gap: 0;
     font-size: var(--text-md);
+  }
+  .sn nav a {
+    padding-inline: var(--spacing-2);
+  }
+  .sn nav a[data-status='active'] {
+    padding-left: calc(var(--spacing-2) + 6px + var(--spacing-2) - 2px);
+  }
+  .sn nav a::before {
+    left: var(--spacing-2);
   }
   .sn nav .cl {
     display: none;
@@ -698,17 +729,25 @@ svg {
   gap: var(--spacing-2);
 }
 
-/* AppShot: a real capture that tilts toward the pointer. */
+/* AppShot: a real capture that tilts toward the pointer. The frame clips it to a radius.
+   The shadow is a box-shadow on the frame, not a filter on the image: a drop-shadow
+   filter under a 3D transform leaves a dark seam along the edges. */
 .shot {
   aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.4);
   transform: perspective(1600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  backface-visibility: hidden;
   transition: transform 0.25s ease-out;
 }
+/* Not display: block, which would beat .only-dark and .only-light. */
 .shot img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.35));
+  vertical-align: top;
+  object-fit: cover;
 }
 
 /* FeatureCard */
@@ -1131,6 +1170,33 @@ svg {
   padding: 48px 8px 0;
   margin: 0 auto;
   overflow: hidden;
+}
+/* Features tour: text beside a capture, the sides swapping each row. */
+.tour {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+}
+.tour-row {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--spacing-12);
+  align-items: center;
+}
+.tour-row:nth-child(even) > .stack {
+  order: 1;
+}
+@media (max-width: 900px) {
+  .tour {
+    gap: var(--spacing-16);
+  }
+  .tour-row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+  }
+  .tour-row:nth-child(even) > .stack {
+    order: 0;
+  }
 }
 .split {
   display: grid;
@@ -1919,6 +1985,135 @@ svg {
   .blog-figure[data-wide='true'] {
     margin-right: calc(var(--gutter) * -1);
     margin-left: calc(var(--gutter) * -1);
+  }
+}
+
+/* Diagrams: Flow (steps joined by arrows) and Layers (stacked bands) */
+.diagram {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
+  margin: var(--spacing-8) 0;
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+.diagram figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+.diagram-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text);
+}
+.diagram-caption {
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  color: var(--color-text-faint);
+}
+.blog-post .flow-steps {
+  flex-direction: row;
+  gap: var(--spacing-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.blog-post .flow-step {
+  display: flex;
+  flex: 1 1 0;
+  gap: var(--spacing-2);
+  align-items: center;
+  min-width: 0;
+}
+.flow-step:first-child {
+  /* The first step has no arrow, so it gives that room back to the others. */
+  flex-grow: 0.8;
+}
+.flow-arrow {
+  flex: none;
+  color: var(--color-text-faint);
+}
+.flow-box,
+.layer {
+  background: var(--color-ground);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+}
+.flow-box {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  align-self: stretch;
+  justify-content: center;
+  min-width: 0;
+  padding: var(--spacing-3);
+}
+.flow-box[data-highlight='true'],
+.layer[data-highlight='true'] {
+  border-color: var(--color-accent-ink);
+}
+.flow-label {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+.flow-box[data-highlight='true'] .flow-label,
+.layer[data-highlight='true'] .layer-label {
+  color: var(--color-accent-ink);
+}
+.flow-note {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--color-text-faint);
+}
+.layers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+.layer {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: var(--spacing-4);
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+}
+.blog-post .layer-items {
+  flex-flow: row wrap;
+  gap: var(--spacing-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.blog-post .layer-items li {
+  padding: 2px var(--spacing-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text);
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+}
+@media (max-width: 720px) {
+  .blog-post .flow-steps {
+    flex-direction: column;
+  }
+  .blog-post .flow-step {
+    flex-direction: column;
+  }
+  .flow-arrow {
+    transform: rotate(90deg);
+  }
+  .layer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-2);
   }
 }
 

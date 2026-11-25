@@ -60,7 +60,7 @@ permissions: {}
 env:
   # The members of the ArakunHQ/maintainers team. The workflow's token can't
   # read team membership, so keep this in step by hand, here, in
-  # human-approval.yml and in the workflows of ArakunHQ/arakun.
+  # human-approval.yml, in preview.yml and in the workflows of ArakunHQ/arakun.
   TEAM: KarloAldrete rikvisser-dev daniektj
 
 jobs:

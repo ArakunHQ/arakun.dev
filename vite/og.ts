@@ -7,6 +7,7 @@ import type { Plugin } from 'vite'
 import { runnerImport } from 'vite'
 import type * as Cards from '../src/og-cards'
 import { blogContent } from './blog'
+import { arts, color, el, type Node } from './og-art'
 
 type OgCard = Cards.OgCard
 
@@ -20,9 +21,6 @@ type OgCard = Cards.OgCard
 
 const W = 1200
 const H = 630
-
-// Brandbook tokens. Cards are always the dark card: link previews can't follow light or dark mode.
-const color = { ground: '#0b0b0b', text: '#f2f2f2', muted: '#a3a3a3', faint: '#737373' }
 
 const require = createRequire(import.meta.url)
 const fontFile = (pkg: string, file: string) =>
@@ -59,22 +57,12 @@ function titleSize(title: string) {
   return title.length <= 16 ? 76 : 60
 }
 
-interface Node {
-  props: Record<string, unknown>
-  type: string
-}
-const el = (
-  type: string,
-  style: Record<string, unknown>,
-  children?: unknown,
-  props: Record<string, unknown> = {}
-): Node => ({
-  type,
-  props: { style, children, ...props },
-})
-
 function layout(card: OgCard, assets: Assets): Node {
   const size = titleSize(card.title)
+  const art = card.art ? arts[card.art] : undefined
+  if (card.art && !art) {
+    throw new Error(`${card.path}: no cover art named "${card.art}" in vite/og-art.ts`)
+  }
   return el(
     'div',
     {
@@ -86,17 +74,19 @@ function layout(card: OgCard, assets: Assets): Node {
       fontFamily: 'Geist',
     },
     [
-      // The mark's viewBox is 184 × 144.
-      el(
-        'img',
-        { position: 'absolute', right: -110, top: 104, width: 670, height: 524 },
-        undefined,
-        {
-          src: assets.raccoon,
-          width: 670,
-          height: 524,
-        }
-      ),
+      // The mark's viewBox is 184 × 144. A post with cover art shows that instead.
+      art
+        ? art(assets)
+        : el(
+            'img',
+            { position: 'absolute', right: -110, top: 104, width: 670, height: 524 },
+            undefined,
+            {
+              src: assets.raccoon,
+              width: 670,
+              height: 524,
+            }
+          ),
       el(
         'div',
         {
@@ -117,7 +107,7 @@ function layout(card: OgCard, assets: Assets): Node {
           position: 'absolute',
           left: 72,
           bottom: 72,
-          width: 548,
+          width: art ? 520 : 548,
           display: 'flex',
           flexDirection: 'column',
           gap: 23,

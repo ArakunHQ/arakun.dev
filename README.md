@@ -154,7 +154,8 @@ in the footer, and every download button, follow it. No deploy is needed.
 ## Deploys
 
 Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
-"Deploy to arakun.dev" job in `.github/workflows/ci.yml`). Pull requests never deploy.
+"Deploy to arakun.dev" job in `.github/workflows/ci.yml`). Pull requests never deploy
+there; they get a preview (see "Previews" below).
 
 - `wrangler.jsonc` attaches arakun.dev and www.arakun.dev to the Worker as custom
   domains. A deploy without one of them detaches it, so keep both. The `workers.dev`
@@ -172,6 +173,37 @@ Every push to `main` deploys to https://arakun.dev, once CI's checks pass (the
   `pnpm exec wrangler rollback`, or pick an older version under Workers >
   arakun-website > Deployments in the Cloudflare dashboard. Then revert the commit on
   `main`, or the next push deploys it again.
+
+## Previews
+
+Every pull request gets a preview of the site at
+`https://arakun-website-pr-<number>.<account>.workers.dev`. A comment on the pull
+request gives the address. Each push updates the preview, and closing the pull request
+removes it (`.github/workflows/preview.yml`).
+
+- A pull request from the team, or from Dependabot, deploys once CI passes. One from
+  anyone else deploys once a maintainer approves the pull request, the same approval the
+  "Human approval" status waits for, and again after each new push and approval. A
+  push removes the preview until a maintainer approves the new commit. Read the diff
+  first: the preview serves that code from our Cloudflare account.
+- CI keeps each build for 30 days. If an approval comes later, the comment links to
+  the CI run; re-running it deploys the preview.
+- A preview is a Worker of its own, `arakun-website-pr-<number>`, with no route and no
+  custom domain. It can't change arakun.dev.
+- Analytics are off in a preview, and it has no `GITHUB_TOKEN`, so it asks GitHub for
+  the releases without one. If GitHub refuses, it serves the last answer it has, as
+  arakun.dev does, and before it has one, the releases in `src/release-notes.ts`.
+- CI builds the pull request without a secret and keeps the build. The Preview
+  workflow runs from `main` and only uploads that build. It never runs code from the
+  pull request, and it writes the Wrangler config itself. Keep it that way: a change
+  to `preview.yml` takes effect once it is on `main`.
+- The workflow uses the `production` environment, with its `CLOUDFLARE_API_TOKEN` and
+  `CLOUDFLARE_ACCOUNT_ID`. It runs from `main`, which the environment allows. Its
+  deploys show under "production" in GitHub's list of deployments.
+- The account needs a workers.dev subdomain (Workers & Pages in the Cloudflare
+  dashboard).
+- The team is the `TEAM` list in `preview.yml`. Keep it in step with the other
+  workflows.
 
 ## Contributing
 

@@ -31,6 +31,8 @@ Its tools run inside a sandbox: bubblewrap on Linux, Seatbelt (`sandbox-exec`) o
 
 The model's API calls run outside the sandbox, in the agent's own process. So does what the agent can't do from inside, such as sending mail or pushing: Arakun does it for the agent, and only after you approve it.
 
+The approval for an email shows each attachment's size. Arakun sends the file you approved: if it changed after you approved, the email is not sent. A file with more than one hard link is never sent.
+
 <Danger>
 `--no-sandbox` runs the tools on your machine, without a sandbox. Arakun waits for you to confirm it first; `--yes` confirms it at once.
 </Danger>
@@ -46,6 +48,8 @@ The model's API calls run outside the sandbox, in the agent's own process. So do
 | `full` | Everything but a list of actions that always ask, such as mail, `git push`, publishing and system changes |
 
 The policy only saves you from answering for harmless calls. The sandbox is what keeps the agent in. When the policy can't tell what a command does, it asks.
+
+For `sh <file>` or `./script`, the policy reads the script to judge what it runs. It only reads a regular file inside the workspace or the sandbox's `/tmp`, after following symlinks. Any other script needs your approval.
 
 A call that asks waits for your answer:
 

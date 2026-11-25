@@ -45,3 +45,11 @@ arakun logs 2 --until compiled
 ```
 
 This waits until terminal 2 prints "compiled", in any case, and prints what it printed. Only output after the call counts. It fails after `--timeout <secs>`, 60 seconds by default.
+
+## See the servers that run
+
+While a local server runs in one of your projects, the status bar says how many do and the memory they hold, such as **2 running · 780 MB**. Click it to list them by project: the port, the command, who started it, its memory and how long it has run. Who started it is a dock terminal, an agent, or something outside Arakun whose folder is in an environment.
+
+Under the pointer, a row can open the port in the browser, show its terminal or stop it. **Stop** ends that process and what it started, never the terminal's shell or the agent.
+
+The **Running** piece (Customize › Sidebar) opens the same list from the sidebar, with the count on its icon.

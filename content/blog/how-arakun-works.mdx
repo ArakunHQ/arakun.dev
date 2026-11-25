@@ -1,0 +1,134 @@
+---
+title: "How Arakun works: one task, from launch to a finished agent"
+cardTitle: "How Arakun works"
+description: "A tour of the Arakun desktop app: one Rust binary on GPUI, a worktree per task, and agents that talk back."
+published: 2026-11-22
+authors: [rik-visser]
+categories: [engineering]
+cover: architecture
+---
+
+## The short answer
+
+Arakun is one Rust program. It draws its own window on the GPU with GPUI, the UI framework from the Zed editor, and it has no web view around the interface. The coding agents are separate programs. Arakun starts them, talks to them over their standard input and output, and shows what they do.
+
+This post follows one task through the app: you launch it, open a project, start an agent, and the agent runs commands and reports back. Each section covers the part of the code that task passes through. Everything here describes <Release version="v0.18.1" />.
+
+<Layers
+  title="The desktop app at a glance"
+  caption="The window and the core are one process. Everything in the bottom row is a child process."
+  rows={[
+    { label: "Window", items: ["project rail", "tabs", "sessions", "terminal dock", "palette"] },
+    { label: "arakun-core", items: ["agent", "terminal", "git", "browser", "theme and ui"], highlight: true },
+    { label: "Child processes", items: ["agents", "shells", "git", "Chromium", "Dynamic Island"] },
+  ]}
+/>
+
+## One binary with several jobs
+
+The first lines of `main` decide what this run of the binary is for, before any window exists.
+
+If Chromium started it as one of its helper processes, it becomes that helper. If you typed `arakun open file.rs` in a terminal, it sends the request to the app that is already running and exits. Only when neither applies does it load fonts, bind keys and open the window.
+
+Using the same binary for the command line has a practical benefit. The app puts a small `arakun` shim first on `PATH` for everything it starts, and the shim points back at the binary that is running. The command always matches the app, and it works even when Arakun was never installed system-wide.
+
+## A thin binary over a core crate
+
+Most of the code that does the work lives in a crate called `arakun-core`: agents, terminals, git, browser tabs, the theme and the UI kit. The desktop app is one program built on it. `arakun-server`, which runs sessions on a machine nobody sits at, is another. The examples in the repository are a third.
+
+The three need different answers to a few questions. Where is the memory kept? Is there a control socket? Core asks through one small struct of function pointers called `Host`, which `main` fills in first thing. The server and the examples keep the defaults. No file is shared by path between packages, so the server builds without any display libraries.
+
+## Projects, environments and sessions
+
+The model has three levels. A project is a git repository. An environment is one of that repository's worktrees. Each environment owns its sessions and terminals.
+
+Giving every task its own worktree is what lets several agents work on one repository at once. Each has its own files and its own branch, so one agent's half-finished edit never breaks another's build.
+
+Arakun does not link a git library. It runs the `git` command line, always on background threads, and three rules keep that safe:
+
+- **Every call has a time limit.** The background pool has only a few threads, and a hung call would hold one for good.
+- **Polling never takes the index lock.** The app sets `GIT_OPTIONAL_LOCKS=0`, so its `git status` cannot block an agent that is committing in the same worktree.
+- **The first frame does not wait for git.** The list of worktrees is saved with the rest of the state, so the window shows the real list at once and corrects it when git answers.
+
+## Driving an agent
+
+Arakun does not contain Claude Code, Codex or any other agent. Each one is a program on your machine, and a session starts one process of it.
+
+The app talks to that process in JSON-RPC 2.0 over its standard input and output. Most agents use ACP, the Agent Client Protocol. Claude Code and Codex get there through adapters, while OpenCode, Devin, Cursor and Antigravity have ACP servers of their own. Droid uses Factory's native protocol, which carries more of what Droid knows, such as credits and context window stats.
+
+<Flow
+  title="One turn of an agent session"
+  steps={[
+    { label: "Your prompt", note: "typed in the composer" },
+    { label: "Thread", note: "owns one process and one session", highlight: true },
+    { label: "Agent process", note: "JSON-RPC on stdio" },
+    { label: "Transcript", note: "built from what streams back" },
+  ]}
+/>
+
+The piece in the middle is called `Thread`. It owns one agent process and one session, and it turns whatever the agent sends into the same transcript entries. The view that draws the conversation never learns which protocol ran. Workers AI is the one agent Arakun runs itself. Its tool loop lives in the app, and it still speaks ACP to its `Thread`, only over in-memory channels.
+
+A project can ask for its agents to be sandboxed, with Seatbelt on macOS and bubblewrap on Linux. The agent can then write the workspace, its caches and temporary folders. Credentials of other tools stay hidden from it, and so do secret files inside the workspace, such as `.env` files and private keys.
+
+## Terminals that cost nothing when hidden
+
+Agents produce a lot of terminal output, and several of them do it at the same time. A terminal in Arakun is Alacritty's emulator on a PTY, painted by GPUI.
+
+<Flow
+  title="From a shell to pixels"
+  caption="However much the shell prints, the window hears about it once per frame."
+  steps={[
+    { label: "Shell", note: "writes to the PTY" },
+    { label: "Reader thread", note: "parses into the grid" },
+    { label: "Dirty flag", note: "one wake-up per frame", highlight: true },
+    { label: "Paint", note: "visible rows only" },
+  ]}
+/>
+
+A reader thread parses the PTY's output straight into the grid. It tells the UI only that something changed, through one flag. The first change after a frame sends one message. Every later change is dropped until the view has painted again and cleared the flag.
+
+So a command that floods the terminal costs the UI at most one notification per frame. A terminal that is not on screen is never painted, and it costs the UI nothing. When a frame is drawn, the painter locks the grid once, copies the visible rows and unlocks before it shapes any text. GPUI caches shaped text between frames, so a row that did not change is a hash lookup.
+
+The [Linux benchmark](/blog/arakun-vs-t3code-vs-orca-benchmark) measures the result, including a 14.8 MB flood.
+
+## The agent talks back
+
+So far the app drives the agent. The other direction matters as much: an agent can use the app.
+
+Everything Arakun starts inherits `ARAKUN_SOCKET` and the `arakun` shim. When an agent runs `arakun browse http://localhost:3000`, the command connects to a Unix socket, sends one line of JSON and reads one line back. Windows 10 and later have the same kind of socket, so the protocol is the same there.
+
+<Flow
+  title="An agent opens a page beside the chat"
+  steps={[
+    { label: "Agent", note: "runs arakun browse" },
+    { label: "Shim on PATH", note: "the same binary" },
+    { label: "Control socket", note: "one JSON line each way", highlight: true },
+    { label: "Window", note: "opens the tab" },
+  ]}
+/>
+
+Through that socket an agent can open pages and files, read a terminal's recent output, run the project's check and notify you. A sandboxed agent reaches a stricter socket, which refuses any command that would run or open something outside the sandbox.
+
+Memory uses the same command and no socket at all. `arakun mem` reads and writes plain JSON files, one per repository and one about you, with a file lock for writers. Arakun puts an index of them in each new session's system prompt, so the next session starts with what the last one learned. Because the files need no running app, headless agents use them too.
+
+## Browser tabs without a browser shell
+
+A browser tab is Chromium, through CEF, rendered off-screen into a GPUI view. Arakun paints the pixels itself, next to the terminals and the chat.
+
+Chromium is the heaviest part of the app, so it is loaded late. Nothing of it is in memory until you open the first browser tab, and every tab after that shares one context. With no tabs open, nothing from it wakes up.
+
+## What survives a restart
+
+Projects, environments, tabs and window position are kept in one `state.json`. Each session's transcript is a file of its own.
+
+Every save goes through the same routine. The bytes go to a temporary file beside the target, the file is flushed to disk, it is renamed over the old one, and the directory is flushed too. A crash or a power cut leaves either the old file or the new one.
+
+Reading is as careful. A file Arakun cannot parse, for example one written by a newer version, is renamed aside before anything can save over it, and the window says so once. On SIGTERM, SIGINT and SIGHUP the app quits the way it does when you close the window, so everything is saved first.
+
+## What lives outside the window
+
+Two parts of the desktop app run in processes of their own, on purpose.
+
+The Dynamic Island is one. It has only its own small window, so it paints at the display's rate whatever the main window is doing. On Linux and Windows it stays up when the app is closed. On macOS it stays only while a headless agent is still running. Headless agents are the other. `arakun agent run` starts a session in its own process, which drives the same `Thread` on a GPUI app without a window, so the session goes on after you quit.
+
+The relay, the phone remote and the server are separate programs. They deserve a post of their own.

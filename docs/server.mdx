@@ -35,25 +35,38 @@ It also installs what the server runs agents with, if it is missing:
 On a Mac or Windows, [install the app](/install) and use `arakun server` in place of `arakun-server`.
 
 </Step>
+<Step title="Sign in">
+
+Through the relay (the default), the server needs a sign-in to your account:
+
+```sh
+arakun-server login   # once: sign in with GitHub, for the relay
+```
+
+`login` prints a code and `https://github.com/login/device`. Open that address on any device, enter the code and approve. The terminal says "Signed in as" and your login. The machine needs no browser.
+
+Over Tailscale or the local network (`--reach tailscale` or `--reach lan`), no account is needed. Skip this step.
+
+</Step>
 <Step title="Start it">
 
 ```sh
 arakun-server serve   # runs until Ctrl+C, a signal or `arakun-server quit`
 ```
 
+Through the relay without a sign-in, `serve` in a terminal stops and says to run `login`.
+
 </Step>
-<Step title="Pair a device">
+<Step title="Reach it from a device">
 
-In another terminal:
+Through the relay, there is no link. Devices signed in to the same GitHub account get in:
 
-```sh
-arakun-server pair    # a link and its QR code
-```
+- In the app: sign in with GitHub, then open the Computers tab. The server joins the list under **Your servers** by itself.
+- On a phone, or in any browser: open `https://app.arakun.dev`, sign in as the same account and pick the server. It is the page the [phone remote](/phone-remote) uses: it lists the sessions, reads them live, and notifies you when one finishes or needs you.
 
-The link is good for two minutes and pairs one device. Use it in one of two ways:
+`arakun-server pair` says the same.
 
-- In the app: open the Servers tab and paste the link.
-- On a phone, or in any browser: open the link. It is the page the [phone remote](/phone-remote) uses: it lists the sessions, reads them live, and notifies you when one finishes or needs you.
+Over Tailscale or the local network, run `arakun-server pair` in another terminal. It prints a link and its QR code. The link is good for two minutes and pairs one device. In the app's Computers tab, press **Add a computer**, pick **By link** and paste it. Or open it on a phone or in any browser.
 
 </Step>
 <Step title="Work with sessions">
@@ -69,12 +82,28 @@ arakun-server approve <id>                   # or deny: answer what it asks
 arakun-server stop <id>                      # stop its turn
 arakun-server devices                        # paired devices
 arakun-server unpair <device>                # forget one
+arakun-server machines                       # the account's machines, this one marked
+arakun-server forget <label>                 # remove one of them from the account
 ```
 
 `arakun-server help` lists them all.
 
 </Step>
 </Steps>
+
+## The sign-in
+
+- `login` again checks that the sign-in still works and says who is signed in. `login --force` signs in again and ends the old sign-in.
+- `logout` ends the sign-in. A running server stays up and leaves the relay. Devices on the network or Tailscale stay.
+- `status` shows who it is signed in as, "Not signed in", or that the sign-in ended.
+- A sign-in lasts at most 180 days, or 90 days without use. Run `arakun-server login` again then.
+- `forget <label>` disconnects a running machine. It stays out until it is restarted or signed in again with `login`.
+
+<Note>
+A server paired through the relay before v0.19.0 must sign in: run `arakun-server login` on it once. A device paired with a link through the relay must sign in too.
+
+In the Computers tab, such a server says it was paired by link before 0.19. Sign in in the app and run `arakun-server login` on the server with the same GitHub account, or pair it again over Tailscale.
+</Note>
 
 ## Agents
 
@@ -84,7 +113,7 @@ Claude Code and Codex also need their ACP adapter. The server installs a missing
 
 ## In the app
 
-Once paired, the app connects to the server when it starts. Each folder the server offers is an environment in the sidebar, marked with the machine's name. A folder whose repository you also have here (the same `origin`) joins that project.
+Once connected, the app connects to the server when it starts. Each folder the server offers is an environment in the sidebar, marked with the machine's name. A folder whose repository you also have here (the same `origin`) joins that project.
 
 Its sessions open in the same tabs, with the same composer, as sessions here. Send, stop, approve and answer go to the server. In a server's environment:
 
@@ -96,26 +125,33 @@ Its sessions open in the same tabs, with the same composer, as sessions here. Se
 
 "New environment" makes a worktree on a server too: <kbd>Alt</kbd>+click the **+** and pick the machine, or right-click a server's environment. It goes in `~/arakun-workspaces/<project>/<branch>` there.
 
-To spread new environments across machines, turn on **Spread across machines** in the Servers tab. A new environment then goes to the least busy connected machine that has the project, this computer included. Set each machine to Prefer, Normal or Avoid there.
+To spread new environments across machines, turn on **Spread new environments** at the foot of the Computers tab's list. A new environment then goes to the least busy connected machine that has the project, this computer included. Set each machine to Prefer, Normal, Avoid or Off under **New environments** in its settings there. A preferred machine takes new environments before the others. An avoided one takes them only when no other can. One that is Off never takes them this way, but you can still pick it in the New environment dialog. When every machine is Off, a new environment goes to the open environment's machine.
 
-To add a folder on a server, press the folder button on it in the Servers tab. Clone runs that machine's git, with its logins. In the Marketplace, "Install on" adds a plugin or MCP server for Claude Code on a paired server.
+To add a folder on a server, pick it in the Computers tab and press **Add a folder**. Clone runs that machine's git, with its logins. In the Marketplace, "Install on" adds a plugin or MCP server for Claude Code on a paired server.
 
 Every paired server also mirrors this computer. When it connects, and after each install here, it adds the plugins (and their marketplaces), the user MCP servers, the skills from skills.sh and the MCP sign-ins it lacks. A notice lists what was added. What you installed in a repo just for you goes to the server's folders with the same `origin`. What you shared with the repo goes with git. The mirror never removes anything.
 
 - Over plain http, only plugins and skills go.
 - A server on macOS doesn't take sign-ins, since Claude keeps them in the Keychain there.
 
-"Forget" on a server in the Servers tab removes it, and has the server forget the app. If the server can't be reached then, remove the app there with `arakun-server unpair <device>`.
-
 <Tip>
 Set `ARAKUN_GITHUB=readonly` on the server, before `service install`, to keep it from pushing or opening pull requests.
 </Tip>
 
+## The Computers tab
+
+The Computers tab lists this computer first, then your servers, each with its status as a dot and a word: Online, Connecting, Offline or Not connected. Pick one to see how it is reached, its environments and their sessions, its agents and their plan limits, and its settings. A session opens in its project.
+
+Signed in, a server on your account joins the list by itself. Signed out, the list says your account's servers show up once you sign in. **Add a computer** shows both ways to add one: **Your own server**, signed in with your GitHub account, or **By link**, for one on Tailscale or your network.
+
+**Remove**, in a server's settings or its ⋯ menu, asks once. Then the server forgets the app, and a server on your account leaves the account too. Its sessions stay on it. If the server can't be reached then, remove the app there with `arakun-server unpair <device>`.
+
 ## Keep it running
 
-`service install` runs `serve` as a service: systemd on Linux, launchd on macOS. It starts the server now, again after a crash, and at boot (Linux) or login (macOS).
+`service install` runs `serve --service` as a service: systemd on Linux, launchd on macOS. It starts the server now, again after a crash, and at boot (Linux) or login (macOS).
 
 ```sh
+arakun-server login               # through the relay: sign in, before or after install
 arakun-server service install     # takes serve's flags: --reach, --port, --relay
 arakun-server service status      # installed, running, lingering, and how it is reached
 arakun-server service logs -f     # what it prints
@@ -124,12 +160,13 @@ arakun-server service uninstall   # stop it and remove the service; the data sta
 
 `arakun-server quit` stops it until the next boot or login. `service install --print` shows the service file and installs nothing.
 
+- **Not signed in.** Through the relay, a service with no sign-in does not fail. It runs signed out, and connects as soon as you run `arakun-server login`, with no restart. A service installed before v0.19.0 needs only `arakun-server login` once after updating.
 - **Logged out (Linux).** It keeps running after you log out, so you can set it up over SSH. If turning that on needs root, it prints the `sudo` command to run.
 - **As root.** Many VPSs only have root. There it installs a system unit that runs as root. The binary must then be in a folder only root can write to, such as `/usr/local/bin`, not a home folder. To run the agents as another user, log in as that user and install from there.
 - **macOS.** Use `arakun server service install`. It runs from login to logout, so a Mac nobody sits at needs automatic login.
 - **Agents.** The service gets the `PATH` of the shell you install it from, so it finds the same agents. If Node comes from mise or nvm, install it from a shell where `node` works. If you install an agent somewhere else later, run `service install` again.
 
-On Windows there is no `service` command yet. To keep the server running, start `arakun server serve` from Task Scheduler, with the trigger "At log on".
+On Windows there is no `service` command yet. To keep the server running, start `arakun server serve --service` from Task Scheduler, with the trigger "At log on".
 
 ### Update it
 
@@ -148,6 +185,8 @@ systemctl --user restart arakun-server
 <Tab title="relay">
 
 `--reach relay` is the default. The server dials out, so it works behind a firewall, and everything between the device and the server is end-to-end encrypted. `--relay <url>` names a relay of your own.
+
+It needs `login`, before or after it starts. It lets in the devices signed in to the same account, with nothing to pair.
 
 </Tab>
 <Tab title="tailscale">
@@ -170,6 +209,6 @@ What `serve` is started with is kept for the next run.
 
 ## What it keeps
 
-The server keeps its data in `~/.local/share/arakun/server/`, which only your user can read: paired devices, folders, sessions and their transcripts, and photos sent with prompts. The app's own files are not touched, so the app and a server can run side by side. `ARAKUN_SERVER_DIR` names another folder, for a second server on the same machine.
+The server keeps its data in `~/.local/share/arakun/server/`, which only your user can read: paired devices, the sign-in (`account.json`, which `logout` removes), folders, sessions and their transcripts, and photos sent with prompts. The app's own files are not touched, so the app and a server can run side by side. `ARAKUN_SERVER_DIR` names another folder, for a second server on the same machine.
 
 A turn that is running when the server stops is cut off. Its session is still there after a restart, and the next message picks it up.

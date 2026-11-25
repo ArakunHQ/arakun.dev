@@ -39,7 +39,7 @@ arakun page eval <js>            # run JavaScript in the page and print the resu
 With several tabs, `-t N` picks one: `arakun page -t 2 screenshot`.
 
 <Note>
-`click`, `type`, `press` and `eval` only act on pages served from this machine: `localhost`, `127.0.0.1` and `file://`.
+`click`, `type`, `press` and `eval` only act on pages served from this machine: `localhost`, `127.0.0.1` and `file://`. They refuse a page that has not finished loading, so a page that is navigating away can't take the action.
 </Note>
 
 ## Links open in Arakun
@@ -55,3 +55,11 @@ Release builds include the browser. It is based on CEF (Chromium) and adds a few
 - **Linux.** Keep the `cef` folder next to `arakun`, or in `~/.local/share/arakun/cef`. Without it, everything but browser tabs works. On Ubuntu 23.10 and later, browser tabs also need an AppArmor profile; a browser tab says why it can't start. The README of ArakunHQ/arakun has the profile.
 - **Windows and macOS.** Browser tabs are barely tested yet.
 - **Built from source.** The `browser` feature is on by default and needs CEF. A build with `--no-default-features` has no browser and opens links in your own browser.
+
+Inspect (<kbd>F12</kbd>) opens Chromium's DevTools for the page in a window of its own.
+
+The browser opens no remote debugging port unless you set `ARAKUN_CDP_PORT=<port>` in the environment Arakun starts in, for tools such as Playwright.
+
+<Warning>
+The debugging port has no password. Any program on the machine can use it to drive your signed-in browser and read your files, including sandboxed agents and other users. Agents may not open or drive pages on it.
+</Warning>

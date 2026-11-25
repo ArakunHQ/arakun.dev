@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import {
   AppShot,
+  Eyebrow,
   FeatureCard,
   InstallBand,
   PageHeader,
@@ -11,6 +12,31 @@ import { innerPageHead } from '#/seo'
 import { pages, sessions, site } from '#/site'
 
 const page = pages.features
+
+// Half the page beside its text, so a smaller capture is enough.
+const TOUR_SIZES = '(min-width: 1280px) 640px, (min-width: 900px) 55vw, 100vw'
+
+/** A closer look at three parts of the app, each with a real capture in both themes. */
+const tour = [
+  {
+    shot: 'diff',
+    label: 'Review',
+    title: 'Read every change before it lands',
+    body: "A session's diff opens in a tab, next to the files it changed. Commit, open a pull request or merge from the same panel. The session's agent can write the commit message.",
+  },
+  {
+    shot: 'palette',
+    label: 'Palette',
+    title: 'One palette for everything',
+    body: 'Ctrl+K finds sessions, files, pull requests and what agents remember, and runs every command with its shortcut beside it. Ctrl+Enter asks an agent instead.',
+  },
+  {
+    shot: 'customize',
+    label: 'Customize',
+    title: 'Make it yours, and watch it change',
+    body: 'Seven color schemes in dark and light, more contrast and colorblind diff colors. The Customize panel opens beside your work, so you see each change at once.',
+  },
+] as const
 
 export const Route = createFileRoute('/features')({
   head: () => innerPageHead(page),
@@ -24,6 +50,19 @@ function Features() {
 
       <section className="wrap" style={{ paddingTop: 'var(--spacing-16)' }}>
         <AppShot eager />
+      </section>
+
+      <section className="wrap section tour">
+        {tour.map((row, i) => (
+          <div className="tour-row" data-reveal="" key={row.shot}>
+            <div className="stack">
+              <Eyebrow label={row.label} num={`0${i + 1}`} />
+              <h2 className="h2">{row.title}</h2>
+              <p className="lead">{row.body}</p>
+            </div>
+            <AppShot name={row.shot} sizes={TOUR_SIZES} />
+          </div>
+        ))}
       </section>
 
       <section className="wrap section cards" data-reveal="">
@@ -87,12 +126,12 @@ function Features() {
           title="A Rust app, not a web view"
         />
         <Principle
-          body="Start a session, switch worktrees and open a pull request without leaving the keyboard."
-          num="Keyboard"
-          title="A palette for everything"
+          body="arakun-server runs sessions on a build box or a VPS with no display. The app and your phone follow them from anywhere."
+          num="Server"
+          title="Agents that keep working"
         />
         <Principle
-          body="The source is on GitHub. Linux is supported. Windows and macOS are in beta."
+          body="The source is on GitHub. Linux is supported, Windows is in beta and macOS is experimental."
           num="Open"
           title={`Free under ${site.license}`}
         />

@@ -168,6 +168,12 @@ function Privacy() {
               your operating system. It never holds your email address or your id.
             </p>
             <p>
+              We handle support and feedback in PostHog. We may use AI, such as PostHog's AI
+              features, to sort, summarize and help answer what you send. The AI sees the answer and
+              what it carries, as described above. It makes no decision about you on its own: a
+              person reads the result.
+            </p>
+            <p>
               We may copy feedback into Linear, the tool we use to plan our work, so we can follow
               it up. That copy holds your answer and, if you gave it, your email address.
             </p>
