@@ -39,7 +39,7 @@ arakun page eval <js>            # run JavaScript in the page and print the resu
 With several tabs, `-t N` picks one: `arakun page -t 2 screenshot`.
 
 <Note>
-`click`, `type`, `press` and `eval` only act on pages served from this machine: `localhost`, `127.0.0.1` and `file://`.
+`click`, `type`, `press` and `eval` only act on pages served from this machine: `localhost`, `127.0.0.1` and `file://`. They refuse a page that has not finished loading, so a page that is navigating away can't take the action.
 </Note>
 
 ## Links open in Arakun
