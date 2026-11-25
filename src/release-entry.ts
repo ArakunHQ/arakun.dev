@@ -33,18 +33,17 @@ const endPeriod = /\.$/u
 function withoutComments(text: string): string {
   let kept = ''
   let at = 0
-  for (;;) {
-    const start = text.indexOf('<!--', at)
-    if (start < 0) {
-      return kept + text.slice(at)
-    }
+  let start = text.indexOf('<!--')
+  while (start >= 0) {
     kept += text.slice(at, start)
     const end = text.indexOf('-->', start + 4)
     if (end < 0) {
       return kept
     }
     at = end + 3
+    start = text.indexOf('<!--', at)
   }
+  return kept + text.slice(at)
 }
 
 /** The page renders entries as text; this keeps stray markdown out of them. */
