@@ -1,13 +1,13 @@
 ---
 title: Turn on more tabs
-description: "Add tabs for usage and plan limits, PostHog, Cloudflare, Doop, the Marketplace, Isometric scenes and automations."
+description: "Add tabs for usage and plan limits, PostHog, Cloudflare, Linear, Doop, the Marketplace, Isometric scenes and automations."
 ---
 
 ## Turn tabs on
 
 Open Arakun › Extensions, or Settings › General › Sidebar. Besides Inbox, Runs, Branches and Marketplace, you can turn on:
 
-GitHub, Notes, Memory, Usage, Cloudflare, PostHog, Doop, Isometric, Phone, Computers and Automations.
+GitHub, Notes, Memory, Usage, Cloudflare, PostHog, Linear, Doop, Isometric, Phone, Computers and Automations.
 
 The palette and Customize › Sidebar list only the tabs that are on. A new install starts with none on, except what you set up on first launch: GitHub once the GitHub CLI is signed in, and Phone if you paired one. The choice is kept in `extensions.json` next to the state.
 
@@ -78,6 +78,19 @@ The key needs `user:read`, `organization:read`, `project:read`, `query:read`, `f
 
 Uses the `cf` CLI's sign-in. Its pages show as tabs across the top of the view.
 
+## Linear
+
+The open [Linear](https://linear.app) issues assigned to you, grouped by state (in progress, todo, backlog) with their identifier, title, team and priority, and a search box over them. The tab opens without a project.
+
+Sign in with a personal API key, from Linear › Settings › Security & access › Personal API keys. Read access is enough. Add one sign-in per workspace; the header switches between them. The keys are kept in `~/.local/share/arakun/linear/sessions.json` (`%LOCALAPPDATA%\arakun\linear\sessions.json` on Windows) and go only to Linear's API.
+
+The tab reads the list again when it is 5 minutes old or you refresh, at most every 30 seconds. When Linear's request limit is hit, it waits as long as Linear asks and says how many minutes are left.
+
+Click an issue, or use <kbd>↑</kbd>/<kbd>↓</kbd> and <kbd>Enter</kbd>, to open it with its description and comments. <kbd>/</kbd> goes to the search box.
+
+- **Work on it with agent** starts an agent session in the open project with the issue's identifier, title, description, comments and link. It leaves git and Linear to you: the agent is asked not to commit, push, open a pull request or touch the issue.
+- **Open in Linear** opens the issue in a browser tab, or in your browser when no project is open.
+
 ## Doop
 
 The canvases of a [Doop](https://doop.design) instance and the frames of the one you pick, page by page. A click opens the frame on the canvas in a browser tab. Sign in with the browser, or paste an agent key.
@@ -89,6 +102,8 @@ Accounts › Agents adds Doop's MCP server to Claude Code or Droid, so sessions 
 Plugins, MCP servers and skills to add, and what the agents load now. Discover › Skills searches [skills.sh](https://skills.sh). **Install** copies the skill into `~/.claude/skills`, where Claude Code and Workers AI find it.
 
 A repository with several skills is a package. A skill's details list the other skills in its repository, with **Install all**. Type `owner/repo` or a GitHub link in the search box to list the skills of that repository, also one skills.sh does not know. Skills you already have stay as they are.
+
+When a plugin or MCP server you installed still needs you to sign in before Claude can use it, its card and its details in Discover show **Sign in**. It opens your browser once, and Claude keeps the sign-in fresh after that.
 
 The Marketplace's pages show as tabs across the top of the view.
 
