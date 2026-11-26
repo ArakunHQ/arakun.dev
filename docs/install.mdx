@@ -23,7 +23,7 @@ It downloads the latest release, checks it against `SHA256SUMS` and installs it 
 | Platform | Installs to | To uninstall |
 | --- | --- | --- |
 | macOS | `~/Applications/Arakun.app`, linked as `~/.local/bin/arakun` | `rm -rf ~/Applications/Arakun.app ~/.local/bin/arakun` |
-| Linux | `~/.local/bin/arakun`, and the browser's runtime in `~/.local/share/arakun/cef` | `rm -rf ~/.local/bin/arakun ~/.local/share/arakun/cef` |
+| Linux | `~/.local/bin/arakun`, the browser's runtime in `~/.local/share/arakun/cef`, and the app launcher's entry and icon in `~/.local/share/applications/arakun.desktop` and `~/.local/share/icons/hicolor/*/apps/arakun.*` (under `$XDG_DATA_HOME` if set) | `rm -rf ~/.local/bin/arakun ~/.local/share/arakun/cef ~/.local/share/applications/arakun.desktop ~/.local/share/icons/hicolor/*/apps/arakun.*` |
 | Windows | `%LOCALAPPDATA%\Programs\Arakun`, added to your user `PATH`, with a Start menu shortcut | Delete that folder and the shortcut, and remove it from `PATH` |
 
 ## A given version

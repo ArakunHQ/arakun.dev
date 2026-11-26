@@ -81,7 +81,21 @@ Press **Join the iOS beta** or **Join the Android beta**. Testers are added by h
 </Step>
 </Steps>
 
-The apps tell you when a turn finishes, when the agent needs a permission or an answer, and when something goes wrong. Pick which of the three you get: in Settings on iOS, under Account in the inbox's menu on Android. The Android app gets notifications from every computer it has opened while they are on.
+The apps tell you when a turn finishes, when the agent needs a permission or an answer, and when something goes wrong. The notice says what happened: the agent's last message, the command waiting for permission, or the question. Pick which of the three you get: in Settings in the iOS app's inbox menu, under Account in the Android app's inbox menu. The Android app gets notices from every computer it has opened while they are on.
+
+In the iOS and Android apps, the count of changed files on top of a session opens the files it changed, turn by turn. Tap a file for its diff, read-only, as on the page.
+
+## When notices come
+
+A computer, or a server, sends a phone a notice only when you are away from it: by default, after 2 minutes without using it. A permission request or a question waits until you leave, and goes only if the agent still waits. A turn shorter than 30 seconds sends no notice.
+
+Change both under **Only when I'm away for** and **Turns shorter than this stay quiet**:
+
+- on the page, in its Settings tab,
+- in the iOS app, in Settings in the inbox menu,
+- in the Android app, in Account in the inbox menu.
+
+The bell in a session mutes that session's notices on the phone.
 
 ## Run your own relay
 
