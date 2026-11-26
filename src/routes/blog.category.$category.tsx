@@ -17,7 +17,7 @@ export const Route = createFileRoute('/blog/category/$category')({
     category
       ? pageHead({
           path: categoryPath(category.id),
-          tabTitle: `${category.label} · ${pages.blog.label} · ${site.name}`,
+          tabTitle: `${category.label} posts on the ${site.name} blog`,
           title: `${category.label} posts`,
           description: category.description,
           trail: [
@@ -31,6 +31,7 @@ export const Route = createFileRoute('/blog/category/$category')({
 
 function CategoryPage() {
   const category = Route.useLoaderData()
+  const list = postsInCategory(category.id)
   return (
     <>
       <PageHeader
@@ -41,7 +42,10 @@ function CategoryPage() {
       />
       <CategoryNav current={category.id} />
       <section aria-label={`${category.label} posts`} className="wrap blog-section">
-        <PostGrid posts={postsInCategory(category.id)} />
+        <h2 className="mono-label blog-section-title">
+          {list.length} {list.length === 1 ? 'post' : 'posts'}
+        </h2>
+        <PostGrid eagerFirst posts={list} />
       </section>
       <div className="blog-end" />
       <InstallBand />

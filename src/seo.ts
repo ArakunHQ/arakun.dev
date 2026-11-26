@@ -95,6 +95,7 @@ function authorEntity(author: Author): JsonLd {
     name: author.name,
     url: pageUrl(authorPath(author.id)),
     description: author.bio,
+    ...(author.type === 'Person' ? { jobTitle: author.role } : {}),
     ...(author.avatar ? { image: `${site.url}${author.avatar}` } : {}),
     sameAs: author.links.map((link) => link.url),
   }
@@ -131,6 +132,7 @@ export function blogPosting(post: PostMeta): JsonLd {
       '@type': 'Organization',
       name: site.name,
       url: site.url,
+      sameAs: [site.githubOrgUrl],
       logo: {
         '@type': 'ImageObject',
         url: `${site.url}/brand/icon-512.png`,
@@ -183,6 +185,8 @@ export function pageHead({
     meta: [
       { title: tabTitle },
       { name: 'description', content: description },
+      // Every page has a 1200 px preview card, so Google Discover may show it large.
+      { name: 'robots', content: 'max-image-preview:large' },
       ...(ogType ? [{ property: 'og:type', content: ogType }] : []),
       ...pageMeta({ path, title, description }),
     ],

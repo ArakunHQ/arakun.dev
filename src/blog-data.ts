@@ -44,7 +44,7 @@ export const authors = {
     type: 'Person',
     name: 'Rik Visser',
     role: 'Co-founder',
-    bio: 'Software engineer from the Netherlands, building Arakun.',
+    bio: 'Software engineer from the Netherlands, building Arakun, the native app for coding agents.',
     avatar: '/blog/authors/rik-visser.jpg',
     links: [
       { label: 'Website', url: 'https://rikvisser.dev' },
@@ -76,7 +76,8 @@ export const categories = {
   performance: {
     id: 'performance',
     label: 'Performance',
-    description: 'Where time and memory go in Arakun, and what we did about it.',
+    description:
+      'Where time and memory go in Arakun, a native Rust app, and what we did to cut them down.',
   },
   engineering: {
     id: 'engineering',
@@ -87,9 +88,13 @@ export const categories = {
   product: {
     id: 'product',
     label: 'Product',
-    description: 'What we ship, what we left out, and the reasons behind both.',
+    description:
+      'What we ship in Arakun, what we left out on purpose, and the reasons behind both.',
   },
 } satisfies Record<string, Category>
+
+/** A post's <title>: its search title, then the site's name. The build keeps it to 60 characters. */
+export const postTabTitle = (title: string) => `${title} · ${site.name}`
 
 export type AuthorId = keyof typeof authors
 export type CategoryId = keyof typeof categories
