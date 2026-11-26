@@ -278,5 +278,135 @@ function benchmark(assets: ArtAssets): Node {
   )
 }
 
-export const arts: Record<string, (assets: ArtAssets) => Node> = { architecture, benchmark }
+/** An off switch: a grey track with the knob on the left. */
+function offSwitch() {
+  return el(
+    'div',
+    {
+      display: 'flex',
+      alignItems: 'center',
+      width: 52,
+      height: 30,
+      padding: 4,
+      borderRadius: 15,
+      background: color.line,
+      border: `1px solid ${color.lineStrong}`,
+    },
+    [el('div', { width: 20, height: 20, borderRadius: 10, background: color.faint })]
+  )
+}
+
+function consentRow(label: string, note: string) {
+  return el(
+    'div',
+    {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '14px 18px',
+      background: color.raised,
+      border: `1px solid ${color.lineStrong}`,
+      borderRadius: 10,
+    },
+    [
+      el('div', { display: 'flex', flexDirection: 'column', gap: 4 }, [
+        el('div', { fontSize: 20, fontWeight: 600, color: color.text }, label),
+        el('div', { fontFamily: 'Geist Mono', fontSize: 14, color: color.faint }, note),
+      ]),
+      offSwitch(),
+    ]
+  )
+}
+
+/** "What Arakun sends home": the first-launch question with both switches off, the raccoon peeking over it. */
+function telemetry(assets: ArtAssets): Node {
+  const left = 640
+  const width = 500
+  return el(
+    'div',
+    { position: 'absolute', left: 0, top: 0, width: 1200, height: 630, display: 'flex' },
+    [
+      el('img', { position: 'absolute', left: 600, top: 0, width: 600, height: 630 }, undefined, {
+        src: dotGrid(600, 630),
+        width: 600,
+        height: 630,
+      }),
+      el(
+        'img',
+        { position: 'absolute', left: left + width - 190, top: 38, width: 166, height: 130 },
+        undefined,
+        { src: assets.raccoon, width: 166, height: 130 }
+      ),
+      el(
+        'div',
+        {
+          position: 'absolute',
+          left,
+          top: 150,
+          width,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
+          padding: '22px 22px 20px',
+          background: color.ground,
+          border: `2px solid ${color.amber}`,
+          borderRadius: 14,
+          boxShadow: '0 0 48px rgba(255, 181, 71, 0.18)',
+        },
+        [
+          el(
+            'div',
+            {
+              fontFamily: 'Geist Mono',
+              fontSize: 15,
+              letterSpacing: 1.8,
+              textTransform: 'uppercase',
+              color: color.amber,
+            },
+            'First launch'
+          ),
+          el(
+            'div',
+            { fontSize: 25, fontWeight: 600, color: color.text, marginBottom: 4 },
+            'Send crash reports and usage counts?'
+          ),
+          consentRow('Crash reports', 'off until you say yes'),
+          consentRow('Usage counts', 'off until you say yes'),
+        ]
+      ),
+      // The one-line way out, under the dialog.
+      el(
+        'div',
+        {
+          position: 'absolute',
+          left,
+          top: 486,
+          width,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '14px 22px',
+          background: color.raised,
+          border: `1px solid ${color.lineStrong}`,
+          borderRadius: 10,
+          fontFamily: 'Geist Mono',
+          fontSize: 19,
+        },
+        [
+          el('div', { display: 'flex', gap: 12 }, [
+            el('span', { color: color.faint }, '$'),
+            el('span', { color: color.text }, 'export DO_NOT_TRACK=1'),
+          ]),
+          el('span', { color: color.amber }, '0 events'),
+        ]
+      ),
+    ]
+  )
+}
+
+export const arts: Record<string, (assets: ArtAssets) => Node> = {
+  architecture,
+  benchmark,
+  telemetry,
+}
 export const artNames = Object.keys(arts)
