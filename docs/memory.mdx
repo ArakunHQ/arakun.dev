@@ -29,7 +29,7 @@ arakun mem get <id>          # the full text (12 is this project's, g3 a global 
 arakun mem list [--global]   # everything saved, newest first
 arakun mem context           # the index new sessions start with
 arakun mem forget <id>       # delete
-arakun mem save <title> --kind gotcha --body <text>   # save one yourself
+arakun mem save <title> --kind gotcha --body <text>   # save one yourself; it refuses a secret
 ```
 
 These work with the app closed, so [headless agents](/headless-agents) use memory too. For an agent that Arakun does not start, `arakun mem prompt` prints the how-to and the index to put in its prompt.

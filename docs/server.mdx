@@ -113,7 +113,7 @@ Claude Code and Codex also need their ACP adapter. The server installs a missing
 
 ## In the app
 
-Once connected, the app connects to the server when it starts. Each folder the server offers is an environment in the sidebar, marked with the machine's name. A folder whose repository you also have here (the same `origin`) joins that project.
+Once connected, the app connects to the server when it starts. Each folder the server offers is an environment in the sidebar, marked with the machine's name. A folder whose repository you also have here (the same `origin`) joins that project. An environment whose folder you remove on the server yourself, such as with `rm` or `git worktree remove`, leaves the list with its sessions within a few seconds, unless a session there is still working or waiting for an answer.
 
 Its sessions open in the same tabs, with the same composer, as sessions here. Send, stop, approve and answer go to the server. In a server's environment:
 
@@ -122,6 +122,7 @@ Its sessions open in the same tabs, with the same composer, as sessions here. Se
 - The Changes panel shows that folder's changes. Stage, discard, commit, pull, push and the pull request button run there, with the server's `git` and `gh` logins.
 - The Explorer lists its files, and they open in file tabs (text only). `@` in the composer completes its paths.
 - Fork, compact, rewind and `/stage` run on the server. "Continue with" hands the session to another agent on that server.
+- When an agent there needs a login, token or password, it asks with the same [private card](/start-a-session#when-the-agent-needs-a-secret) as in the app, and the phone page shows it too. What you type goes only over an encrypted connection: the relay, Tailscale or https. Over `--reach lan`, the card offers only **Decline**. A sandboxed agent on a server doesn't get the card yet.
 
 "New environment" makes a worktree on a server too: <kbd>Alt</kbd>+click the **+** and pick the machine, or right-click a server's environment. It goes in `~/arakun-workspaces/<project>/<branch>` there.
 
@@ -209,6 +210,6 @@ What `serve` is started with is kept for the next run.
 
 ## What it keeps
 
-The server keeps its data in `~/.local/share/arakun/server/`, which only your user can read: paired devices, the sign-in (`account.json`, which `logout` removes), folders, sessions and their transcripts, and photos sent with prompts. The app's own files are not touched, so the app and a server can run side by side. `ARAKUN_SERVER_DIR` names another folder, for a second server on the same machine.
+The server keeps its data in `~/.local/share/arakun/server/`, which only your user can read: paired devices, the sign-in (`account.json`, which `logout` removes), folders, sessions and their transcripts, and photos sent with prompts. Photos sent with prompts are removed after 30 days, and the transcript of a session the server no longer lists after 7 days. The app's own files are not touched, so the app and a server can run side by side. `ARAKUN_SERVER_DIR` names another folder, for a second server on the same machine.
 
 A turn that is running when the server stops is cut off. Its session is still there after a restart, and the next message picks it up.

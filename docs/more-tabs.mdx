@@ -32,6 +32,19 @@ Add the proxy's management key in the tab to see the 5-hour and weekly limits of
 
 </Accordion>
 
+### Where tokens go
+
+Under Breakdown, **Where tokens go** reads the Claude Code transcripts on this computer (`~/.claude/projects`) and shows what makes sessions large:
+
+- the setup that loads with every message (skills, plugins, MCP servers, `CLAUDE.md` files, hook output), and which of it no session called,
+- each project's first-message size,
+- how full sessions got,
+- the noisiest tool results.
+
+It lists what to fix first, largest first, with one suggestion each. Each finding has a button that opens the file, or the Marketplace tab's installed MCP servers, plugins or skills, where you change it. Every number is an estimate, at about 4 bytes a token. Arakun only reads the files: nothing is sent anywhere and your setup is not changed.
+
+From a terminal, `arakun usage where` shows the same. The last 30 days count by default; `--days N` changes that (`--days 0` for all), and `--json` prints JSON.
+
 ## Claude seats
 
 With several Claude subscriptions, give each Claude Code session a seat of its own, so parallel sessions don't drain one.
@@ -48,7 +61,7 @@ Run `claude setup-token` for each subscription.
 arakun seat add work < token.txt
 ```
 
-The token is read from stdin and checked with one small call. It is kept in `~/.local/share/arakun/seats/work`, readable only by you.
+The token is read from stdin and checked with one small call. It is kept in the system keyring, with an empty `~/.local/share/arakun/seats/work` that lists the seat. A token an older Arakun saved in that file moves to the keyring the first time it is read.
 
 </Step>
 </Steps>
@@ -82,7 +95,7 @@ Uses the `cf` CLI's sign-in. Its pages show as tabs across the top of the view.
 
 The open [Linear](https://linear.app) issues assigned to you, grouped by state (in progress, todo, backlog) with their identifier, title, team and priority, and a search box over them. The tab opens without a project.
 
-Sign in with a personal API key, from Linear › Settings › Security & access › Personal API keys. Read access is enough. Add one sign-in per workspace; the header switches between them. The keys are kept in `~/.local/share/arakun/linear/sessions.json` (`%LOCALAPPDATA%\arakun\linear\sessions.json` on Windows) and go only to Linear's API.
+Sign in with a personal API key, from Linear › Settings › Security & access › Personal API keys. Read access is enough. Add one sign-in per workspace; the header switches between them. The keys are kept in the system keyring and go to Linear's API. Who signed in is kept in `~/.local/share/arakun/linear/sessions.json` (`%LOCALAPPDATA%\arakun\linear\sessions.json` on Windows).
 
 The tab reads the list again when it is 5 minutes old or you refresh, at most every 30 seconds. When Linear's request limit is hit, it waits as long as Linear asks and says how many minutes are left.
 

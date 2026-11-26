@@ -7,6 +7,8 @@ While Arakun is running, `arakun <command>` acts on the environment of the curre
 
 Terminals and agents started by Arakun get `ARAKUN_SOCKET` and `arakun` on their `PATH`. The agents also get a note about it in their system prompt. Set `ARAKUN_AGENT_HINT=off` to remove that note.
 
+In a session, an agent's `arakun` command shows as what it does, such as "Search memory", "Click" or "New agent". Open the row to see the command and its output. A line that does more than the `arakun` command, such as a pipe, shows the command as typed.
+
 <Note>
 **Sandboxed agents**
 
@@ -126,7 +128,10 @@ arakun seat add work < token.txt      # save a Claude seat (a `claude setup-toke
 arakun seat ls                        # the seats and their 5-hour and weekly usage
 arakun seat rm work                   # forget a seat
 arakun usage tools --days 7           # which tools' results used the tokens of Workers AI turns
+arakun usage where                    # where Claude Code sessions' tokens go, and what to fix first
 ```
+
+See [Where tokens go](/more-tabs#where-tokens-go).
 
 </Accordion>
 <Accordion title="Updates, servers and feedback">

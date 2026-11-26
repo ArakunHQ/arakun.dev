@@ -76,6 +76,21 @@ The title bar holds the sessions you pin to it. Drag a row up to the bar, or pre
 
 To hand a running session to another agent, open the model menu, pick that agent in the strip and click **Continue with**.
 
+## When the agent needs a secret
+
+When an agent needs something only you can give, such as a login, an API token, a PIN or a pairing code, it asks with a card in the session instead of a message. The card shows what it is, why the agent needs it and, when there is one, the page to sign in or make it.
+
+- Its inputs are masked. The eye shows what you typed, and nothing copies out of them.
+- **Save** or **Decline** answers. The agent gets a `secret-ref:` handle per field, never the value, and the transcript records only whether you saved, declined or the request was cancelled.
+- A request is cancelled when you stop the run, send a new message, the turn ends, or 10 minutes pass.
+- Saved values are held only in the running Arakun's memory, never on disk, for 24 hours or until a handle is used.
+
+Claude Code, Codex and Droid sessions have it through Arakun's MCP server, `arakun mcp`, which Arakun starts for each session. The phone page and sessions on a [server](/server) show the card too.
+
+A password field in an agent's question is masked the same way, with **Show** to see it. Once you answer, the question shows "Answered" instead of what you typed.
+
+A secret you type in a prompt shows as `[secret]` in session titles, notifications, handoffs to another agent and memory. The model that names the branch doesn't see it either.
+
 ## Branch names from the task
 
 A new worktree starts on a random branch name, such as `env/brave-otter`. After the first prompt, a small model names the branch after the task, such as `fix/terminal-tab-name`, and Arakun renames it. The folder keeps its name.

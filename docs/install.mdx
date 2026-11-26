@@ -120,5 +120,7 @@ Arakun does not bundle the agents. Install the ones you want to use. The first l
 <Note>
 **Optional tools**
 
-`git` for Changes, worktrees and branches, `gh` for CI and the GitHub tab, `bwrap` for headless and sandboxed agents on Linux, `secret-tool` for stored logins on Linux, `tailscale` for the phone over Tailscale, `cf` for the Cloudflare tab.
+`git` for Changes, worktrees and branches, `gh` for CI and the GitHub tab, `bwrap` for headless and sandboxed agents on Linux, `tailscale` for the phone over Tailscale, `cf` for the Cloudflare tab.
+
+Arakun keeps its keys and tokens in the system keyring. On Linux that is a Secret Service on the session bus, such as gnome-keyring, KWallet or KeePassXC. Without one, Arakun keeps them in `secrets.json` in its data folder (`~/.local/share/arakun`), which only you can read, and tells you so once.
 </Note>
