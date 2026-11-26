@@ -3,6 +3,7 @@ import type { Author, AuthorId, Category, CategoryId } from '#/blog-data'
 import { authors, categories } from '#/blog-data'
 
 export type { Author, Category } from '#/blog-data'
+export { postTabTitle } from '#/blog-data'
 
 export interface TocEntry {
   id: string
@@ -22,6 +23,8 @@ export interface PostMeta {
   featured: boolean
   published: string
   readingMinutes: number
+  /** A shorter title for search results and the tab, when the full one is too long for them. */
+  seoTitle?: string
   slug: string
   title: string
   toc: TocEntry[]

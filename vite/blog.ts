@@ -11,7 +11,7 @@ import remarkParse from 'remark-parse'
 import { unified } from 'unified'
 import type { Plugin } from 'vite'
 import { parse as parseYaml } from 'yaml'
-import { authors, categories, slugify } from '../src/blog-data'
+import { authors, categories, postTabTitle, slugify } from '../src/blog-data'
 import { site } from '../src/site'
 import { artNames } from './og-art'
 
@@ -34,6 +34,7 @@ const VIRTUAL_IDS = [POSTS_ID, MARKDOWN_ID, BODIES_ID]
 const resolved = (id: string) => `\0${id}`
 
 const WORDS_PER_MINUTE = 220
+const MAX_TAB_TITLE = 60
 const DATE = /^\d{4}-\d{2}-\d{2}$/u
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u
 const WORD = /\S+/gu
@@ -49,6 +50,7 @@ interface Frontmatter {
   draft?: boolean
   featured?: boolean
   published: string
+  seoTitle?: string
   title: string
   updated?: string
 }
@@ -221,6 +223,16 @@ function checkCover(cover: string | undefined, file: string) {
   }
 }
 
+/** Search results cut a title after about 60 characters, so a long one needs a shorter seoTitle. */
+function checkTabTitle(fm: Partial<Frontmatter>, file: string) {
+  const tab = postTabTitle(fm.seoTitle ?? String(fm.title))
+  if (tab.length > MAX_TAB_TITLE) {
+    throw new Error(
+      `${file}: the title "${tab}" is ${tab.length} characters, over ${MAX_TAB_TITLE}. Add a shorter "seoTitle"`
+    )
+  }
+}
+
 function check(fm: Partial<Frontmatter>, file: string): Frontmatter {
   const fail = (message: string): never => {
     throw new Error(`${file}: ${message}`)
@@ -252,6 +264,7 @@ function check(fm: Partial<Frontmatter>, file: string): Frontmatter {
     }
   }
   checkCover(fm.cover, file)
+  checkTabTitle(fm, file)
   return fm as Frontmatter
 }
 
@@ -280,6 +293,7 @@ async function readPost(root: string, name: string) {
       slug,
       title: fm.title,
       cardTitle: fm.cardTitle,
+      seoTitle: fm.seoTitle,
       cover: fm.cover,
       description: fm.description,
       published: fm.published,

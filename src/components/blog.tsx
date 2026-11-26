@@ -122,7 +122,8 @@ export function CategoryNav({ current }: { current?: string }) {
   )
 }
 
-function Cover({ post }: { post: PostMeta }) {
+/** `eager`: the cover is in the first screen, so it loads at once and before other images. */
+function Cover({ post, eager }: { post: PostMeta; eager?: boolean }) {
   return (
     <Link
       aria-label={post.title}
@@ -134,8 +135,9 @@ function Cover({ post }: { post: PostMeta }) {
       <img
         alt=""
         decoding="async"
+        fetchPriority={eager ? 'high' : undefined}
         height={630}
-        loading="lazy"
+        loading={eager ? undefined : 'lazy'}
         src={ogImagePath(`/blog/${post.slug}`)}
         width={1200}
       />
@@ -144,10 +146,10 @@ function Cover({ post }: { post: PostMeta }) {
 }
 
 /** A post in a list: cover, categories, title, description and byline. */
-export function PostCard({ post }: { post: PostMeta }) {
+export function PostCard({ post, eager }: { post: PostMeta; eager?: boolean }) {
   return (
     <article className="post-card">
-      <Cover post={post} />
+      <Cover eager={eager} post={post} />
       <div className="post-card-body">
         <CategoryChips categories={postCategories(post)} />
         <h3>
@@ -166,7 +168,7 @@ export function PostCard({ post }: { post: PostMeta }) {
 export function FeaturedPost({ post }: { post: PostMeta }) {
   return (
     <article className="post-featured wrap">
-      <Cover post={post} />
+      <Cover eager post={post} />
       <div className="post-featured-body">
         <span className="mono-label post-featured-label">Latest</span>
         <CategoryChips categories={postCategories(post)} />
@@ -185,11 +187,12 @@ export function FeaturedPost({ post }: { post: PostMeta }) {
   )
 }
 
-export function PostGrid({ posts: list }: { posts: PostMeta[] }) {
+/** `eagerFirst`: the grid opens the page, so its first cover is in the first screen. */
+export function PostGrid({ posts: list, eagerFirst }: { posts: PostMeta[]; eagerFirst?: boolean }) {
   return (
     <div className="post-grid">
-      {list.map((post) => (
-        <PostCard key={post.slug} post={post} />
+      {list.map((post, i) => (
+        <PostCard eager={eagerFirst && i === 0} key={post.slug} post={post} />
       ))}
     </div>
   )

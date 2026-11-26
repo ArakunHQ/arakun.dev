@@ -66,7 +66,8 @@ A post is one MDX file, `content/blog/<slug>.mdx`. The file name is its URL: `/b
 
 ```mdx
 ---
-title: The full title, shown on the page and in search results
+title: The full title, shown on the page
+seoTitle: A title for search results and the tab, when "<title> · Arakun" is over 60 characters
 cardTitle: A short title for the link preview card (optional)
 description: One or two sentences for the overview, search results and the preview card.
 published: 2026-11-22

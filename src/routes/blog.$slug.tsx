@@ -3,12 +3,12 @@ import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import type { MDXContent } from 'mdx/types'
 import type { LazyExoticComponent } from 'react'
 import { lazy, Suspense } from 'react'
-import { getPost, postAuthors, postCategories, postPath, relatedPosts } from '#/blog'
+import { getPost, postAuthors, postCategories, postPath, postTabTitle, relatedPosts } from '#/blog'
 import { AuthorCard, Byline, CategoryChips, PostGrid, Toc } from '#/components/blog'
 import { mdxComponents } from '#/components/blog-mdx'
 import { InstallBand } from '#/components/ui'
 import { blogPosting, pageHead } from '#/seo'
-import { pages, site } from '#/site'
+import { pages } from '#/site'
 
 // Published posts only, one chunk each (vite/blog.ts), so neither a draft nor
 // another post's text ships with this page.
@@ -47,7 +47,7 @@ export const Route = createFileRoute('/blog/$slug')({
     post
       ? pageHead({
           path: postPath(post.slug),
-          tabTitle: `${post.title} · ${site.name}`,
+          tabTitle: postTabTitle(post.seoTitle ?? post.title),
           title: post.title,
           description: post.description,
           ogType: 'article',

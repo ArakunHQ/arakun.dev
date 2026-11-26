@@ -17,7 +17,7 @@ export const Route = createFileRoute('/blog/author/$author')({
     author
       ? pageHead({
           path: authorPath(author.id),
-          tabTitle: `${author.name} · ${pages.blog.label} · ${site.name}`,
+          tabTitle: `Posts by ${author.name} on the ${site.name} blog`,
           title: `Posts by ${author.name}`,
           description: author.bio,
           ogType: 'profile',
@@ -46,7 +46,7 @@ function AuthorPage() {
         <h2 className="mono-label blog-section-title">
           {list.length} {list.length === 1 ? 'post' : 'posts'}
         </h2>
-        <PostGrid posts={list} />
+        <PostGrid eagerFirst posts={list} />
       </section>
       <div className="blog-end" />
       <InstallBand />
