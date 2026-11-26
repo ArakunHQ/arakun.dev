@@ -56,7 +56,7 @@ Run `claude setup-token` while signed in to that subscription. It prints a long-
 arakun seat add work < token.txt
 ```
 
-Arakun reads the token from stdin, checks it with one small call and keeps it in `~/.local/share/arakun/seats/work`, readable only by you.
+Arakun reads the token from stdin, checks it with one small call and keeps it in the system keyring. An empty `~/.local/share/arakun/seats/work` lists the seat.
 
 </Step>
 </Steps>
