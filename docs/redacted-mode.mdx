@@ -37,7 +37,7 @@ In terminals, agent replies, tool output, tab titles, notifications and the Inbo
 
 - emails,
 - values shaped like keys or tokens, such as `sk-…` or `ghp_…`, and long random words. They keep their first four characters.
-- the value after a name such as `API_KEY=` or `token:`,
+- the value after a name such as `API_KEY=` or `token:`, unless the value is code, such as `let token = match x {` or `const secret = offset + 5;`,
 - the word after `Bearer`,
 - IPv4 addresses other than `127.0.0.1`,
 - your user name and the computer's name, as a shell prompt shows them (`you@laptop`).
