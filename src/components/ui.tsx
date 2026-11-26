@@ -229,17 +229,17 @@ const srcSet = (name: string) =>
 // As wide as .wrap's content at most: var(--page) less two gutters.
 const SHOT_SIZES = '(min-width: 1280px) 1152px, 100vw'
 
-/** Real captures of Arakun v0.18.1, taken with tools/product-shots.sh's `arakun dev` in the app repo. */
+/** Real captures of Arakun v0.23.0 with the demo project of tools/product-shots.sh in the app repo, taken with `arakun dev`. */
 const shots = {
   app: {
-    dark: 'Arakun in the Arakun Black palette: a finished Claude Code session that fixed a rate limiter, with the two files it changed in the Changes panel.',
+    dark: 'Arakun in the Arakun Black palette: a finished Claude Code session that added rate limiting, with the four files it changed in the Changes panel.',
     light:
-      'Arakun in light mode: a finished Claude Code session that fixed a rate limiter, with the two files it changed in the Changes panel.',
+      'Arakun in light mode: a finished Claude Code session that added rate limiting, with the four files it changed in the Changes panel.',
   },
   diff: {
-    dark: 'A file diff in a tab of its own in dark mode, next to the Changes list with the lines added and removed per file and the Commit and Merge buttons.',
+    dark: 'A file diff in a tab of its own in dark mode, next to the Changes list with the lines added and removed per file and the Commit button.',
     light:
-      'A file diff in a tab of its own in light mode, next to the Changes list with the lines added and removed per file and the Commit and Merge buttons.',
+      'A file diff in a tab of its own in light mode, next to the Changes list with the lines added and removed per file and the Commit button.',
   },
   palette: {
     dark: 'The palette open over the app in dark mode, listing commands with their shortcuts and filters for sessions, GitHub, files and memory.',
