@@ -1,0 +1,118 @@
+---
+title: "What Arakun sends home: all eleven events, and the switch that stops them"
+cardTitle: "What Arakun sends home"
+description: "A raccoon goes through its own bins. Every event Arakun can send, what's in it, and how to turn it all off."
+published: 2026-11-26
+authors: [rik-visser]
+categories: [product]
+cover: telemetry
+---
+
+## A raccoon checks its own bins
+
+This week [a long thread on X](https://x.com/realchendahuang/status/2125153472450527440) went through another coding-agent app's telemetry, link by link. Seventeen thousand people liked it. We can't vouch for every claim in it, and this post isn't about that app.
+
+But the thread made us do the most raccoon thing possible. We went through the bins at night, except they were our own. We opened `src/telemetry.rs` and wrote down everything we found. Arakun is open source under AGPL-3.0, so you can climb in after us and check.
+
+Good news: the bins are fairly empty.
+
+<StatGrid>
+  <Stat value="0" label="Events sent before you say yes" note="they wait in memory" />
+  <Stat value="11" label="Event names in the whole app" note="we counted twice" />
+  <Stat value="1" label="Variable to turn it all off" note="DO_NOT_TRACK=1" />
+</StatGrid>
+
+## Step one: we ask, like a polite guest
+
+On first launch Arakun asks one question: "Send crash reports and usage counts?" There's a switch for each, and both start off.
+
+Closing the dialog isn't a yes. It's a "maybe later", and Arakun asks again next time it starts. Until you answer, the events from the launch wait in memory, like a dog with a ball. Say yes and they go out. Say no, or quit, and they're dropped without being sent.
+
+You can change your mind whenever you like in **Settings › Privacy**. There's a switch for crash reports and one for usage counts. We put the switches there before the first event shipped. Nobody had to open four pull requests to ask for them.
+
+## The complete guest list
+
+The event names live in one module, `telemetry::events`, so a new one can't sneak in without someone noticing in review. This is everyone invited to the party:
+
+<DataTable>
+
+| Event | What it brings along |
+| --- | --- |
+| `app launched` | nothing, it's shy |
+| `app quit` | how many minutes the app was open |
+| `onboarding finished` | whether you added a project or skipped, and the step you were on |
+| `session started` | which agent, such as `claude` or `codex` |
+| `agent turn finished` | which agent, how the turn stopped, how many seconds it took |
+| `project added` | nothing, not even the project's name |
+| `environment created` | nothing |
+| `view opened` | the name of the built-in view |
+| `browser tab opened` | nothing, not even the URL |
+| `update asked` | whether we asked or required you to update |
+| `survey sent` | that you answered or closed a survey |
+
+</DataTable>
+
+Every event also carries Arakun's version, your OS, the CPU architecture and whether it's a release build. And that's the whole party.
+
+Not invited: your prompts, the agents' replies, file contents, project names, URLs, model names, token counts, how many projects you have, or the make of your laptop. We wanted to know whether Arakun works, and none of them helps with that.
+
+## The id is a coin flip, 128 times
+
+Every event carries a `distinct_id`. In Arakun it's 16 random bytes, written as hex to a file called `telemetry-id` in Arakun's data folder. It isn't a hash of anything. It doesn't come from your account, your machine or another tool's config. It knows nothing about you, and it's quite relaxed about that.
+
+Two flags go with every event:
+
+- `$process_person_profile: false`. PostHog counts the install but builds no person profile.
+- `$geoip_disable: true`. PostHog doesn't work out where you are from your IP address. You could be on a beach. We'll never know.
+
+Delete `telemetry-id` and Arakun makes a new one. To have the reports for an id deleted, mail the id to privacy@arakun.dev.
+
+<Callout tone="note" title="Full disclosure: we do open ~/.claude.json">
+
+Arakun reads `~/.claude.json`. It copies your MCP servers into the sessions it starts, so Claude Code behaves the same in Arakun as in your terminal. Nothing from that file goes into telemetry.
+
+The telemetry code reads exactly two files: `telemetry.json` (your answer) and `telemetry-id`. Both live in Arakun's own data folder. It doesn't go through the neighbours' bins either.
+
+</Callout>
+
+## Where it goes
+
+Events go straight to PostHog's US cloud, `us.i.posthog.com`, in batches every five seconds, from one background thread. No server of ours sits in the middle keeping a copy for later.
+
+If PostHog can't be reached, the batch is dropped. We don't retry forever, and we don't keep a stash on disk. Raccoons are known for stashing things. This one doesn't.
+
+Debug builds, tests and `arakun dev` send nothing at all. Otherwise the busiest user in the dashboard would be us, launching the app four hundred times a day.
+
+## Crash reports
+
+A crash report is the panic message and its stack trace. Before it leaves your computer, your home folder becomes `~`, and paths, links, email addresses and anything shaped like a key or token are scrubbed out. The message is cut at 300 characters, which is plenty to say "something broke".
+
+When an agent stops with an error, we don't send its text. We send a fixed category, such as "rate limited" or "not signed in", plus the step that failed and the exit code. Error text can contain anything, so it stays on your machine.
+
+## The off switch is a switch
+
+```sh
+export DO_NOT_TRACK=1
+```
+
+That's it. Arakun follows the [Console Do Not Track](https://consoledonottrack.com) convention: any value except empty or `0` turns off crash reports and usage counts, blocks all feedback, and Arakun never asks the question. `ARAKUN_TELEMETRY=0` does the same, if you'd rather have a variable with our name on it.
+
+What you won't need:
+
+- a second variable for a second pipeline
+- a line in your hosts file
+- a pull request, approved or otherwise
+
+## The one call we make either way
+
+Once an hour Arakun checks a feature flag that can ask you to update, or require it, when a version has a serious bug. It does this whatever you answered. A broken build that can't be told it's broken is worse than one small request.
+
+That request carries the version, the update channel, the OS and the CPU type. If you agreed to usage counts, it carries your id. If you didn't, it uses a fresh random id each time Arakun starts, so one day's check can't be linked to the next.
+
+## Why we bother
+
+We do want to know how many people use Arakun, which agents they run, and where it crashes. That's why we ask. But you're running coding agents with access to your source code, your shell and your keys. The tool around them has to earn that trust, and quietly taking data is a bad way to start.
+
+So the deal is simple: we ask, you answer, and the code shows what we do with the answer. If you find an event this post doesn't list, that's a bug, and the raccoon will be very embarrassed. Please [tell us](https://github.com/ArakunHQ/arakun/issues).
+
+The [privacy page](/privacy) has the legal side, and [the docs](https://docs.arakun.dev/crash-reports) show where the files are on each platform.
