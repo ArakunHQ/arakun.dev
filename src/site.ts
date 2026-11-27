@@ -46,7 +46,11 @@ export const site = {
   licenseUrl: `${repo}/blob/main/LICENSE`,
   releasesUrl: `${repo}/releases`,
   sourceUrl: `${repo}#build-from-source`,
+  contributingUrl: `${repo}/blob/main/CONTRIBUTING.md`,
   privacyEmail: 'privacy@arakun.dev',
+  supportEmail: 'support@arakun.dev',
+  /** Each founder's own address, for the team on the about page. */
+  teamEmails: { 'karlo-aldrete': 'karlo@arakun.dev', 'rik-visser': 'rik@arakun.dev' },
   /**
    * Who runs the site, for the privacy page. Provisional: CoderLabs runs it until Arakun
    * has an organization of its own. Then change this, and sign a new PostHog DPA in its name.
@@ -125,6 +129,15 @@ export const pages = {
     lead: 'What arakun.dev and the Arakun app collect, why, and how to say no.',
     description:
       'What arakun.dev and the Arakun app collect, why they collect it, who processes it and how to turn it off.',
+  },
+  about: {
+    path: '/about',
+    updated: '2026-11-27',
+    num: '06',
+    label: 'About',
+    tab: 'About Arakun: who builds it and why',
+    title: 'Two people, many agents',
+    lead: 'We build Arakun, one native window for your coding agents. This is who we are and why we started.',
   },
 }
 

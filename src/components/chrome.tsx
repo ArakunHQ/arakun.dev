@@ -42,6 +42,9 @@ export function SiteNav() {
           <Link className="cl" to="/changelog">
             Changelog
           </Link>
+          <Link className="ab" to="/about">
+            About
+          </Link>
         </nav>
         <ThemeToggle />
         <span className="ctas">
@@ -147,6 +150,7 @@ export function SiteFooter() {
             <Link to="/download">Download</Link>
             <Link to="/blog">Blog</Link>
             <Link to="/changelog">Changelog</Link>
+            <Link to="/about">About</Link>
           </div>
           <div className="col">
             <span>Learn</span>
