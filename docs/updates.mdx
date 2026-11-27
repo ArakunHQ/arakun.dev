@@ -109,8 +109,9 @@ In Arakun's data folder (`~/.local/share/arakun` on Linux and macOS, `%LOCALAPPD
 | --- | --- |
 | `update.json` | The version waiting to be installed, its checksum, and the last one you were told about |
 | `update.lock` | Held while one updater runs |
-| `no-auto-update` | There while **Update automatically** is off |
-| `update-channel` | `stable` or `nightly`, once you pick one |
+| `update-channel.lock` | Held while the channel changes or an update is installed |
 | `update-download/` | The download, removed when it is done |
+
+**Update automatically** and the channel (`stable` or `nightly`, once you pick one) are kept in `settings.json`, in the same folder, as `general.automatic_updates` and `general.update_channel`.
 
 </Accordion>

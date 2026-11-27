@@ -93,6 +93,17 @@ Claude Code, Codex and Droid sessions have it through Arakun's MCP server, `arak
 
 A password field in an agent's question is masked the same way, with **Show** to see it. Once you answer, the question shows "Answered" instead of what you typed.
 
+### Save a secret for the project
+
+To keep a secret for the project's later sessions, turn on **Save for this project** on the card and give it a name. The agents of that project can then ask for it again by name instead of asking you.
+
+- The project's entry in Arakun's state keeps only the name. The value stays in the system keyring.
+- Agents call `list_saved_secrets` for the names, never the values.
+- `use_saved_secret` gives an agent a fresh `secret-ref:` handle, which works once like any other, or a private file with `deliver: "file"`.
+- A card with several fields saves each as "name (field)".
+
+Settings › Project › Saved secrets lists them, masked. **Rename**, **Replace** and **Remove** manage each one, and no screen shows a stored value. **Variable** sets one as an environment variable, such as `STRIPE_KEY`, that the project's agents start with, sandboxed or not. Tools that read the variable then work without the value passing through the chat. The agent's commands can read it, as they can a file. It applies to sessions started afterwards.
+
 ## When your prompt holds a secret
 
 When a message you send holds what looks like a key or a token, Arakun holds the send. A notice above the text says that, sent as it is, the secret goes to the model provider and stays in the session. The secret shows as stars until you choose:

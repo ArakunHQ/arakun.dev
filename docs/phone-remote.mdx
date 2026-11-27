@@ -11,7 +11,7 @@ Turn on **Phone** under Arakun › Extensions, or Settings › General › Sideb
 
 - **Over the local network.** This is the default. You pair the phone with a code.
 - **Over Tailscale.** You pair the phone with a code.
-- **Through an end-to-end encrypted relay.** You sign in with GitHub on the computer and on the phone. There is no code.
+- **Through an end-to-end encrypted relay.** You sign in to your Arakun account on the computer and on the phone, with GitHub or with a code sent by email. There is no code to pair.
 
 On the local network and over Tailscale, the page comes from the computer itself. It only opens while the computer is on and awake. The relay works from anywhere and says when the computer is offline; the Phone tab then offers **Use Relay**.
 
@@ -19,12 +19,19 @@ Every way is end-to-end encrypted between the phone and the computer. The comput
 
 ## Reach it through the relay
 
-The relay lets a device in only when it is signed in to the same GitHub account as the computer.
+The relay lets a device in only when it is signed in to the same account as the computer.
 
 <Steps>
 <Step title="Sign in on the computer">
 
-With Relay chosen, the Phone tab says "Sign in to reach this computer from anywhere". Press **Sign in with GitHub**. It is the same sign-in as the User row of the sidebar.
+With Relay chosen, the Phone tab says "Sign in to reach this computer from anywhere". Press **Sign in**. It is the same sign-in as the User row of the sidebar.
+
+The dialog offers two ways:
+
+- **Continue with GitHub** shows a code to approve on GitHub.
+- **Email me a code** sends a six-digit code to the address you type. Type it in the dialog. It works once, for 10 minutes.
+
+Either way makes an account if you have none. An account made by email is not the same as one made with GitHub, so sign in the same way on every device.
 
 </Step>
 <Step title="Open the page on the phone">
@@ -34,7 +41,7 @@ The Phone tab shows the address to open on the phone, `https://app.arakun.dev`, 
 </Step>
 <Step title="Sign in on the phone and pick the computer">
 
-Sign in with GitHub as the same account, then pick the computer. With only one computer, the page opens it straight away.
+Sign in as the same account, with GitHub or with a code emailed to you, then pick the computer. With only one computer, the page opens it straight away.
 
 </Step>
 </Steps>
@@ -49,11 +56,11 @@ Signed in, the Phone tab lists:
 On the phone, each computer in the list has **Remove**, and the page's Settings tab lists the account's signed-in devices with **Sign out**. With several computers, push notifications on the page come only from the computer you opened last.
 
 <Warning>
-Anyone who signs in to your GitHub account, or holds one of its sessions, can reach every computer of the account. Sign out the devices you do not know.
+Anyone who signs in to your account, or holds one of its sessions, can reach every computer of the account. Sign out the devices you do not know.
 </Warning>
 
 <Note>
-A phone paired through the relay with a link before v0.19.0 must sign in again with the same GitHub account. The Phone tab says so under **Sign in with GitHub**. To use no account, pick Tailscale or Same Wi-Fi instead. Pairing over the local network or Tailscale is unchanged.
+A phone paired through the relay with a link before v0.19.0 must sign in again to the same account. The Phone tab says so under **Sign in**. To use no account, pick Tailscale or Same Wi-Fi instead. Pairing over the local network or Tailscale is unchanged.
 </Note>
 
 ## Pair a phone on the network
@@ -66,7 +73,7 @@ The hosted relay's free plan allows 10 computers per account. Each computer take
 
 ## Phone apps
 
-The iOS and Android apps reach your computers the same way, only by signing in with GitHub. They have no link or code for the relay.
+The iOS and Android apps reach your computers the same way, only by signing in to your account. Press **Sign in with GitHub**, or type your address and press **Email me a code**, then type the six-digit code from the mail. They have no link or code for the relay.
 
 The apps are in beta. To ask for an invite, in the Phone tab, signed in:
 

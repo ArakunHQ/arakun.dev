@@ -10,7 +10,7 @@ Even with redacted mode off, keys, tokens, passwords and private keys an agent p
 - Click a hidden secret to show it in that session's view until the view closes.
 - Copying text that holds one asks first. The copy button asks "Copy the secret too?" and copies on a second click. The selection menu offers **Copy as shown** or **Copy with secret**.
 
-Settings › Privacy › Hide secrets in sessions turns this off. While it is off, Arakun keeps a `show-secrets` file in its data folder. Redacted mode hides more, and a click there shows nothing.
+Settings › Privacy › Hide secrets in sessions turns this off. The choice is kept in `settings.json` in Arakun's data folder. Redacted mode hides more, and a click there shows nothing.
 
 ## Turn it on
 
@@ -60,4 +60,4 @@ It also masks every answer field of an agent's question.
 It hides only what it can recognize. A secret that looks like a plain word still shows. Check a view before you share it.
 </Warning>
 
-The choice is kept in a `redacted` file in Arakun's data folder.
+The choice is kept in `settings.json` in Arakun's data folder, so it is still on after a restart.
