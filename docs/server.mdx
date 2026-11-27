@@ -159,6 +159,13 @@ Under the servers, **Cloud** offers a cloud environment: a server Arakun runs fo
 
 With access, **New cloud environment** makes one. The first start takes a few minutes. The section shows whether it is awake, why it stopped and the hours left this month, with **Wake**, **Stop** and **Remove**. The phone's Computers screen has the same.
 
+To let a cloud environment clone your private repositories and push branches, install the Arakun Cloud GitHub App on the repositories you choose, or on your whole account. Your own GitHub account must also be able to read the repository, and write to it for a push. No GitHub token is stored in the environment: Arakun adds a short-lived token for the one repository on each `git` request.
+
+- Public repositories clone without the app.
+- When git is refused, it prints why, with the link to install the app where it is missing.
+- `git@github.com:` URLs work too. Git uses https for them.
+- The `gh` CLI and Git LFS don't get a token yet.
+
 ## Keep it running
 
 `service install` runs `serve --service` as a service: systemd on Linux, launchd on macOS. It starts the server now, again after a crash, and at boot (Linux) or login (macOS).

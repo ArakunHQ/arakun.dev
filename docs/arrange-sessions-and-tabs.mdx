@@ -41,7 +41,7 @@ Sessions sort by **Recent** by default: the session that moved last, whether its
 
 The same menu holds **Group by project** and **Show archived**. Under **Applies to**, **All projects** gives the order to every project. **Select projects…** gives it only to the projects you tick in the list beside the menu, and the rest keep the order for all. Each project's order is kept in `state.json`. Settings › Appearance › Tabs and sessions › Sort sessions sets the order too.
 
-Sessions pinned to the title bar go first in every order, with a pin at the end of the row and a rule under them. In Recent and Name, the sessions with a tab open come next, with a rule under them. A session with no tab open is dimmed, unless it works or needs you. The rows hold still while the pointer is over the tree.
+Sessions pinned to the title bar go first in every order, with a pin at the end of the row and a rule under them. In Recent and Name, the sessions with a tab open come next, with a rule under them. A session with no tab open is dimmed, unless it works or needs you. The rows hold still while the pointer is over the sidebar. Sessions that need you go to the [Needs you](#see-what-needs-you) list above the projects.
 
 A project with nothing running folds. The project on screen and any project with a session that works or needs you stay open. Click a project to fold or open it. Settings can keep such projects open or hide them.
 
@@ -63,7 +63,13 @@ When the bar fills, tabs shrink and the rest go under **N more**, which can also
 
 ## See what needs you
 
-The **Active** list at the top of the sidebar shows the sessions of every project that need you, because they wait for an answer or failed, then the ones that run. A click opens the session in its project. Move or remove the list from Customize › Sidebar.
+With Focused, the **Needs you** list sits above the projects in the sidebar. It holds the sessions of every project that wait on you, failed or whose checks failed, the worst first. Each row starts with its project's icon and ends with how long it has waited or why it failed.
+
+- Its title shows the count. The list is gone when nothing needs you.
+- A session in it leaves its project's list, so it shows once. It goes back when it works again or its checks pass.
+- While the pointer is over the sidebar, no row moves. The order catches up once the pointer leaves.
+
+With Classic, the **Active** list at the top of the sidebar shows the sessions of every project that need you, because they wait for an answer or failed, then the ones that run. A click opens the session in its project. Move or remove either list from Customize › Sidebar.
 
 An environment needs you when:
 

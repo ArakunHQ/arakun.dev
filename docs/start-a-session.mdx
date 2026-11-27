@@ -104,6 +104,22 @@ To keep a secret for the project's later sessions, turn on **Save for this proje
 
 Settings › Project › Saved secrets lists them, masked. **Rename**, **Replace** and **Remove** manage each one, and no screen shows a stored value. **Variable** sets one as an environment variable, such as `STRIPE_KEY`, that the project's agents start with, sandboxed or not. Tools that read the variable then work without the value passing through the chat. The agent's commands can read it, as they can a file. It applies to sessions started afterwards.
 
+### Answer from a password manager
+
+To keep a key in 1Password instead of in Arakun, choose **Password manager** instead of **Value** on the card. Then enter a 1Password reference such as `op://vault/item/field`. In 1Password, **Copy Secret Reference** on the field copies it.
+
+- Arakun reads the value through the 1Password CLI (`op`) when you press **Save**.
+- With **Save for this project** on, the project keeps only the reference. Arakun reads the value again each time an agent needs it.
+- **Check** reads a reference and says whether that worked, without showing the value.
+- Arakun remembers what it read, and what failed, until it quits, so you unlock 1Password once. **Refresh** forgets it.
+- A read waits up to 45 seconds for you to unlock 1Password.
+
+In Settings › Project › Saved secrets, **Password manager** points a saved secret at a reference, and **Value** puts a value back in the keyring.
+
+<Note>
+Install `op` and turn on **Integrate with 1Password CLI** in the 1Password app first.
+</Note>
+
 ## When your prompt holds a secret
 
 When a message you send holds what looks like a key or a token, Arakun holds the send. A notice above the text says that, sent as it is, the secret goes to the model provider and stays in the session. The secret shows as stars until you choose:
