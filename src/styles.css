@@ -469,7 +469,8 @@ svg {
   .sn nav a::before {
     left: var(--spacing-2);
   }
-  .sn nav .cl {
+  .sn nav .cl,
+  .sn nav .ab {
     display: none;
   }
 }
@@ -2354,5 +2355,204 @@ svg {
   [data-reveal='pre'] {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* About */
+.about-story,
+.about-split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--spacing-12);
+  align-items: start;
+}
+.about-prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  max-width: 640px;
+  font-size: var(--text-title);
+  line-height: var(--leading-snug);
+  color: var(--color-text-muted);
+}
+.about-prose p:first-child {
+  color: var(--color-text);
+}
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: var(--spacing-16);
+  border-block: 1px solid var(--color-line);
+}
+.about-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  padding: var(--spacing-6) 0;
+}
+.about-stats > div + div {
+  padding-left: var(--spacing-6);
+  border-left: 1px solid var(--color-line);
+}
+.about-stats b {
+  font-size: var(--text-display);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.about-stats span {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+.about-team,
+.about-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-6);
+}
+.about-team {
+  margin-top: var(--spacing-12);
+}
+.about-person,
+.about-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-8);
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+}
+.about-person .who {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+.about-person h3,
+.about-card h2 {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+.about-person p,
+.about-card p {
+  font-size: var(--text-xl);
+  color: var(--color-text-muted);
+}
+.about-person .links,
+.about-card .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  padding-top: var(--spacing-2);
+  margin-top: auto;
+}
+.about-person .links a,
+.about-card .links a {
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.about-person .links a:hover,
+.about-card .links a:hover {
+  color: var(--color-text);
+  border-color: var(--color-accent);
+}
+.about-timeline {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  list-style: none;
+}
+.about-timeline li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  padding: 0 0 var(--spacing-8) var(--spacing-8);
+  border-left: 1px solid var(--color-line-strong);
+}
+.about-timeline li:last-child {
+  padding-bottom: 0;
+  border-left-color: transparent;
+}
+/* The dot sits on the line, so it is centered on the border. */
+.about-timeline li::before {
+  position: absolute;
+  top: 6px;
+  left: -5px;
+  width: 9px;
+  height: 9px;
+  content: '';
+  background: var(--color-ground);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+}
+.about-timeline li[data-now]::before {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+.about-timeline time {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-accent-ink);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+.about-timeline h3 {
+  font-size: var(--text-title);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+}
+.about-timeline p {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+}
+.about-timeline a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 3px;
+}
+.about-timeline a:hover {
+  text-decoration-color: var(--color-accent);
+}
+.about-beliefs {
+  margin-top: var(--spacing-12);
+}
+@media (max-width: 900px) {
+  .about-story,
+  .about-split,
+  .about-team,
+  .about-cards {
+    grid-template-columns: 1fr;
+  }
+  .about-split .stack {
+    margin-bottom: var(--spacing-2);
+  }
+}
+@media (max-width: 560px) {
+  .about-person,
+  .about-card {
+    padding: var(--spacing-6);
+  }
+  .about-stats {
+    grid-template-columns: 1fr;
+  }
+  .about-stats > div + div {
+    padding-left: 0;
+    border-top: 1px solid var(--color-line);
+    border-left: 0;
   }
 }

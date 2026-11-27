@@ -4,11 +4,19 @@ import { formatDay, getPost, postAuthors, postCategories, postPath, posts } from
 import type { Release } from '#/releases'
 import { listReleases } from '#/releases'
 import { pageDescription, pageUrl } from '#/seo'
-import { agents, installCommands, pages, pillars, site } from '#/site'
+import { agentList, agents, installCommands, pages, pillars, site } from '#/site'
 
 const MARKDOWN_TYPES = new Set(['text/markdown', 'text/x-markdown'])
 const HTML_TYPES = new Set(['text/html', 'application/xhtml+xml'])
-const MARKDOWN_PATHS = new Set(['/', '/features', '/download', '/changelog', '/blog', '/privacy'])
+const MARKDOWN_PATHS = new Set([
+  '/',
+  '/features',
+  '/download',
+  '/changelog',
+  '/blog',
+  '/privacy',
+  '/about',
+])
 
 function parseQuality(params: string[]): number {
   for (const param of params) {
@@ -147,6 +155,38 @@ ${posts
 
 Latest releases and checksums: ${site.releasesUrl}
 Install guide: ${site.docsUrl}/install.md
+`,
+  '/about': `# ${pages.about.title}
+
+> ${pageDescription(pages.about)}
+
+## Why
+
+We met online in October 2026, in the PostHog developer community. We both ran coding agents every day, and soon several at once. It got messy fast: terminal tabs everywhere, agents editing the same files, and every agent with its own app. We wanted one fast, native window where any agent works on its own git worktree. Open source, so nobody can lock you in. That became ${site.name}.
+
+## Team
+
+- **Karlo Aldrete**, Founder, Mexico: ${site.teamEmails['karlo-aldrete']}
+- **Rik Visser**, Co-founder, Netherlands: ${site.teamEmails['rik-visser']}
+
+## History
+
+- October 2026: we meet in the PostHog developer community.
+- November 14, 2026: the first commit, and v0.1.0 the same day.
+- Every release since: ${pageUrl('/changelog')}
+
+## What we believe
+
+- **Native and fast:** one Rust binary that draws its own window on the GPU.
+- **Open source:** free under ${site.license}. Nobody can lock you in.
+- **Any agent:** ${agentList}.
+- **Your code stays yours:** ${site.name} never sends your code, prompts or replies. Reports stay off until you say yes.
+
+## Contact
+
+- Support: ${site.supportEmail}
+- Source and issues: ${site.githubUrl}
+- Contributing guide: ${site.contributingUrl}
 `,
   '/privacy': `# ${pages.privacy.title}
 
