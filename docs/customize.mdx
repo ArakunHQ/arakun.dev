@@ -42,6 +42,14 @@ Text size and Glass are here too. **Reset shape** goes back to the defaults.
 
 Start from a preset: Switcher, Focused, Developer, Notion, Icons or Everything. It lays out the pieces and keeps the style you chose. Style (Card, Flush, Floating), Rows, Width, Side, what <kbd>Ctrl+B</kbd> does, Counters and Shortcuts change the whole sidebar.
 
+The Switcher, the default, names three views (Runs, Branches and GitHub), then **More views** for the rest. It puts plan usage on one line above Settings: 5h, a bar and the percentage.
+
+- Add a view from the chips to give it a row. Remove its row and it moves to More views.
+- Select Usage to switch between the card and the line.
+- A sidebar saved on the old Switcher, with its row of view icons, moves to this one once.
+
+When <kbd>Ctrl+B</kbd> folds the sidebar to icons, it shows one tile per project. A dot gives the project's worst state (amber needs you, red failed, blue working), and a marker shows the open one. Point at a tile to see that project's sessions and New session beside it. A click on a session opens it, and <kbd>Esc</kbd> or moving the pointer away closes the list. Search, the Inbox, Add project, More views, Settings and the account stay. The other views wait in More views.
+
 Every preset holds the User row, a button where you sign in to your Arakun account. A layout saved without it gets it once, next to Help.
 
 While this tab is open, you arrange the sidebar:
@@ -68,6 +76,16 @@ A segment with a title folds with a click on it. Folded, it says how many pieces
 Settings › Appearance › Reduce motion holds the mascot, spinners and the island still, and shows menus and dialogs without sliding them in.
 
 **System**, the default, follows the system's setting: Reduce motion on macOS, Animations on GNOME, Animation effects on Windows. **On** and **Off** ignore the system.
+
+## Use a screen reader
+
+A screen reader can read a session's chat and its terminal.
+
+- Each message in the chat is its own item, named for who wrote it: "You" or the agent.
+- A tool call reads as what it did, such as "Edited src/main.rs, 3 lines added, 1 removed", and says when it failed.
+- The terminal reads one line per row on screen, with the cursor as the caret.
+
+Arakun also announces when a session finishes its turn, needs you or fails, for example "Claude Code in arakun/bold-valley needs you". It announces the same events as its desktop notifications.
 
 ## Zoom
 
