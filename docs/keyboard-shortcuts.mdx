@@ -9,6 +9,8 @@ description: "Every keyboard shortcut in Arakun: the keys for sessions, tabs, pa
 <kbd>Cmd</kbd> takes the place of <kbd>Ctrl</kbd> in the shortcuts below, except for the ones with <kbd>Tab</kbd>, <kbd>PageUp</kbd>, <kbd>PageDown</kbd> or <kbd>{"`"}</kbd>. The menu bar lists them. <kbd>Ctrl+Cmd+F</kbd> toggles full screen, and <kbd>Cmd+H</kbd>, <kbd>Cmd+M</kbd> and <kbd>Cmd+Q</kbd> hide, minimize and quit.
 </Note>
 
+Settings › Keyboard shortcuts lists every shortcut. The search in Settings finds shortcuts too.
+
 On Linux and Windows, most of these keys go to the shell while a terminal has the focus, since a shell needs them.
 
 ## Sessions and environments
@@ -21,6 +23,7 @@ On Linux and Windows, most of these keys go to the shell while a terminal has th
 | <kbd>Ctrl+O</kbd> | Add a project |
 | <kbd>Alt+Up</kbd> and <kbd>Alt+Down</kbd> | Switch environments |
 | <kbd>Ctrl+F</kbd> | Search the session |
+| <kbd>Ctrl+Alt+1…9</kbd> | Open pin 1 to 9, from anywhere |
 | <kbd>Ctrl+Shift+H</kbd> | Turn redacted mode on or off |
 | <kbd>Ctrl+,</kbd> | Open Settings |
 
@@ -58,7 +61,7 @@ Terminals, web pages, fields and the composer keep <kbd>Tab</kbd> for themselves
 A middle click closes a tab. Drag a tab left or right to move it; the order stays after a restart. A tab's right-click menu also opens a new session, or closes the other tabs of its environment or those to its right.
 
 <Tip>
-GNOME, Ubuntu and some KDE setups keep <kbd>Ctrl+Alt+T</kbd> to open their own terminal. There, use Reopen closed tab in the File menu or in a tab's right-click menu.
+GNOME, Ubuntu and some KDE setups keep <kbd>Ctrl+Alt+T</kbd> to open their own terminal. There, use Reopen closed tab in the palette or in a tab's right-click menu.
 </Tip>
 
 ## The composer
@@ -107,10 +110,12 @@ Picking a model of the agent in use, or a reasoning level, keeps the menu open, 
 | <kbd>→</kbd> | Open a row's actions, or go into it (a project, a person, Branches) |
 | <kbd>←</kbd> | Go back |
 | <kbd>Space</kbd> | After the arrows: mark rows for the bar at the bottom |
-| <kbd>Ctrl+P</kbd> | Pin a row to the top of the palette and the sidebar |
-| <kbd>Ctrl+1…9</kbd> | Open a pin. <kbd>Ctrl+Alt+1…9</kbd> does it from anywhere. |
-| <kbd>Alt+Up</kbd> and <kbd>Alt+Down</kbd> | Reorder the pins |
+| <kbd>Alt+P</kbd> | Pin or unpin the selected row, at the top of the palette and the sidebar |
+| <kbd>Ctrl+Alt+1…9</kbd> | Open a pin |
+| <kbd>Alt+Shift+Up</kbd> and <kbd>Alt+Shift+Down</kbd> | Move the selected pin up or down |
 | <kbd>Ctrl+Enter</kbd> | Ask an agent |
+
+A key the window uses means the same in the palette: <kbd>Ctrl+1…9</kbd> still switches tabs and <kbd>Alt+Up</kbd> and <kbd>Alt+Down</kbd> switch environments.
 
 On a cloud task card (`cloud: <task>`), <kbd>Enter</kbd> sends it and <kbd>Esc</kbd> cancels. When there is an open pull request, <kbd>Tab</kbd> switches between it and a new branch.
 
