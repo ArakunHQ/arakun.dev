@@ -3,6 +3,15 @@ title: Hide private details
 description: "Turn on redacted mode before a stream, a demo or a screen share, so Arakun hides emails, tokens, addresses and names."
 ---
 
+## Secrets in sessions
+
+Even with redacted mode off, keys, tokens, passwords and private keys an agent prints show as stars in a session: in replies, your prompts, tool rows and command output, diffs, permission cards and questions. A key keeps its first four characters (`sk-a****`), which say what it is.
+
+- Click a hidden secret to show it in that session's view until the view closes.
+- Copying text that holds one asks first. The copy button asks "Copy the secret too?" and copies on a second click. The selection menu offers **Copy as shown** or **Copy with secret**.
+
+Settings › Privacy › Hide secrets in sessions turns this off. While it is off, Arakun keeps a `show-secrets` file in its data folder. Redacted mode hides more, and a click there shows nothing.
+
 ## Turn it on
 
 Press <kbd>Ctrl+Shift+H</kbd>, or use the palette or Settings › Privacy. A **Redacted** pill in the title bar shows it is on. Click the pill to turn it off.

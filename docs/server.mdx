@@ -123,6 +123,7 @@ Its sessions open in the same tabs, with the same composer, as sessions here. Se
 - The Explorer lists its files, and they open in file tabs (text only). `@` in the composer completes its paths.
 - Fork, compact, rewind and `/stage` run on the server. "Continue with" hands the session to another agent on that server.
 - When an agent there needs a login, token or password, it asks with the same [private card](/start-a-session#when-the-agent-needs-a-secret) as in the app, and the phone page shows it too. What you type goes only over an encrypted connection: the relay, Tailscale or https. Over `--reach lan`, the card offers only **Decline**. A sandboxed agent on a server doesn't get the card yet.
+- When the agent is not signed in on that server, the session shows a card with **Sign in in a terminal**. It runs the agent's sign-in in a terminal on the server.
 
 "New environment" makes a worktree on a server too: <kbd>Alt</kbd>+click the **+** and pick the machine, or right-click a server's environment. It goes in `~/arakun-workspaces/<project>/<branch>` there.
 
@@ -130,9 +131,14 @@ To spread new environments across machines, turn on **Spread new environments** 
 
 To add a folder on a server, pick it in the Computers tab and press **Add a folder**. Clone runs that machine's git, with its logins. You can also paste a clone URL in Add project (<kbd>Ctrl+O</kbd>) and pick the item that clones it on the server, such as **Clone owner/app on box**. The new folder opens in its project once the server has it. If the clone fails, a notice says so. In the Marketplace, "Install on" adds a plugin or MCP server for Claude Code on a paired server.
 
-Every paired server also mirrors this computer. When it connects, and after each install here, it adds the plugins (and their marketplaces), the user MCP servers, the skills from skills.sh and the MCP sign-ins it lacks. A notice lists what was added. What you installed in a repo just for you goes to the server's folders with the same `origin`. What you shared with the repo goes with git. The mirror never removes anything.
+Every paired server also mirrors this computer. When it connects, and after each install here, it adds the plugins (and their marketplaces), the user MCP servers and the skills from skills.sh it lacks. A notice lists what was added. What you installed in a repo just for you goes to the server's folders with the same `origin`. What you shared with the repo goes with git. The mirror never removes anything you installed.
 
 - Over plain http, only plugins and skills go.
+
+Your MCP sign-ins (Claude Code's tokens for the MCP servers you signed in to) go only to a server you let have them. Pairing by link asks, and the answer is no unless you change it. **Copy MCP sign-ins** in the server's settings in the Computers tab changes it later, and the server's card says when it holds a copy.
+
+- Turning it off takes the copy off the server when it next connects. So does removing the server, or unpairing this app on it.
+- A server paired before pairing asked keeps getting them until you turn it off.
 - A server on macOS doesn't take sign-ins, since Claude keeps them in the Keychain there.
 
 <Tip>
@@ -146,6 +152,12 @@ The Computers tab lists this computer first, then your servers, each with its st
 Signed in, a server on your account joins the list by itself. Signed out, the list says your account's servers show up once you sign in. **Add a computer** shows both ways to add one: **Your own server**, signed in with your GitHub account, or **By link**, for one on Tailscale or your network.
 
 **Remove**, in a server's settings or its ⋯ menu, asks once. Then the server forgets the app, and a server on your account leaves the account too. Its sessions stay on it. If the server can't be reached then, remove the app there with `arakun-server unpair <device>`.
+
+### Cloud environments
+
+Under the servers, **Cloud** offers a cloud environment: a server Arakun runs for you, so sessions keep working with your computer off. Access is given by hand. Press **Ask for access** there and say what you would use it for. The section then shows where your request stands.
+
+With access, **New cloud environment** makes one. The first start takes a few minutes. The section shows whether it is awake, why it stopped and the hours left this month, with **Wake**, **Stop** and **Remove**. The phone's Computers screen has the same.
 
 ## Keep it running
 
