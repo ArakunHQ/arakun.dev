@@ -121,7 +121,7 @@ export const pages = {
   },
   privacy: {
     path: '/privacy',
-    updated: '2026-11-22',
+    updated: '2026-11-27',
     num: '05',
     label: 'Privacy',
     tab: 'Privacy: what arakun.dev and the app collect · Arakun',
@@ -138,6 +138,17 @@ export const pages = {
     tab: 'About Arakun: who builds it and why',
     title: 'Two people, many agents',
     lead: 'We build Arakun, one native window for your coding agents. This is who we are and why we started.',
+  },
+  pro: {
+    path: '/pro',
+    updated: '2026-11-27',
+    num: '07',
+    label: 'Pro',
+    tab: 'Arakun Pro: cloud machines, teams and more · Waitlist',
+    title: 'Arakun Pro is coming',
+    lead: 'Cloud machines, teams and Linear delegation, on top of the free app. Join the waitlist and hear first.',
+    description:
+      'Arakun Pro adds cloud machines for your coding agents, end to end encrypted teams, Linear delegation and higher limits. Join the waitlist.',
   },
 }
 

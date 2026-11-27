@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { reopenConsent, useAnalytics } from '#/analytics'
 import { PageHeader } from '#/components/ui'
@@ -179,11 +179,21 @@ function Privacy() {
             </p>
           </Section>
 
+          <Section title="The Arakun Pro waitlist">
+            <p>
+              If you join the waitlist on the <Link to="/pro">Arakun Pro</Link> page, we store your
+              email address, the features you ticked and the time you joined in PostHog. We use them
+              only to tell you about Arakun Pro and to decide what to build first. This works
+              without the cookie banner: it sends nothing about your visit.
+            </p>
+          </Section>
+
           <Section title="Why we may do this">
             <p>
               Analytics on the site, the app's crash reports and usage counts, and feedback and
-              survey answers run on your consent (GDPR Art. 6(1)(a)). Server error reports run on
-              our legitimate interest in keeping the site working (Art. 6(1)(f)).
+              survey answers, and the waitlist, run on your consent (GDPR Art. 6(1)(a)). Server
+              error reports run on our legitimate interest in keeping the site working (Art.
+              6(1)(f)).
             </p>
           </Section>
 
@@ -210,7 +220,8 @@ function Privacy() {
               We keep the site's analytics and error reports, and the app's reports, feedback and
               survey answers, for one year. Then PostHog deletes them. A GitHub issue and feedback
               in Linear stay until we delete them; ask us and we will. PostHog's cookie expires
-              after a year.
+              after a year. We keep your place on the waitlist until you ask us to remove it, or
+              until we close the waitlist.
             </p>
           </Section>
 
@@ -243,7 +254,7 @@ function Privacy() {
             </ul>
           </Section>
 
-          <p className="updated">Last updated November 25, 2026.</p>
+          <p className="updated">Last updated November 27, 2026.</p>
         </article>
       </div>
     </>
