@@ -5,6 +5,7 @@ import type { Release } from '#/releases'
 import { listReleases } from '#/releases'
 import { pageDescription, pageUrl } from '#/seo'
 import { agentList, agents, installCommands, pages, pillars, site } from '#/site'
+import { proFeatures } from '#/waitlist'
 
 const MARKDOWN_TYPES = new Set(['text/markdown', 'text/x-markdown'])
 const HTML_TYPES = new Set(['text/html', 'application/xhtml+xml'])
@@ -16,6 +17,7 @@ const MARKDOWN_PATHS = new Set([
   '/blog',
   '/privacy',
   '/about',
+  '/pro',
 ])
 
 function parseQuality(params: string[]): number {
@@ -188,6 +190,20 @@ We met online in October 2026, in the PostHog developer community. We both ran c
 - Source and issues: ${site.githubUrl}
 - Contributing guide: ${site.contributingUrl}
 `,
+  '/pro': `# ${pages.pro.title}
+
+> ${pageDescription(pages.pro)}
+
+Arakun Pro has no price yet. Join the waitlist at ${pageUrl('/pro')}.
+
+## What Pro adds
+
+${proFeatures.map((feature) => `- **${feature.name}:** ${feature.body}`).join('\n')}
+
+## The app stays free
+
+Pro pays for what runs on our servers. Everything on your own computer stays free and open source under ${site.license}.
+`,
   '/privacy': `# ${pages.privacy.title}
 
 > ${pageDescription(pages.privacy)}
@@ -224,9 +240,13 @@ Every crash report and usage count includes app version, OS, CPU architecture, a
 - **Feedback from agents:** only with usage counts on, at most five times per hour per environment, with paths, links, emails, and tokens stripped before leaving your computer.
 - Public GitHub issues created from feedback never include your email address or telemetry id.
 
+## The Arakun Pro waitlist
+
+If you join the waitlist at ${pageUrl('/pro')}, we store your email address, the features you ticked and the time you joined in PostHog, only to tell you about Arakun Pro and decide what to build first. It works without the cookie banner and sends nothing about your visit. It stays until you ask us to remove it or we close the waitlist.
+
 ## Legal basis, storage and retention
 
-Site analytics, app crash reports, usage counts, feedback, and surveys rely on consent (GDPR Art. 6(1)(a)); server error reports rely on legitimate interest (Art. 6(1)(f)). Data is stored by PostHog, Inc. in the United States under a DPA (Data Privacy Framework + EU SCCs); public GitHub issues live on GitHub, Inc. servers in the United States. PostHog data and cookies are kept for one year; GitHub issues stay until deleted on request.
+Site analytics, app crash reports, usage counts, feedback, surveys, and the waitlist rely on consent (GDPR Art. 6(1)(a)); server error reports rely on legitimate interest (Art. 6(1)(f)). Data is stored by PostHog, Inc. in the United States under a DPA (Data Privacy Framework + EU SCCs); public GitHub issues live on GitHub, Inc. servers in the United States. PostHog data and cookies are kept for one year; GitHub issues stay until deleted on request.
 
 ## Your choices
 
@@ -234,7 +254,7 @@ Site analytics, app crash reports, usage counts, feedback, and surveys rely on c
 - Toggle Crash reports and Usage counts in Settings > Privacy in the app, or set \`DO_NOT_TRACK=1\` or \`ARAKUN_TELEMETRY=0\`.
 - Delete \`telemetry-id\` to reset your id, or email ${site.privacyEmail} to inspect or delete data. EU/UK visitors may also complain to their data protection authority.
 
-Last updated November 22, 2026. Full page: ${pageUrl('/privacy')}
+Last updated November 27, 2026. Full page: ${pageUrl('/privacy')}
 `,
 }
 

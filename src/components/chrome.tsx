@@ -38,6 +38,9 @@ export function SiteNav() {
         </Link>
         <nav aria-label="Main">
           <Link to="/features">Features</Link>
+          <Link className="pro" to="/pro">
+            Pro
+          </Link>
           <Link to="/blog">Blog</Link>
           <Link className="cl" to="/changelog">
             Changelog
@@ -148,6 +151,7 @@ export function SiteFooter() {
             <span>Product</span>
             <Link to="/features">Features</Link>
             <Link to="/download">Download</Link>
+            <Link to="/pro">Arakun Pro</Link>
             <Link to="/blog">Blog</Link>
             <Link to="/changelog">Changelog</Link>
             <Link to="/about">About</Link>
