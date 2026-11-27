@@ -15,6 +15,8 @@ Turn on **Phone** under Arakun › Extensions, or Settings › General › Sideb
 
 On the local network and over Tailscale, the page comes from the computer itself. It only opens while the computer is on and awake. The relay works from anywhere and says when the computer is offline; the Phone tab then offers **Use Relay**.
 
+Every way is end-to-end encrypted between the phone and the computer. The computer signs each handshake with its own key, and the phone checks it is the key it was paired with. The pairing code, the device token, the sessions and the notification settings all go inside that channel. Plain HTTP only carries the page itself, so someone on the same Wi-Fi who listens reads nothing. Someone who can change the traffic could still change the page: against that, use Tailscale, where the page comes over HTTPS, or the relay.
+
 ## Reach it through the relay
 
 The relay lets a device in only when it is signed in to the same GitHub account as the computer.
@@ -85,6 +87,8 @@ The apps tell you when a turn finishes, when the agent needs a permission or an 
 
 In the iOS and Android apps, the count of changed files on top of a session opens the files it changed, turn by turn. Tap a file for its diff, read-only, as on the page.
 
+The iOS and Android apps show the same [private card](/start-a-session#when-the-agent-needs-a-secret) when an agent asks for a secret.
+
 ## When notices come
 
 A computer, or a server, sends a phone a notice only when you are away from it: by default, after 2 minutes without using it. A permission request or a question waits until you leave, and goes only if the agent still waits. A turn shorter than 30 seconds sends no notice.
@@ -115,6 +119,8 @@ The page is dark, and light when the device is set to a light appearance.
 ## Send prompts
 
 While the agent works, a prompt you send waits for the turn to end. With something written, **Stop** becomes **Stop and send**.
+
+You can attach photos when you start a new session, as with any prompt. A computer on an older version starts the session without them.
 
 When an agent asks for a login, token or password, the page shows the same [private card](/start-a-session#when-the-agent-needs-a-secret) as the app. What you type goes only over the relay, Tailscale or https. Over plain http, the card offers only **Decline**.
 

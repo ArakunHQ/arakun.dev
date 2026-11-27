@@ -83,13 +83,54 @@ When an agent needs something only you can give, such as a login, an API token, 
 - Its inputs are masked. The eye shows what you typed, and nothing copies out of them.
 - **Save** or **Decline** answers. The agent gets a `secret-ref:` handle per field, never the value, and the transcript records only whether you saved, declined or the request was cancelled.
 - A request is cancelled when you stop the run, send a new message, the turn ends, or 10 minutes pass.
-- Saved values are held only in the running Arakun's memory, never on disk, for 24 hours or until a handle is used.
+- Saved values wait in the system keyring for 24 hours or until a handle is used.
 
-Claude Code, Codex and Droid sessions have it through Arakun's MCP server, `arakun mcp`, which Arakun starts for each session. The phone page and sessions on a [server](/server) show the card too.
+Only Arakun's own tool `run_with_secrets` redeems a handle. It sets the value as an environment variable for one command and masks it in the output. A handle works once, in the project it was made for, and Arakun won't type one into a page or a terminal.
+
+For a command that must read the value itself, such as `sudo -S` or a pairing CLI, the agent asks for a file instead. The card then says the agent's commands can read it. The value goes to a file only you can read, in `secret-files` in Arakun's data folder (`~/.local/share/arakun`), and the file is deleted after 24 hours. `secret_to_file` moves a secret you pasted in a message to such a file.
+
+Claude Code, Codex and Droid sessions have it through Arakun's MCP server, `arakun mcp`, which Arakun starts for each session. The phone page, the iOS and Android apps and sessions on a [server](/server) show the card too.
 
 A password field in an agent's question is masked the same way, with **Show** to see it. Once you answer, the question shows "Answered" instead of what you typed.
 
+## When your prompt holds a secret
+
+When a message you send holds what looks like a key or a token, Arakun holds the send. A notice above the text says that, sent as it is, the secret goes to the model provider and stays in the session. The secret shows as stars until you choose:
+
+- **Save as a secret** puts a one-use handle, or the path of a private file, in its place.
+- **Send anyway** sends it as it is. Arakun doesn't ask again about that value in the session.
+- **Cancel** goes back to the draft.
+
 A secret you type in a prompt shows as `[secret]` in session titles, notifications, handoffs to another agent and memory. The model that names the branch doesn't see it either.
+
+## When an agent reads a secret file
+
+With or without the sandbox, and with auto-allow on, an agent asks before it reads a secret file. This covers a read tool, `fs/read_text_file`, or a command that plainly prints the file, such as `cat .env`, `grep KEY ~/.aws/credentials` or `node app.js < .env`. The card names the file and says why it matters: what the agent reads goes to its model, and shows in the chat and on your phone.
+
+- **Allow secret files this session** stops the read tools from asking again in that session. A command still asks.
+- Output from a secret file stays hidden in the chat until you press **Show**. The phone never gets it.
+
+A secret file is:
+
+- an env file: `.env`, `.env.*`, `.envrc`, `*.env`, `.dev.vars`;
+- a key or key store: `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`, `*.ppk`, `*.kdbx`, `*.gpg`, `*.asc`, `id_rsa` and the other `id_*` keys;
+- a credentials file: `.netrc`, `.npmrc`, `.pypirc`, `.git-credentials`, `.pgpass`, `.htpasswd`, `kubeconfig`, `auth.json`, `credentials*`, a service account's JSON key, `.docker/config.json`;
+- Terraform state and variables;
+- a data file named for a secret, such as `password.json` or `gh-token.txt`;
+- anything under `.ssh/`, `.gnupg/`, `.aws/`, `.kube/`, `.azure/` or `.config/gcloud/`.
+
+Templates (`.env.example`, `.sample`, `.template`, `.dist`) are not secret files. Claude Code reads files itself, so Arakun gives it `permissions.ask` rules for these names on top of your own settings. A rule can't say everything above, so some reads, such as `password.json`, ask only when Claude Code would ask anyway.
+
+## What agents get from your environment
+
+Every agent, sandboxed or not, starts without the variables of Arakun's environment that look like secrets:
+
+- names with `TOKEN`, `SECRET`, `PASSWORD`, `CREDENTIAL`, `API_KEY` or `PRIVATE` in them, or ending in `KEY`;
+- those of other tools, such as `GH_*`, `GITHUB_*`, `AWS_*`, `CLOUDFLARE_*`, `STRIPE_*`, `HF_*`, `DOCKER_*` and `NETRC`.
+
+Model providers' keys and settings (`ANTHROPIC_*`, `CLAUDE_*`, `OPENAI_*`, `GEMINI_*` and the like) and `ARAKUN_*` stay. So do `AWS_*` for Bedrock in Claude Code and OpenCode. An agent outside the sandbox also keeps `SSH_AUTH_SOCK`, `DBUS_SESSION_BUS_ADDRESS` and `DISPLAY`, so `git push` over SSH and sign-ins still work.
+
+Without `GH_TOKEN`, `gh` in a session uses the login from `gh auth login`. To give a project's agents a variable anyway, name it under **Pass to agents** in Settings › Project, for example `GH_TOKEN NPM_TOKEN`. Terminals keep the whole environment.
 
 ## Branch names from the task
 
