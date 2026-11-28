@@ -90,13 +90,16 @@ arakun mem scripts                    # scripts agents keep writing here, worth 
 <Accordion title="Agents in the background">
 
 ```sh
-arakun agent new <prompt>             # an OpenCode or Workers AI agent, listed in the sidebar
-arakun agent run <prompt>             # a headless agent that goes on with Arakun closed
-arakun agent ls                       # the sessions and their status
-arakun agent wait <id>                # wait until it stops working
-arakun agent pending                  # tool calls headless agents wait on you for
-arakun agent approve <id> <req_id>    # or deny
+arakun agent start --agent claude <prompt>   # a session in the window, listed in the sidebar
+arakun agent start --headless <prompt>       # a headless agent that goes on with Arakun closed
+arakun agent start --server <prompt>         # a session on the Arakun server on this machine
+arakun agent ls                              # the sessions and their status
+arakun agent wait <id>                       # wait until it stops working
+arakun agent pending                         # tool calls headless agents wait on you for
+arakun agent approve <id> <req_id>           # or deny
 ```
+
+`arakun agent start` starts an agent and prints its id. Without a flag it starts in the window, and `--agent` is `claude`, `opencode` or `workers-ai`. `--headless` is the same as `arakun agent run`, and `--server` the same as `arakun server new`, with any agent the server runs. `arakun agent new` still starts a session in the window, with the agent picked by its model.
 
 See [Headless agents](/headless-agents).
 

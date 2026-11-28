@@ -40,15 +40,17 @@ Text size and Glass are here too. **Reset shape** goes back to the defaults.
 
 ## Sidebar
 
-Start from a preset: Switcher, Focused, Developer, Notion, Icons or Everything. It lays out the pieces and keeps the style you chose. Style (Card, Flush, Floating), Rows, Width, Side, what <kbd>Ctrl+B</kbd> does, Counters and Shortcuts change the whole sidebar.
+Start from a preset: Needs you first, Switcher, Focused, Developer, Notion, Icons, Everything or View strip. It lays out the pieces and keeps the style you chose. Style (Card, Flush, Floating), Rows, Width, Side, what <kbd>Ctrl+B</kbd> does, Counters and Shortcuts change the whole sidebar.
 
-The Switcher, the default, names three views (Runs, Branches and GitHub), then **More views** for the rest. It puts plan usage on one line above Settings: 5h, a bar and the percentage.
+**Needs you first**, the default, puts Search and the Inbox on top, then Needs you (the sessions of every project that wait on you or failed), then every project with its sessions, their finished ones folded into one "done" line. Below them it names three views (Runs, Branches and GitHub), then **More views** for the rest. It puts plan usage on one line above Settings: 5h, a bar and the percentage. The **Switcher** is the same with only the open project and its environments.
 
 - Add a view from the chips to give it a row. Remove its row and it moves to More views.
 - Select Usage to switch between the card and the line.
-- A sidebar saved on the old Switcher, with its row of view icons, moves to this one once.
+- A sidebar saved on the Switcher, the default before, moves to Needs you first once and keeps its style. A layout you arranged yourself stays as it is.
 
-When <kbd>Ctrl+B</kbd> folds the sidebar to icons, it shows one tile per project. A dot gives the project's worst state (amber needs you, red failed, blue working), and a marker shows the open one. Point at a tile to see that project's sessions and New session beside it. A click on a session opens it, and <kbd>Esc</kbd> or moving the pointer away closes the list. Search, the Inbox, Add project, More views, Settings and the account stay. The other views wait in More views.
+**View strip** puts a 40 px strip of tiles at the window's edge: Sessions, Inbox, Team and the views, More views, then plan usage, Settings and the account at its foot. Beside it, a panel holds only the sessions, the full height, with New session at its foot. Point at a tile to see its name and a live line under it, such as how many sessions need you. <kbd>Ctrl+B</kbd>, or the Sessions tile, hides the panel and keeps the strip. Any segment can be such a strip: set it to Strip instead of Fixed or Scroll.
+
+When <kbd>Ctrl+B</kbd> folds the sidebar to icons, it shows one tile per project. A dot gives the project's worst state (amber needs you, red failed, blue working), and a marker shows the open one. Point at a tile to see that project's sessions and New session beside it. A click on a session opens it, and <kbd>Esc</kbd> or moving the pointer away closes the list. <kbd>Alt+1</kbd> to <kbd>Alt+9</kbd> open that list for the first nine projects from the keyboard: <kbd>Up</kbd> and <kbd>Down</kbd> move through it, and <kbd>Enter</kbd> opens a session or starts one. Search, the Inbox, Add project, More views, Settings and the account stay. The other views wait in More views.
 
 Every preset holds the User row, a button where you sign in to your Arakun account. A layout saved without it gets it once, next to Help.
 
@@ -73,7 +75,7 @@ A segment with a title folds with a click on it. Folded, it says how many pieces
 
 ## Reduce motion
 
-Settings › Appearance › Reduce motion holds the mascot, spinners and the island still, and shows menus and dialogs without sliding them in.
+Settings › Appearance › Reduce motion holds the mascot, spinners and the island still, and shows menus and dialogs without sliding them in. It also shows or hides the sidebar and the workspace panel at once instead of sliding them.
 
 **System**, the default, follows the system's setting: Reduce motion on macOS, Animations on GNOME, Animation effects on Windows. **On** and **Off** ignore the system.
 

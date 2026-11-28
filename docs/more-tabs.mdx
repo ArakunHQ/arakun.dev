@@ -112,7 +112,14 @@ Accounts › Agents adds Doop's MCP server to Claude Code or Droid, so sessions 
 
 ## Marketplace
 
-Plugins, MCP servers and skills to add, and what the agents load now. Discover › Skills searches [skills.sh](https://skills.sh). **Install** copies the skill into `~/.claude/skills`, where Claude Code and Workers AI find it.
+Plugins, MCP servers and skills to add, and what the agents load now. The page has one layout for every agent: **Show for** in its header (All agents, Claude Code, Droid) changes only what the cells say.
+
+- **Installed** lists each item once. Its Agents column shows which agents have it, such as "Off for Droid" or "Claude Code only". With one agent picked, an item that agent can't use stays in the list as "Not for Droid", with the reason.
+- An item's details have an Agents card: one row per agent with the file it reads and, where Arakun can change it, a switch that turns the item off for that agent only.
+- **Discover** installs for Claude Code. Each item has one card, which ends with **Install** or the item's state: Ready, Needs sign-in, Needs approval, Off, or Broken with the reason. The details pane says the same and holds the fix.
+- Discover › MCP servers also lists Arakun's own picks, such as Linear, Notion and Sentry. A server found both there and in the MCP Registry, or added under another name for the same URL, shows once.
+
+Discover › Skills searches [skills.sh](https://skills.sh). **Install** copies the skill into `~/.claude/skills`, where Claude Code and Workers AI find it.
 
 A repository with several skills is a package. A skill's details list the other skills in its repository, with **Install all**. Type `owner/repo` or a GitHub link in the search box to list the skills of that repository, also one skills.sh does not know. Skills you already have stay as they are.
 
@@ -120,11 +127,13 @@ When a plugin or MCP server you installed still needs you to sign in before Clau
 
 The Marketplace's pages show as tabs across the top of the view.
 
-**Install in** picks where Install puts a plugin, skill or MCP server on this computer:
+**Where**, in an item's details, picks who Install sets it up for on this computer. Each choice shows the file it writes:
 
-- **Every repo:** for your user.
-- **This repo, shared:** in the repo's committed files (`.claude/settings.json`, `.mcp.json` or `.claude/skills`), for everyone who clones it.
-- **This repo, just me:** Claude Code's `local` scope. A skill goes in the repo's `.claude/skills` and is listed in `.git/info/exclude`.
+- **Everyone in &lt;project&gt;:** the repo's committed `.mcp.json`, `.claude/settings.json` or `.claude/skills`, for everyone who clones it.
+- **Just me, in &lt;project&gt;:** Claude Code's `local` scope: `~/.claude.json` for an MCP server, `.claude/settings.local.json` for a plugin. A skill has no such choice.
+- **Me, in every project:** your user, in `~/.claude.json`, `~/.claude/settings.json` or `~/.claude/skills`.
+
+The Install button, its tooltip and the notice after it name the same place. With a paired server picked under **Install on**, the item goes on that server for every project there, and a skill can't be installed.
 
 An MCP server that signs in gets the repo in its name when you install it in a repo, such as `github-acme-web` in acme/web, so each repo has its own sign-in. Paired servers get what you install here too. See [Server](/server).
 
