@@ -71,6 +71,13 @@
   },
   "overrides": [
     {
+      // The live poll's Worker: these are globals of the Workers runtime.
+      "includes": ["live/**"],
+      "javascript": {
+        "globals": ["WebSocketPair", "WebSocketRequestResponsePair"]
+      }
+    },
+    {
       // TanStack Router reads the route from the file name, such as
       // install[.]sh.ts for /install.sh.
       "includes": ["src/routes/**"],
@@ -86,7 +93,7 @@
       // The stylesheet is grouped by component, and the rule compares
       // selectors that never match the same element, such as `.consent a`
       // and `.sf .col a`. Moving rules to please it would change the cascade.
-      "includes": ["src/styles.css"],
+      "includes": ["src/styles.css", "src/vote.css"],
       "linter": {
         "rules": {
           "style": {
