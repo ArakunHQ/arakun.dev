@@ -43,7 +43,7 @@ const platforms: {
   {
     name: 'macOS',
     downloads: ['macOS'],
-    status: 'Experimental',
+    status: 'Beta',
     tone: 'attention',
     note: 'Apple silicon. Little tested, browser tabs least of all.',
   },

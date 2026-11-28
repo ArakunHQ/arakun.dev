@@ -131,7 +131,7 @@ function Features() {
           title="Agents that keep working"
         />
         <Principle
-          body="The source is on GitHub. Linux is supported, Windows is in beta and macOS is experimental."
+          body="The source is on GitHub. Linux is supported, Windows and macOS are in beta."
           num="Open"
           title={`Free under ${site.license}`}
         />
