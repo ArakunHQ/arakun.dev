@@ -65,13 +65,15 @@ function RootDocument({ children }: { children: ReactNode }) {
 function RootLayout() {
   const pathname = useLocation({ select: (l) => l.pathname })
   useReveal(pathname)
+  // The live poll is a page for a phone in a talk: no header or footer around it.
+  const bare = pathname === '/vote' || pathname.startsWith('/vote/')
   return (
     <CelebrateProvider>
-      <SiteNav />
+      {!bare && <SiteNav />}
       <main>
         <Outlet />
       </main>
-      <SiteFooter />
+      {!bare && <SiteFooter />}
       <ConsentBanner />
     </CelebrateProvider>
   )

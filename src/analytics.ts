@@ -107,6 +107,14 @@ function stop() {
   withPostHog((posthog) => posthog.opt_out_capturing())
 }
 
+/** Sends an event only when the visitor said yes; otherwise nothing leaves the browser. */
+export function captureEvent(name: string, properties: Record<string, unknown>) {
+  if (state.consent !== 'granted') {
+    return
+  }
+  withPostHog((posthog) => posthog.capture(name, properties))
+}
+
 export function acceptAnalytics() {
   saveConsent('granted')
   update({ consent: 'granted', reopened: false })
