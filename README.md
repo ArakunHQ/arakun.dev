@@ -32,6 +32,7 @@ The design comes from the Doop canvases "Website Design" and "Brandbook".
 - `src/components/HeroRaccoon.tsx`: the animated mascot in the home hero.
 - `src/components/Celebrate.tsx`: the toast and ASCII burst after a download or copy.
 - `public/img/`: real captures of the app, one per theme.
+- `src/routes/vote.index.tsx`, `src/routes/vote.admin.tsx`, `src/components/vote/`, `src/vote.css`, `src/live.ts`: the live poll at /vote for talks, with a demo per answer, and its admin page. The poll itself is the `arakun-live` Worker in `live/` (see `live/README.md`).
 
 ## Writing docs
 

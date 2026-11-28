@@ -1,0 +1,36 @@
+/**
+ * arakun-live: the realtime poll behind arakun.dev/vote (live/README.md).
+ * A separate Worker from the site, so the site's deploy and domains never change for it.
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "arakun-live",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-13",
+  // The default deploy is the preview: arakun-live.<account>.workers.dev, no route on
+  // arakun.dev. The production env below adds the route.
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "POLL", "class_name": "Poll" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Poll"] }],
+  "env": {
+    // `wrangler deploy -c live/wrangler.jsonc --env production`. Same Worker, plus the
+    // route. A route runs in front of the site's custom domain, so only /live/* reaches
+    // this Worker and the rest of arakun.dev stays with arakun-website. Once the route
+    // is on, deploy with --env production only, so a preview deploy never drops it.
+    "production": {
+      "name": "arakun-live",
+      "workers_dev": true,
+      "routes": [{ "pattern": "arakun.dev/live/*", "zone_name": "arakun.dev" }],
+      "durable_objects": {
+        "bindings": [{ "name": "POLL", "class_name": "Poll" }]
+      }
+    }
+  }
+}

@@ -26,6 +26,8 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
+import { Route as VoteIndexRouteImport } from './routes/vote.index'
+import { Route as VoteAdminRouteImport } from './routes/vote.admin'
 import { Route as BlogAuthorAuthorRouteImport } from './routes/blog.author.$author'
 import { Route as BlogCategoryCategoryRouteImport } from './routes/blog.category.$category'
 
@@ -114,6 +116,16 @@ const DocsSplatRoute = DocsSplatRouteImport.update({
   path: '/docs/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VoteIndexRoute = VoteIndexRouteImport.update({
+  id: '/vote/',
+  path: '/vote/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoteAdminRoute = VoteAdminRouteImport.update({
+  id: '/vote/admin',
+  path: '/vote/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogAuthorAuthorRoute = BlogAuthorAuthorRouteImport.update({
   id: '/blog/author/$author',
   path: '/blog/author/$author',
@@ -142,7 +154,9 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
+  '/vote/admin': typeof VoteAdminRoute
   '/blog/': typeof BlogIndexRoute
+  '/vote/': typeof VoteIndexRoute
   '/blog/author/$author': typeof BlogAuthorAuthorRoute
   '/blog/category/$category': typeof BlogCategoryCategoryRoute
 }
@@ -163,7 +177,9 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
+  '/vote/admin': typeof VoteAdminRoute
   '/blog': typeof BlogIndexRoute
+  '/vote': typeof VoteIndexRoute
   '/blog/author/$author': typeof BlogAuthorAuthorRoute
   '/blog/category/$category': typeof BlogCategoryCategoryRoute
 }
@@ -185,7 +201,9 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
+  '/vote/admin': typeof VoteAdminRoute
   '/blog/': typeof BlogIndexRoute
+  '/vote/': typeof VoteIndexRoute
   '/blog/author/$author': typeof BlogAuthorAuthorRoute
   '/blog/category/$category': typeof BlogCategoryCategoryRoute
 }
@@ -208,7 +226,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/docs/$'
+    | '/vote/admin'
     | '/blog/'
+    | '/vote/'
     | '/blog/author/$author'
     | '/blog/category/$category'
   fileRoutesByTo: FileRoutesByTo
@@ -229,7 +249,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/docs/$'
+    | '/vote/admin'
     | '/blog'
+    | '/vote'
     | '/blog/author/$author'
     | '/blog/category/$category'
   id:
@@ -250,7 +272,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/docs/$'
+    | '/vote/admin'
     | '/blog/'
+    | '/vote/'
     | '/blog/author/$author'
     | '/blog/category/$category'
   fileRoutesById: FileRoutesById
@@ -272,7 +296,9 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BlogSlugRoute: typeof BlogSlugRoute
   DocsSplatRoute: typeof DocsSplatRoute
+  VoteAdminRoute: typeof VoteAdminRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  VoteIndexRoute: typeof VoteIndexRoute
   BlogAuthorAuthorRoute: typeof BlogAuthorAuthorRoute
   BlogCategoryCategoryRoute: typeof BlogCategoryCategoryRoute
 }
@@ -398,6 +424,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vote/': {
+      id: '/vote/'
+      path: '/vote'
+      fullPath: '/vote/'
+      preLoaderRoute: typeof VoteIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vote/admin': {
+      id: '/vote/admin'
+      path: '/vote/admin'
+      fullPath: '/vote/admin'
+      preLoaderRoute: typeof VoteAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/author/$author': {
       id: '/blog/author/$author'
       path: '/blog/author/$author'
@@ -432,7 +472,9 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BlogSlugRoute: BlogSlugRoute,
   DocsSplatRoute: DocsSplatRoute,
+  VoteAdminRoute: VoteAdminRoute,
   BlogIndexRoute: BlogIndexRoute,
+  VoteIndexRoute: VoteIndexRoute,
   BlogAuthorAuthorRoute: BlogAuthorAuthorRoute,
   BlogCategoryCategoryRoute: BlogCategoryCategoryRoute,
 }
