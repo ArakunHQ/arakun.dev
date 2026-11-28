@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { AgentName } from './icons'
 import { AgentIcon } from './icons'
+import type { Step } from './story'
+import { Stage, StoryBar, useStory } from './story'
 
 // Three sessions split side by side (src/shell/panes.rs), each in its own worktree
 // (docs/features.md, "One session, one worktree"). A new environment gets a
@@ -17,6 +19,8 @@ interface Pane {
   agent: AgentName
   branch: string
   env: string
+  /** The tick it lands on Ready to merge; one after the other. */
+  land: number
   lines: Line[]
   /** Ticks between streamed lines, so the three don't move in step. */
   pace: number
@@ -29,6 +33,7 @@ const FILE = 'src/pricing.ts'
 const panes: Pane[] = [
   {
     agent: 'Claude Code',
+    land: 36,
     env: 'crisp-pine',
     title: 'Add yearly plans',
     branch: 'feat/yearly-plans',
@@ -44,6 +49,7 @@ const panes: Pane[] = [
   },
   {
     agent: 'Codex',
+    land: 44,
     env: 'brave-otter',
     title: 'Fix rounding in totals',
     branch: 'fix/total-rounding',
@@ -58,6 +64,7 @@ const panes: Pane[] = [
   },
   {
     agent: 'OpenCode',
+    land: 52,
     env: 'quiet-heron',
     title: 'Format prices',
     branch: 'refactor/price-format',
@@ -77,56 +84,82 @@ const TICK_MS = 110
 const RENAME_AT = 8
 const EDIT_AT = 12
 
-const doneAt = (pane: Pane) => EDIT_AT + pane.lines.length * pane.pace + 6
+const doneAt = (pane: Pane) => pane.land
 const END = Math.max(...panes.map(doneAt)) + 2
+
+const BEATS = [
+  'Three agents get the same file',
+  'Each on its own branch, in its own worktree',
+  'They edit it at the same time',
+  'Each lands: ready to merge, no conflicts',
+]
+
+function beatAt(tick: number) {
+  if (tick >= Math.min(...panes.map(doneAt))) {
+    return 3
+  }
+  if (tick >= EDIT_AT) {
+    return 2
+  }
+  return tick >= RENAME_AT ? 1 : 0
+}
 
 export function WorktreesDemo() {
   const [tick, setTick] = useState(0)
-  const [run, setRun] = useState(0)
+  const [focus, setFocus] = useState(0)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a new run replays the scene.
-  useEffect(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setTick(END)
-      return
-    }
-    setTick(0)
-    const timer = setInterval(() => {
-      setTick((t) => {
-        if (t >= END) {
-          clearInterval(timer)
-          return t
-        }
-        return t + 1
-      })
-    }, TICK_MS)
-    return () => clearInterval(timer)
-  }, [run])
-
-  const finished = tick >= END
+  const story = useStory({
+    reset: () => {
+      setTick(0)
+      setFocus(0)
+    },
+    finish: () => setTick(END),
+    steps: [
+      ...Array.from(
+        { length: END },
+        (): Step => ({ wait: TICK_MS, do: () => setTick((t) => t + 1) })
+      ),
+      { after: 2400 },
+    ],
+  })
 
   return (
-    <div className="wt-stage">
-      <div className="wt-window">
-        {panes.map((pane, i) => (
-          <PaneView focused={i === 0} key={pane.env} pane={pane} tick={tick} />
-        ))}
-      </div>
-      <p aria-live="polite" className="demo-hint">
-        {finished
-          ? 'Three branches, three worktrees, one file. Each merges on its own.'
-          : 'Three agents edit the same file, each on its own branch.'}
-        {finished && (
-          <button className="demo-replay" onClick={() => setRun((n) => n + 1)} type="button">
-            Replay
-          </button>
-        )}
-      </p>
+    <div>
+      <Stage bind={story.bind} className="wt-stage" ghost={story.ghost}>
+        <div className="wt-window">
+          {panes.map((pane, i) => (
+            <PaneView
+              focused={i === focus}
+              key={pane.env}
+              onFocus={() => setFocus(i)}
+              pane={pane}
+              tick={tick}
+            />
+          ))}
+        </div>
+      </Stage>
+      <StoryBar
+        auto={story.auto}
+        beats={BEATS}
+        current={beatAt(tick)}
+        onReplay={story.replay}
+        reduced={story.reduced}
+      />
     </div>
   )
 }
 
-function PaneView({ pane, tick, focused }: { pane: Pane; tick: number; focused: boolean }) {
+function PaneView({
+  pane,
+  tick,
+  focused,
+  onFocus,
+}: {
+  pane: Pane
+  tick: number
+  focused: boolean
+  onFocus: () => void
+}) {
   const renamed = tick >= RENAME_AT
   const editing = tick >= EDIT_AT
   const shown = editing ? Math.min(pane.lines.length, Math.floor((tick - EDIT_AT) / pane.pace)) : 0
@@ -140,10 +173,13 @@ function PaneView({ pane, tick, focused }: { pane: Pane; tick: number; focused: 
       {focused ? <span className="wt-focus" /> : null}
       <div className="wt-tabs">
         <span className="wt-env">{pane.env}</span>
-        <span className="wt-tab">
+        <button className="wt-tab" onClick={onFocus} type="button">
           <AgentIcon agent={pane.agent} size={14} />
           <span>{pane.title}</span>
-        </span>
+        </button>
+        <code className="wt-tab-branch" data-renamed={renamed ? '' : undefined} key={branch}>
+          {branch}
+        </code>
       </div>
       <div className="wt-body">
         <div className="wt-branch">

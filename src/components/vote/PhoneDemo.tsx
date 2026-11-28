@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AgentIcon, Chevron } from './icons'
+import type { Step } from './story'
+import { Stage, StoryBar, useStory } from './story'
 
 // The phone remote's permission card (phone/src/components/session/PermissionCard.tsx)
 // over the session from the phone's own demo (phone/src/demo.tsx). Allow is a 700 ms
@@ -13,9 +15,17 @@ const COMMAND = 'cargo test --locked relay'
 type Answer = 'allow' | 'always' | 'deny'
 type Phase = 'asking' | 'running' | 'done' | 'denied'
 
+const BEATS = [
+  'The agent asks to run a command',
+  'Hold to allow, so a pocket tap runs nothing',
+  'Allowed from your phone',
+  'The agent goes on without you watching',
+]
+
 export function PhoneDemo() {
   const [phase, setPhase] = useState<Phase>('asking')
   const [toast, setToast] = useState<{ text: string; id: number } | null>(null)
+  const [pressing, setPressing] = useState(false)
   const transcript = useRef<HTMLDivElement>(null)
 
   const say = (text: string) => setToast({ text, id: Date.now() })
@@ -55,6 +65,41 @@ export function PhoneDemo() {
     setPhase('running')
   }
 
+  const story = useStory({
+    reset: () => {
+      setPressing(false)
+      setToast(null)
+      setPhase('asking')
+      const el = transcript.current
+      if (el) {
+        el.scrollTop = el.scrollHeight
+      }
+    },
+    finish: () => setPhase('done'),
+    steps: [
+      { wait: 1300 },
+      // The finger holds for the app's 700 ms; the fill runs under it.
+      { to: '.pbtn.hold', act: 'press', wait: 900, do: () => setPressing(true), after: HOLD_MS },
+      {
+        do: () => {
+          setPressing(false)
+          answer('allow')
+        },
+        leave: true,
+        after: 4200,
+      },
+    ] satisfies Step[],
+  })
+
+  let beat = 0
+  if (phase === 'asking') {
+    beat = pressing ? 1 : 0
+  } else if (phase === 'running') {
+    beat = 2
+  } else {
+    beat = 3
+  }
+
   let toolState = 'in_progress'
   if (phase === 'done') {
     toolState = 'completed'
@@ -63,85 +108,83 @@ export function PhoneDemo() {
   }
 
   return (
-    <div className="ph-stage">
-      <div className="ph-frame">
-        <div className="ph-top">
-          <span className="ph-av">
-            <AgentIcon agent="Claude Code" size={18} />
-          </span>
-          <span className="ph-title">
-            <b>Fix the idle relay drop</b>
-            <span>arakun · env/brave-otter</span>
-          </span>
-        </div>
-        <div className="ph-transcript" ref={transcript}>
-          <div className="ph-entry">
-            <div className="ph-user">
-              The phone drops off the relay after a minute idle. Find out why and fix it.
+    <div>
+      <Stage bind={story.bind} className="ph-stage" ghost={story.ghost}>
+        <div className="ph-frame">
+          <div className="ph-top">
+            <span className="ph-av">
+              <AgentIcon agent="Claude Code" size={18} />
+            </span>
+            <span className="ph-title">
+              <b>Fix the idle relay drop</b>
+              <span>arakun · env/brave-otter</span>
+            </span>
+          </div>
+          <div className="ph-transcript" ref={transcript}>
+            <div className="ph-entry">
+              <div className="ph-user">
+                The phone drops off the relay after a minute idle. Find out why and fix it.
+              </div>
+              <div className="ph-meta">9:41 · Worked for 2m</div>
             </div>
-            <div className="ph-meta">9:41 · Worked for 2m</div>
-          </div>
-          <div className="ph-entry ph-lead">
-            <div className="ph-who">Claude</div>
-            <p className="ph-text">
-              The relay closes a socket after 60 s without traffic. A phone that only reads sends
-              nothing, so it gets cut.
-            </p>
-          </div>
-          <div className="ph-steps">
-            <ToolRow add={24} del={6} state="completed" title="Edited relay/src/socket.ts" />
-            <ToolRow add={11} del={2} state="completed" title="Edited phone/relay.js" />
-          </div>
-          <div className="ph-entry">
-            <p className="ph-text">
-              I added a ping every 25 s and a reconnect with backoff. Now I want to run the relay
-              tests.
-            </p>
-          </div>
-          <div className="ph-steps">
-            <ToolRow command={COMMAND} state={toolState} />
-          </div>
-          {phase === 'done' && (
-            <div className="ph-entry ph-new">
-              <p className="ph-text">All 14 relay tests pass. An idle phone now stays connected.</p>
+            <div className="ph-entry ph-lead">
+              <div className="ph-who">Claude</div>
+              <p className="ph-text">
+                The relay closes a socket after 60 s without traffic. A phone that only reads sends
+                nothing, so it gets cut.
+              </p>
             </div>
-          )}
-          {phase === 'denied' && (
-            <div className="ph-entry ph-new">
-              <p className="ph-text">Okay, I won't run them. The change is ready when you are.</p>
+            <div className="ph-steps">
+              <ToolRow add={24} del={6} state="completed" title="Edited relay/src/socket.ts" />
+              <ToolRow add={11} del={2} state="completed" title="Edited phone/relay.js" />
             </div>
-          )}
-        </div>
-        {phase === 'asking' && <PermissionCard onAnswer={answer} onTap={say} />}
-        {phase !== 'asking' && (
-          <div className="ph-composer">
-            <span className="ph-placeholder">Message Claude…</span>
-            {(phase === 'done' || phase === 'denied') && (
-              <button className="demo-replay" onClick={() => setPhase('asking')} type="button">
-                Replay
-              </button>
+            <div className="ph-entry">
+              <p className="ph-text">
+                I added a ping every 25 s and a reconnect with backoff. Now I want to run the relay
+                tests.
+              </p>
+            </div>
+            <div className="ph-steps">
+              <ToolRow command={COMMAND} state={toolState} />
+            </div>
+            {phase === 'done' && (
+              <div className="ph-entry ph-new">
+                <p className="ph-text">
+                  All 14 relay tests pass. An idle phone now stays connected.
+                </p>
+              </div>
             )}
-            <span aria-hidden="true" className="ph-send" />
+            {phase === 'denied' && (
+              <div className="ph-entry ph-new">
+                <p className="ph-text">Okay, I won't run them. The change is ready when you are.</p>
+              </div>
+            )}
           </div>
-        )}
-        {toast ? (
-          <div className="ph-toast" key={toast.id} role="status">
-            {toast.text}
-          </div>
-        ) : null}
-      </div>
-      <p aria-live="polite" className="demo-hint">
-        {PHONE_HINTS[phase]}
-      </p>
+          {phase === 'asking' ? (
+            <PermissionCard holding={pressing} onAnswer={answer} onTap={say} />
+          ) : null}
+          {phase !== 'asking' && (
+            <div className="ph-composer">
+              <span className="ph-placeholder">Message Claude…</span>
+              <span aria-hidden="true" className="ph-send" />
+            </div>
+          )}
+          {toast ? (
+            <div className="ph-toast" key={toast.id} role="status">
+              {toast.text}
+            </div>
+          ) : null}
+        </div>
+      </Stage>
+      <StoryBar
+        auto={story.auto}
+        beats={BEATS}
+        current={beat}
+        onReplay={story.replay}
+        reduced={story.reduced}
+      />
     </div>
   )
-}
-
-const PHONE_HINTS: Record<Phase, string> = {
-  asking: 'Press and hold to allow. A quick tap only shows a reminder.',
-  running: 'Allowed. The agent goes on while your phone is in your pocket.',
-  done: 'The tests ran. You never sat and watched.',
-  denied: 'Denied. Nothing ran.',
 }
 
 function ToolRow({
@@ -180,9 +223,12 @@ function ToolRow({
 }
 
 function PermissionCard({
+  holding: shown,
   onAnswer,
   onTap,
 }: {
+  /** The story's finger is holding the button. */
+  holding: boolean
   onAnswer: (answer: Answer) => void
   onTap: (text: string) => void
 }) {
@@ -234,7 +280,7 @@ function PermissionCard({
           </button>
           <button
             className="pbtn hold"
-            data-holding={holding ? '' : undefined}
+            data-holding={holding || shown ? '' : undefined}
             onClick={() => {
               // The click that ends a finished hold is not a tap.
               if (held.current) {
