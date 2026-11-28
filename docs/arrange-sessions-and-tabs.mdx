@@ -43,11 +43,15 @@ The same menu holds **Group by project** and **Show archived**. Under **Applies 
 
 Sessions pinned to the title bar go first in every order, with a pin at the end of the row and a rule under them. In Recent and Name, the sessions with a tab open come next, with a rule under them. A session with no tab open is dimmed, unless it works or needs you. The rows hold still while the pointer is over the sidebar. Sessions that need you go to the [Needs you](#see-what-needs-you) list above the projects.
 
+A project's sessions whose checks passed fold into one quiet line after the others, with a check and the count, such as "2 done". Click it, or press <kbd>Enter</kbd> on it, to open them in place or fold them again. Each project remembers that in `state.json`. A search, the session on screen and a pinned session never fold.
+
+<kbd>Alt+1</kbd> to <kbd>Alt+9</kbd> go to the first nine projects, in the sidebar's order. <kbd>Up</kbd> and <kbd>Down</kbd> move through the project's sessions, <kbd>Left</kbd> and <kbd>Right</kbd> fold and open it, and <kbd>Enter</kbd> opens a session. A hidden sidebar opens first.
+
 A project with nothing running folds. The project on screen and any project with a session that works or needs you stay open. Click a project to fold or open it. Settings can keep such projects open or hide them.
 
 Point at a session that is not working and the end of its row gives way to an archive button. Click it to archive that session. Sessions on a server and the session you have open have no button. Archive the open one from its right-click menu.
 
-Archived sessions stay out of the list. The archived toggle shows them.
+Archived sessions stay out of the list. The archived toggle shows them. To delete old ones for you, see [Remove archived sessions](/projects-and-worktrees#remove-archived-sessions).
 
 ## Pin sessions to the title bar
 
@@ -117,7 +121,14 @@ The window has one row of tabs for every environment. Going to a tab shows its e
 
 A middle click closes a tab. Drag a tab left or right to move it; the order stays after a restart.
 
-A split can hold tabs of two environments side by side. Clicking a pane switches to its environment.
+<kbd>Ctrl+D</kbd> (or <kbd>Ctrl+Shift+D</kbd> to split down) shows up to three panes side by side. The first press splits the tab, the second adds a third pane beside the focused one, and the third press ends the split.
+
+- <kbd>Ctrl+Alt+Left</kbd> or <kbd>Ctrl+Alt+Up</kbd> moves the focus to the previous pane, <kbd>Ctrl+Alt+Right</kbd> or <kbd>Ctrl+Alt+Down</kbd> to the next one.
+- <kbd>Ctrl+Alt+Shift+arrows</kbd>, or **Swap sides** in the tab's menu, swaps the focused pane with the next one.
+- Drag a divider to resize the two panes beside it. Double-click a divider to make every pane the same size.
+- Closing the tab in one pane closes only that pane. The split ends when one pane is left.
+
+A split can hold tabs of different environments side by side. Clicking a pane switches to its environment.
 
 <Tip>
 GNOME, Ubuntu and some KDE setups keep <kbd>Ctrl+Alt+T</kbd> for their own terminal. Use Reopen closed tab in the palette or a tab's right-click menu there.

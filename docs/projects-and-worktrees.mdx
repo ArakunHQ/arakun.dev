@@ -67,6 +67,12 @@ A session's own right-click menu archives just that session, without touching Gi
 
 To get one back, use the **N archived** row at the end of the sidebar's list, or search. Pick Restore on its right-click menu, or send it a new prompt.
 
+### Remove archived sessions
+
+Settings › Branches › Remove archived sessions after (Off, 30 days, 90 days or 1 year) removes an archived session once that long has passed since it was archived or last used, whichever is later. Its transcript, its linked note and the images pasted into it are deleted too. It is off by default, so sessions stay until you remove them.
+
+Arakun looks when it starts and then once a day. A session stays when it is working, waiting for you or open in a tab. The files of a session another one continued stay with that one. A [server](/server)'s sessions follow the same setting on the server.
+
 ### After a merge
 
 Once an environment's pull request is merged, Arakun archives it the same way. It asks `gh` every few minutes. Turn this off in Settings › Branches › Archive after merge.

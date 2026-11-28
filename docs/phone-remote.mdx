@@ -31,7 +31,9 @@ The dialog offers two ways:
 - **Continue with GitHub** shows a code to approve on GitHub.
 - **Email me a code** sends a six-digit code to the address you type. Type it in the dialog. It works once, for 10 minutes.
 
-Either way makes an account if you have none. An account made by email is not the same as one made with GitHub, so sign in the same way on every device.
+Either way makes an account if you have none. An account made by email is not the same as one made with GitHub, so sign in the same way on every device, or link both to one account in Settings › Account.
+
+Settings › Account lists how the account signs in: GitHub, an email address, or both. **Add GitHub** runs the same GitHub sign-in, and **Add address** mails a code to the address. A GitHub account or address that already signs in to another Arakun account is refused, so two accounts are never joined. **Remove** takes a method off the account, after you confirm, as long as another is left. Each change is mailed to the account's addresses.
 
 </Step>
 <Step title="Open the page on the phone">
@@ -125,9 +127,9 @@ The page is dark, and light when the device is set to a light appearance.
 
 ## Send prompts
 
-While the agent works, a prompt you send waits for the turn to end. With something written, **Stop** becomes **Stop and send**.
+While the agent works, a prompt you send waits for the turn to end, listed over the box. **Take back** puts one back in the box. With something written, **Stop** becomes **Stop and send**. **Stop** pauses what waits, and **Resume** lets it go. The iOS and Android apps do the same.
 
-You can attach photos when you start a new session, as with any prompt. A computer on an older version starts the session without them.
+You can attach photos when you start a new session, as with any prompt. A computer on an older version starts the session without them. In the iOS app, the photo button in the composer and the new-session form opens the photo picker or the camera.
 
 When an agent asks for a login, token or password, the page shows the same [private card](/start-a-session#when-the-agent-needs-a-secret) as the app. What you type goes only over the relay, Tailscale or https. Over plain http, the card offers only **Decline**.
 
@@ -140,6 +142,14 @@ The page keeps shortcuts, phrases you send often, as a row of buttons over the b
 - Hold a message you sent to keep it as a shortcut, or tap **+** in the row.
 
 Shortcuts stay in that phone's browser.
+
+## Subagents
+
+On the page, a subagent the agent started shows as a card with its name, task, state, run time and latest step. Tap it to read the subagent's transcript, read-only. Back returns to the session. A line over the box says how many subagents run on in the background.
+
+## Pictures and formatting
+
+The iOS and Android apps show the photos in your prompts and the images in the agent's replies. Tap one to open it full screen. Code blocks, lists, headings, quotes and tables in a reply are formatted.
 
 ## Charts and diagrams
 
